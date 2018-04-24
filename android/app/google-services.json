@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "189898083221",
+    "firebase_url": "https://nixonapp0610.firebaseio.com",
+    "project_id": "nixonapp0610",
+    "storage_bucket": "nixonapp0610.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189898083221:android:a9a90e5af9bc4f6a",
+        "android_client_info": {
+          "package_name": "com.sam0610.nixonapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "189898083221-22orqgsejunf5naa2o3240mi36rcf6fc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sam0610.nixonapp",
+            "certificate_hash": "17775c65915a289823b3d6833d49085ef8314dc1"
+          }
+        },
+        {
+          "client_id": "189898083221-ie62gqnnig5c8mocclfvco3v43gocgqg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXTurubL1BxpKWEod7okRg6rQT8wp6vVA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "189898083221-ie62gqnnig5c8mocclfvco3v43gocgqg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
