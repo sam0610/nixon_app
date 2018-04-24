@@ -7,7 +7,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Welcome',
       theme: new ThemeData(
         // This is the theme of your application.
         //
@@ -18,23 +18,15 @@ class MyApp extends StatelessWidget {
         // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
+        accentColor: Colors.lightBlueAccent,
       ),
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      home: new MyHomePage(title: 'Welcome'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -43,67 +35,146 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  TextEditingController _emailEditController = new TextEditingController();
+  TextEditingController _passwordEditController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return new Scaffold(
       appBar: new AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: new Text(widget.title),
       ),
-      body: new Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: new Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug paint" (press "p" in the console where you ran
-          // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
-          // window in IntelliJ) to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: new ListView(
+        children: <Widget>[
+          buildLogo(),
+          new Column(
+            children: <Widget>[emailTextField(), pwTextField(), pwConfirmBtn()],
+          )
+        ],
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget buildLogo() {
+    return new Center(
+      child: new Container(
+        margin: const EdgeInsets.all(20.0),
+        child: new Image.asset(
+          'asset/nx_logo.png',
+          scale: 10.0,
+          color: Colors.redAccent,
+        ),
+      ),
+    );
+  }
+
+  Widget emailTextField() {
+    return new Container(
+        padding: EdgeInsets.all(10.0),
+        child: new Row(
           children: <Widget>[
-            new Text(
-              'You have pushed the button this many times:',
+            new Flexible(
+              child: new Container(
+                padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                child: new TextField(
+                  decoration: new InputDecoration(
+                      hintText: "please enter email",
+                      suffixIcon: new Icon(Icons.email)),
+                  controller: _emailEditController,
+                  maxLines: 1,
+                ),
+              ),
             ),
-            new Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
+          ],
+        ));
+  }
+
+  Widget pwTextField() {
+    return new Container(
+        padding: EdgeInsets.all(10.0),
+        child: new Row(
+          children: <Widget>[
+            new Flexible(
+              child: new Container(
+                padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                child: new TextField(
+                  obscureText: true,
+                  decoration: new InputDecoration(
+                      hintText: "please enter password",
+                      suffixIcon: new Icon(Icons.lock)),
+                  controller: _passwordEditController,
+                  maxLines: 1,
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget pwConfirmBtn() {
+    return new Center(
+      child: new Container(
+        margin: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            new Expanded(
+              child: new RaisedButton(
+                onPressed: login,
+                color: Colors.blue,
+                child: new Container(
+                  padding: EdgeInsets.all(10.0),
+                  child: new Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      new Container(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: new Icon(Icons.send)),
+                      new Text("Login")
+                    ],
+                  ),
+                ),
+                splashColor: Colors.white,
+              ),
+            ),
+            new Padding(padding: EdgeInsets.only(right: 20.0)),
+            new RaisedButton(
+              onPressed: () {
+                setState(() {
+                  _emailEditController.clear();
+                  _passwordEditController.clear();
+                });
+              },
+              color: Colors.redAccent,
+              child: new Container(
+                padding: EdgeInsets.all(10.0),
+                child: new Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    new Container(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: new Icon(Icons.clear),
+                    ),
+                    new Text("Cancel")
+                  ],
+                ),
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: new Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  login() {
+    if (_emailEditController.text.isNotEmpty &&
+        _passwordEditController.text.isNotEmpty) {
+      _emailEditController.text =
+          _emailEditController.text.toLowerCase().trim();
+      _passwordEditController.text = _passwordEditController.text.trim();
+      print("LOGIN REQUESTED");
+    }
   }
 }
