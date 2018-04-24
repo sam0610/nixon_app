@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.title}) : super(key: key);
@@ -12,25 +17,22 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _emailEditController = new TextEditingController();
   TextEditingController _passwordEditController = new TextEditingController();
+  //final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: Center(
-        child: new ListView(
+    return new ListView(
+      children: <Widget>[
+        Padding(padding: EdgeInsets.only(top: 50.0)),
+        new Column(
           children: <Widget>[
-            Padding(padding: EdgeInsets.only(top: 50.0)),
             buildLogo(),
-            new Column(
-              children: <Widget>[
-                emailTextField(),
-                pwTextField(),
-                pwConfirmBtn()
-              ],
-            )
+            emailTextField(),
+            pwTextField(),
+            pwConfirmBtn()
           ],
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        )
+      ],
     );
   }
 
@@ -111,7 +113,6 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ),
-                splashColor: Colors.white,
               ),
             ),
             new Padding(padding: EdgeInsets.only(right: 20.0)),
@@ -151,6 +152,35 @@ class _LoginPageState extends State<LoginPage> {
           _emailEditController.text.toLowerCase().trim();
       _passwordEditController.text = _passwordEditController.text.trim();
       print("LOGIN REQUESTED");
+      var user = _handleSignIn()
+          .then((FirebaseUser user) => print(user))
+          .catchError((e) => print(e));
     }
+  }
+
+  Future<FirebaseUser> _handleSignIn() async {
+    try {
+      FirebaseUser user = await _auth.signInWithEmailAndPassword(
+          email: _emailEditController.text.toLowerCase().trim(),
+          password: _passwordEditController.text.trim());
+      if (user != null) {
+        showSnackbar('signed in ' + user.uid.toString(), Colors.green);
+        Navigator.of(context).pushNamed('/home');
+        return user;
+      } else {
+        showSnackbar('Login Fails');
+      }
+    } catch (ex) {
+      showSnackbar(ex.toString());
+    }
+    return null;
+  }
+
+  void showSnackbar(String s, [Color bgColor]) {
+    Scaffold.of(context).showSnackBar(new SnackBar(
+          backgroundColor: bgColor == null ? Colors.red : bgColor,
+          content: new Text(s),
+          duration: Duration(seconds: 3),
+        ));
   }
 }
