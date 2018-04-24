@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firebase_services.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -13,7 +12,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final currentuser = _auth.currentUser() as FirebaseUser;
+
+  bool isLoggedIn = false;
+  String userID ;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    FirebaseAuth.instance.currentUser().then((user) => user != null
+        ? setState(() {
+      isLoggedIn = true;
+      userID = user.uid;
+    })
+        : null);
+    super.initState();
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +37,7 @@ class _HomePageState extends State<HomePage> {
         title: new Text("welcome"),
         centerTitle: true,
       ),
-      body: new Center(child: new Text(currentuser.uid)),
+      body: new Center(child: new Text(isLoggedIn.toString() +' '+ userID)),
     );
   }
 }

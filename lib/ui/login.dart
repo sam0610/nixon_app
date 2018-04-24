@@ -20,6 +20,17 @@ class _LoginPageState extends State<LoginPage> {
   //final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
+  void initState() {
+    super.initState();
+    // TODO: implement initState
+    FirebaseAuth.instance.currentUser().then((user) => user != null
+        ? setState(() {
+      Navigator.of(context).pushNamed('/home');
+    })
+        : null);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return new ListView(
       children: <Widget>[
