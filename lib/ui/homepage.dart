@@ -1,8 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../services/firebase_services.dart';
-
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -12,23 +9,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   bool isLoggedIn = false;
-  String userID ;
-
+  FirebaseUser currentUser;
   @override
   void initState() {
     // TODO: implement initState
+    super.initState();
     FirebaseAuth.instance.currentUser().then((user) => user != null
         ? setState(() {
-      isLoggedIn = true;
-      userID = user.uid;
-    })
-        : null);
-    super.initState();
-
+            isLoggedIn = true;
+            checkName(user);
+            currentUser = user;
+          })
+        : setState(() {
+            isLoggedIn = false;
+            user = null;
+            if (isLoggedIn == false) Navigator.pushNamed(context, "/login");
+          }));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +35,50 @@ class _HomePageState extends State<HomePage> {
         title: new Text("welcome"),
         centerTitle: true,
       ),
-      body: new Center(child: new Text(isLoggedIn.toString() +' '+ userID)),
+      drawer: new Drawer(
+          child: new ListView(padding: EdgeInsets.zero, children: <Widget>[
+        myDrawerHeader(),
+        new ListTile(title: new Text('Page 1')),
+        new ListTile(title: new Text('Page 2')),
+      ])),
+      body: new Center(child: new Text(isLoggedIn.toString())),
     );
   }
+
+  Widget myDrawerHeader() {
+    return new DrawerHeader(
+        decoration: new BoxDecoration(color: Theme.of(context).accentColor),
+        child: new Container(
+          child: new Row(children: <Widget>[
+            new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                new Text(currentUser.displayName,
+                    style: new TextStyle(
+                        fontSize: 20.0, fontWeight: FontWeight.bold)),
+                new Text(currentUser.email,
+                    style: new TextStyle(fontSize: 18.0))
+              ],
+            )
+          ]),
+        ));
+  }
+
+  void checkName(FirebaseUser user) async {
+    if (user.displayName == null) await updateProfileName("Not Set");
+  }
+
+  updateProfileName(String name) {
+    UserUpdateInfo updateInfo = new UserUpdateInfo();
+    updateInfo.displayName = name;
+    FirebaseAuth.instance.updateProfile(updateInfo);
+  }
+
+  changeName() {
+    updateProfileName("samchoi");
+    print("changed");
+  }
+
+  void changeDetail() {}
 }

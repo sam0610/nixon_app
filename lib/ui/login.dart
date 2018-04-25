@@ -25,8 +25,8 @@ class _LoginPageState extends State<LoginPage> {
     // TODO: implement initState
     FirebaseAuth.instance.currentUser().then((user) => user != null
         ? setState(() {
-      Navigator.of(context).pushNamed('/home');
-    })
+            Navigator.of(context).pushNamed('/home');
+          })
         : null);
   }
 
@@ -163,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
           _emailEditController.text.toLowerCase().trim();
       _passwordEditController.text = _passwordEditController.text.trim();
       print("LOGIN REQUESTED");
-      var user = _handleSignIn()
+      _handleSignIn()
           .then((FirebaseUser user) => print(user))
           .catchError((e) => print(e));
     }
