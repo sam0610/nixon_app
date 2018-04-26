@@ -8,14 +8,19 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => new _HomePageState();
 }
 
+FirebaseUser currentUser;
+
 class _HomePageState extends State<HomePage> {
   bool isLoggedIn = false;
-  FirebaseUser currentUser;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    FirebaseAuth.instance.currentUser().then((user) => user != null
+    _assureLogin();
+  }
+
+  _assureLogin() async {
+    await FirebaseAuth.instance.currentUser().then((user) => user != null
         ? setState(() {
             isLoggedIn = true;
             checkName(user);
@@ -24,7 +29,8 @@ class _HomePageState extends State<HomePage> {
         : setState(() {
             isLoggedIn = false;
             user = null;
-            if (isLoggedIn == false) Navigator.pushNamed(context, "/login");
+            if (isLoggedIn == false)
+              Navigator.pushReplacementNamed(context, "/login");
           }));
   }
 
@@ -37,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: new Drawer(
           child: new ListView(padding: EdgeInsets.zero, children: <Widget>[
-        myDrawerHeader(),
+        new _BuildDrawerHeader(),
         new ListTile(
             title: new Text('Logout'),
             onTap: () {
@@ -48,26 +54,6 @@ class _HomePageState extends State<HomePage> {
       ])),
       body: new Center(child: new Text(isLoggedIn.toString())),
     );
-  }
-
-  Widget myDrawerHeader() {
-    return new DrawerHeader(
-        decoration: new BoxDecoration(color: Theme.of(context).accentColor),
-        child: new Container(
-          child: new Row(children: <Widget>[
-            new Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                new Text(currentUser.displayName,
-                    style: new TextStyle(
-                        fontSize: 20.0, fontWeight: FontWeight.bold)),
-                new Text(currentUser.email,
-                    style: new TextStyle(fontSize: 18.0))
-              ],
-            )
-          ]),
-        ));
   }
 
   void checkName(FirebaseUser user) async {
@@ -86,4 +72,27 @@ class _HomePageState extends State<HomePage> {
   }
 
   void changeDetail() {}
+}
+
+class _BuildDrawerHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new DrawerHeader(
+        decoration: new BoxDecoration(color: Theme.of(context).accentColor),
+        child: new Container(
+          child: new Row(children: <Widget>[
+            new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                new Text(currentUser.displayName,
+                    style: new TextStyle(
+                        fontSize: 20.0, fontWeight: FontWeight.bold)),
+                new Text(currentUser.email,
+                    style: new TextStyle(fontSize: 18.0))
+              ],
+            )
+          ]),
+        ));
+  }
 }
