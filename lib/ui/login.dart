@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -16,28 +17,30 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _emailEditController = new TextEditingController();
   TextEditingController _passwordEditController = new TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    // TODO: implement initState
-    FirebaseAuth.instance.currentUser().then((user) => user != null
-        ? setState(() {
-            Navigator.of(context).pushNamed('/home');
-          })
-        : null);
+  void showMessage(String value, [Color color]) {
+    color == null ? color = Colors.red[50] : null;
+    Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(value)));
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget buildLogo = new Center(
-      child: new Image.asset(
-        'asset/nx_logo.png',
-        scale: 10.0,
-        color: Colors.redAccent,
-      ),
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        new Column(
+          children: <Widget>[
+            _BuildLogo(),
+            emailTextField(),
+            pwTextField(),
+            pwConfirmBtn()
+          ],
+        )
+      ],
     );
+  }
 
-    Widget emailTextField = new Container(
+  Widget emailTextField() {
+    return new Container(
         padding: EdgeInsets.all(10.0),
         child: new Row(
           children: <Widget>[
@@ -55,8 +58,10 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ],
         ));
+  }
 
-    Widget pwTextField = new Container(
+  Widget pwTextField() {
+    return new Container(
         padding: EdgeInsets.all(10.0),
         child: new Row(
           children: <Widget>[
@@ -75,21 +80,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ],
         ));
-
-    return new Scaffold(
-        body: new ListView(
-      children: <Widget>[
-        Padding(padding: EdgeInsets.only(top: 50.0)),
-        new Column(
-          children: <Widget>[
-            buildLogo,
-            emailTextField,
-            pwTextField,
-            pwConfirmBtn()
-          ],
-        )
-      ],
-    ));
   }
 
   Widget pwConfirmBtn() {
@@ -154,37 +144,40 @@ class _LoginPageState extends State<LoginPage> {
       _emailEditController.text =
           _emailEditController.text.toLowerCase().trim();
       _passwordEditController.text = _passwordEditController.text.trim();
+
       print("LOGIN REQUESTED");
-      _handleSignIn()
+/*      _handleSignIn()
           .then((FirebaseUser user) => print(user))
-          .catchError((e) => print(e));
+          .catchError((e) => print(e.error));
+*/
+      _handleSignIn().then((FirebaseUser user) {
+        showMessage("Welcome!", Colors.blue[100]);
+        Navigator.of(context).pushReplacementNamed('/home');
+      }).catchError((PlatformException onError) {
+        showMessage(onError.message.toString());
+      }).catchError((onError) {
+        showMessage(onError.message.toString());
+      });
     }
   }
 
   Future<FirebaseUser> _handleSignIn() async {
-    try {
-      FirebaseUser user = await _auth.signInWithEmailAndPassword(
-          email: _emailEditController.text.toLowerCase().trim(),
-          password: _passwordEditController.text.trim());
-      if (user != null) {
-        showSnackbar('signed in ' + user.uid.toString(), Colors.green);
-        Navigator.of(context).pushNamed('/home');
-        return user;
-      } else {
-        showSnackbar('Login Fails');
-      }
-    } catch (ex) {
-      showSnackbar(ex.toString());
-      print(ex);
-    }
-    return null;
+    FirebaseUser user = await _auth.signInWithEmailAndPassword(
+        email: _emailEditController.text.toLowerCase().trim(),
+        password: _passwordEditController.text.trim());
+    return user;
   }
+}
 
-  void showSnackbar(String s, [Color bgColor]) {
-    Scaffold.of(context).showSnackBar(new SnackBar(
-          backgroundColor: bgColor == null ? Colors.red : bgColor,
-          content: new Text(s),
-          duration: Duration(seconds: 3),
-        ));
+class _BuildLogo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Center(
+      child: new Image.asset(
+        'asset/nx_logo.png',
+        scale: 10.0,
+        color: Colors.redAccent,
+      ),
+    );
   }
 }
