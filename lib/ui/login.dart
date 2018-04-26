@@ -6,9 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  LoginPage({Key key}) : super(key: key);
 
   @override
   _LoginPageState createState() => new _LoginPageState();
@@ -17,7 +15,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _emailEditController = new TextEditingController();
   TextEditingController _passwordEditController = new TextEditingController();
-  //final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -32,33 +29,15 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new ListView(
-      children: <Widget>[
-        Padding(padding: EdgeInsets.only(top: 50.0)),
-        new Column(
-          children: <Widget>[
-            buildLogo(),
-            emailTextField(),
-            pwTextField(),
-            pwConfirmBtn()
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget buildLogo() {
-    return new Center(
+    Widget buildLogo = new Center(
       child: new Image.asset(
         'asset/nx_logo.png',
         scale: 10.0,
         color: Colors.redAccent,
       ),
     );
-  }
 
-  Widget emailTextField() {
-    return new Container(
+    Widget emailTextField = new Container(
         padding: EdgeInsets.all(10.0),
         child: new Row(
           children: <Widget>[
@@ -76,10 +55,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ],
         ));
-  }
 
-  Widget pwTextField() {
-    return new Container(
+    Widget pwTextField = new Container(
         padding: EdgeInsets.all(10.0),
         child: new Row(
           children: <Widget>[
@@ -98,6 +75,21 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ],
         ));
+
+    return new Scaffold(
+        body: new ListView(
+      children: <Widget>[
+        Padding(padding: EdgeInsets.only(top: 50.0)),
+        new Column(
+          children: <Widget>[
+            buildLogo,
+            emailTextField,
+            pwTextField,
+            pwConfirmBtn()
+          ],
+        )
+      ],
+    ));
   }
 
   Widget pwConfirmBtn() {
@@ -183,6 +175,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (ex) {
       showSnackbar(ex.toString());
+      print(ex);
     }
     return null;
   }

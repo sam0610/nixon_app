@@ -38,7 +38,12 @@ class _HomePageState extends State<HomePage> {
       drawer: new Drawer(
           child: new ListView(padding: EdgeInsets.zero, children: <Widget>[
         myDrawerHeader(),
-        new ListTile(title: new Text('Page 1')),
+        new ListTile(
+            title: new Text('Logout'),
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushReplacementNamed('/login');
+            }),
         new ListTile(title: new Text('Page 2')),
       ])),
       body: new Center(child: new Text(isLoggedIn.toString())),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './ui/login.dart';
 import './ui/homepage.dart';
+import './ui/splashscreen.dart';
 
 void main() => runApp(new MyApp());
 
@@ -15,10 +16,11 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.lightBlueAccent,
       ),
       routes: <String, WidgetBuilder>{
+        '/splash': (BuildContext context) => new SplashScreen(),
         '/login': (BuildContext context) => new LoginPage(),
         '/home': (BuildContext context) => new HomePage(),
       },
-      home: new Scaffold(body: new LoginPage()),
+      home: new SplashScreen(),
     );
   }
 }
