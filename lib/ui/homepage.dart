@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../Helper/firebase.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -8,10 +9,14 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => new _HomePageState();
 }
 
-FirebaseUser currentUser;
+UserData currentUser;
+FireBaseHelper fireHelper = new FireBaseHelper();
 
 class _HomePageState extends State<HomePage> {
+  TextEditingController displayNameController = new TextEditingController();
   bool isLoggedIn = false;
+  bool boolEdit = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -23,8 +28,7 @@ class _HomePageState extends State<HomePage> {
     await FirebaseAuth.instance.currentUser().then((user) => user != null
         ? setState(() {
             isLoggedIn = true;
-            checkName(user);
-            currentUser = user;
+            currentUser = UserData(user);
           })
         : setState(() {
             isLoggedIn = false;
@@ -32,6 +36,19 @@ class _HomePageState extends State<HomePage> {
             if (isLoggedIn == false)
               Navigator.pushReplacementNamed(context, "/login");
           }));
+  }
+
+  void allowEdit() {
+    setState(() {
+      boolEdit = !boolEdit;
+    });
+  }
+
+  void changeName(String value) {
+    fireHelper.updateProfileName(value);
+    setState(() {
+      _assureLogin();
+    });
   }
 
   @override
@@ -43,7 +60,37 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: new Drawer(
           child: new ListView(padding: EdgeInsets.zero, children: <Widget>[
-        new _BuildDrawerHeader(),
+        new DrawerHeader(
+            decoration:
+                new BoxDecoration(color: Theme.of(context).primaryColor),
+            child: new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      boolEdit == false
+                          ? new Text(
+                              currentUser.displayName,
+                              style: new TextStyle(
+                                  fontSize: 30.0, fontWeight: FontWeight.bold),
+                            )
+                          : new Flexible(
+                              child: new TextField(
+                                  controller: displayNameController,
+                                  onSubmitted: changeName,
+                                  style: new TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold))),
+                      new GestureDetector(
+                        child: new Icon(Icons.edit),
+                        onTap: allowEdit,
+                      )
+                    ],
+                  ),
+                  new Text(currentUser.email,
+                      style: new TextStyle(fontSize: 20.0))
+                ])),
         new ListTile(
             title: new Text('Logout'),
             onTap: () {
@@ -54,45 +101,5 @@ class _HomePageState extends State<HomePage> {
       ])),
       body: new Center(child: new Text(isLoggedIn.toString())),
     );
-  }
-
-  void checkName(FirebaseUser user) async {
-    if (user.displayName == null) await updateProfileName("Not Set");
-  }
-
-  updateProfileName(String name) {
-    UserUpdateInfo updateInfo = new UserUpdateInfo();
-    updateInfo.displayName = name;
-    FirebaseAuth.instance.updateProfile(updateInfo);
-  }
-
-  changeName() {
-    updateProfileName("samchoi");
-    print("changed");
-  }
-
-  void changeDetail() {}
-}
-
-class _BuildDrawerHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new DrawerHeader(
-        decoration: new BoxDecoration(color: Theme.of(context).accentColor),
-        child: new Container(
-          child: new Row(children: <Widget>[
-            new Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                new Text(currentUser.displayName,
-                    style: new TextStyle(
-                        fontSize: 20.0, fontWeight: FontWeight.bold)),
-                new Text(currentUser.email,
-                    style: new TextStyle(fontSize: 18.0))
-              ],
-            )
-          ]),
-        ));
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import './ui/login.dart';
@@ -8,12 +10,21 @@ void main() => runApp(new MyApp());
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-  bool _checkLogin() {
+  Future<bool> _checkLogin() async {
     bool result;
-    FirebaseAuth.instance
+    await FirebaseAuth.instance
         .currentUser()
         .then((user) => user != null ? result = true : result = false);
     return result;
+  }
+
+  bool _login() {
+    _checkLogin().then((bool result) {
+      return true;
+    }).catchError((onError) {
+      return false;
+    });
+    return false;
   }
 
   @override
@@ -22,14 +33,15 @@ class MyApp extends StatelessWidget {
         title: 'Welcome',
         theme: new ThemeData(
           primarySwatch: Colors.blue,
+          primaryColor: Colors.blue[500],
+          primaryColorBrightness: Brightness.light,
           accentColor: Colors.lightBlueAccent,
+          accentColorBrightness: Brightness.light,
         ),
         routes: <String, WidgetBuilder>{
           '/login': (BuildContext context) => new LoginPage(),
           '/home': (BuildContext context) => new HomePage(),
         },
-        home: (_checkLogin() == true
-            ? new HomePage()
-            : new Scaffold(body: new LoginPage())));
+        home: (_login != true ? new HomePage() : new LoginPage()));
   }
 }

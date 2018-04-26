@@ -22,9 +22,37 @@ class _LoginPageState extends State<LoginPage> {
     Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(value)));
   }
 
+  Future<Null> _showDialog(String title, String message) async {
+    return showDialog<Null>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text(title),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Column(
+    return new Scaffold(
+        body: new Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         new Column(
@@ -36,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
           ],
         )
       ],
-    );
+    ));
   }
 
   Widget emailTextField() {
@@ -47,9 +75,10 @@ class _LoginPageState extends State<LoginPage> {
             new Flexible(
               child: new Container(
                 padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                child: new TextField(
+                child: new TextFormField(
+                  keyboardType: TextInputType.emailAddress,
                   decoration: new InputDecoration(
-                      hintText: "please enter email",
+                      hintText: "email address",
                       suffixIcon: new Icon(Icons.email)),
                   controller: _emailEditController,
                   maxLines: 1,
@@ -68,10 +97,11 @@ class _LoginPageState extends State<LoginPage> {
             new Flexible(
               child: new Container(
                 padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                child: new TextField(
+                child: new TextFormField(
+                  keyboardType: TextInputType.text,
                   obscureText: true,
                   decoration: new InputDecoration(
-                      hintText: "please enter password",
+                      hintText: "login password",
                       suffixIcon: new Icon(Icons.lock)),
                   controller: _passwordEditController,
                   maxLines: 1,
@@ -138,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  login() {
+  login() async {
     if (_emailEditController.text.isNotEmpty &&
         _passwordEditController.text.isNotEmpty) {
       _emailEditController.text =
@@ -146,17 +176,10 @@ class _LoginPageState extends State<LoginPage> {
       _passwordEditController.text = _passwordEditController.text.trim();
 
       print("LOGIN REQUESTED");
-/*      _handleSignIn()
-          .then((FirebaseUser user) => print(user))
-          .catchError((e) => print(e.error));
-*/
       _handleSignIn().then((FirebaseUser user) {
-        showMessage("Welcome!", Colors.blue[100]);
         Navigator.of(context).pushReplacementNamed('/home');
-      }).catchError((PlatformException onError) {
-        showMessage(onError.message.toString());
       }).catchError((onError) {
-        showMessage(onError.message.toString());
+        _showDialog("Error", onError.message.toString());
       });
     }
   }
