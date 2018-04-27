@@ -41,11 +41,12 @@ class _HomePageState extends State<HomePage> {
   void allowEdit() {
     setState(() {
       boolEdit = !boolEdit;
+      if (boolEdit) this.displayNameController.text = currentUser.displayName;
     });
   }
 
-  void changeName(String value) {
-    fireHelper.updateProfileName(value);
+  void changeName(String value) async {
+    await fireHelper.updateProfileName(value);
     setState(() {
       _assureLogin();
     });
@@ -63,36 +64,41 @@ class _HomePageState extends State<HomePage> {
         new DrawerHeader(
             decoration:
                 new BoxDecoration(color: Theme.of(context).primaryColor),
-            child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      boolEdit == false
-                          ? new Text(
-                              currentUser.displayName,
-                              style: new TextStyle(
-                                  fontSize: 30.0, fontWeight: FontWeight.bold),
-                            )
-                          : new Flexible(
-                              child: new TextField(
-                                  controller: displayNameController,
-                                  onSubmitted: changeName,
-                                  style: new TextStyle(
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold))),
-                      new GestureDetector(
-                        child: new Icon(Icons.edit),
-                        onTap: allowEdit,
-                      )
-                    ],
-                  ),
-                  new Text(currentUser.email,
-                      style: new TextStyle(fontSize: 20.0))
-                ])),
+            child: new Container(
+              padding: EdgeInsets.all(20.0),
+              child: new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        boolEdit == false
+                            ? new Text(
+                                currentUser.displayName,
+                                style: new TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            : new Flexible(
+                                child: new TextField(
+                                    controller: displayNameController,
+                                    onSubmitted: changeName,
+                                    style: new TextStyle(
+                                        fontSize: 20.0, color: Colors.black))),
+                        new GestureDetector(
+                          child: new Icon(Icons.edit),
+                          onTap: allowEdit,
+                        )
+                      ],
+                    ),
+                    new Text(currentUser.email,
+                        style: new TextStyle(fontSize: 20.0))
+                  ]),
+            )),
         new ListTile(
-            title: new Text('Logout'),
+            title: new Text('Logout',
+                style:
+                    new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)),
             onTap: () {
               FirebaseAuth.instance.signOut();
               Navigator.of(context).pushReplacementNamed('/login');
