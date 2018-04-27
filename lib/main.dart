@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import './ui/login.dart';
 import './ui/homepage.dart';
+import './ui/page1.dart';
+import 'Helper/Route.dart';
 
 void main() => runApp(new MyApp());
 
@@ -38,10 +40,33 @@ class MyApp extends StatelessWidget {
           accentColor: Colors.lightBlueAccent,
           accentColorBrightness: Brightness.light,
         ),
-        routes: <String, WidgetBuilder>{
-          '/login': (BuildContext context) => new LoginPage(),
-          '/home': (BuildContext context) => new HomePage(),
-        },
-        home: (_login != true ? new HomePage() : new LoginPage()));
+        onGenerateRoute: (RouteSettings settings) {
+          switch (settings.name) {
+            case '/':
+              return new AnimatedRoute(
+                builder: (_) =>
+                    (_login != true ? new HomePage() : new LoginPage()),
+                settings: settings,
+              );
+            case '/home':
+              return new AnimatedRoute(
+                builder: (_) => new HomePage(),
+                settings: settings,
+              );
+            case '/login':
+              return new AnimatedRoute(
+                builder: (_) => new LoginPage(),
+                settings: settings,
+              );
+            case '/p1':
+              return new AnimatedRoute(
+                builder: (_) => new Page1(),
+                settings: settings,
+              );
+          }
+          assert(false);
+        }
+        //home: (_login != true ? new HomePage() : new LoginPage()));
+        );
   }
 }
