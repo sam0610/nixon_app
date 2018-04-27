@@ -21,7 +21,7 @@ class _Page1State extends State<Page1> {
     Firestore.instance
         .collection('todos')
         .document()
-        .setData({'title': titleController.text, 'type': typeController});
+        .setData({'title': titleController.text, 'type': typeController.text});
   }
 
   @override
@@ -32,7 +32,7 @@ class _Page1State extends State<Page1> {
           backgroundColor: Theme.of(context).primaryColor),
       body: Container(
         child: new Center(
-          child: new Column(
+          child: new Column(children: <Widget>[
             new TextFormField(
               controller: titleController,
             ),
@@ -43,7 +43,7 @@ class _Page1State extends State<Page1> {
               child: new Text("submit"),
               onPressed: _submit,
             ),
-          ),
+          ]),
         ),
       ),
     );
