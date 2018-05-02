@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../Helper/Route.dart';
 import '../Helper/firebase.dart';
-import 'page1.dart';
+import 'inspectionList.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.of(context).pop();
     Navigator.of(context).push(
           new AnimatedRoute(
-            builder: (_) => new Page1(),
+            builder: (_) => new InspectionRecord(),
           ),
         );
   }

@@ -1,11 +1,10 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import './ui/login.dart';
 import './ui/homepage.dart';
-import './ui/page1.dart';
 import 'Helper/Route.dart';
+import 'ui/inspectionList.dart';
 
 void main() => runApp(new MyApp());
 
@@ -58,9 +57,14 @@ class MyApp extends StatelessWidget {
                 builder: (_) => new LoginPage(),
                 settings: settings,
               );
-            case '/p1':
+            case '/inspectionList':
               return new AnimatedRoute(
-                builder: (_) => new Page1(),
+                builder: (_) => new InspectionRecord(),
+                settings: settings,
+              );
+            case '/inspectionForm':
+              return new AnimatedRoute(
+                builder: (_) => new InspectionForm(),
                 settings: settings,
               );
           }
