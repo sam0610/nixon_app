@@ -17,10 +17,10 @@ class UserData {
         : this._photoURL = user.photoUrl;
   }
 
-  String get displayName => _displayName;
+  String get displayName => _displayName ?? "N/A";
   String get email => _email;
   String get uid => _uid;
-  String get photoUrl => _photoURL;
+  String get photoUrl => _photoURL ?? "N/A";
 }
 
 class FireBaseHelper {

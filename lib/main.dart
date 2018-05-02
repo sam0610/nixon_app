@@ -65,8 +65,7 @@ class MyApp extends StatelessWidget {
               );
           }
           assert(false);
-        }
-        //home: (_login != true ? new HomePage() : new LoginPage()));
-        );
+        },
+        home: (_login != true ? new HomePage() : new LoginPage()));
   }
 }
