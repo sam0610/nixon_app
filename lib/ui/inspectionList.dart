@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
+import '../Helper/formHelper.dart';
 import '../Helper/Route.dart';
 import '../Models/Inspection.dart';
+import '../Models/InspectionRepository.dart';
 
-String _formatDate(DateTime value) {
-  return new DateFormat("yyyy.MM.dd").format(value);
-}
+InspectionRepos inspectionRepos;
 
 class InspectionRecord extends StatefulWidget {
   @override
@@ -17,6 +16,15 @@ class InspectionRecord extends StatefulWidget {
 }
 
 class _InspectionRecordState extends State<InspectionRecord> {
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
+      if (user != null)
+        inspectionRepos = new InspectionRepos.forUser(user: user);
+    });
+  }
+
   void _addNew() {
     Navigator.of(context).push(
           new AnimatedRoute(
@@ -43,6 +51,14 @@ class _InspectionRecordState extends State<InspectionRecord> {
 }
 
 class InspectionList extends StatelessWidget {
+  void _open(BuildContext context, Inspection inspection) {
+    Navigator.of(context).push(
+          new AnimatedRoute(
+            builder: (_) => new InspectionForm(),
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder(
@@ -54,15 +70,17 @@ class InspectionList extends StatelessWidget {
           if (snapshot.data.documents.length == 0) {
             return new Text("No Data");
           }
-
           return new ListView(
             children: snapshot.data.documents.map((document) {
               Inspection inspection = Inspection.fromDocument(document);
               return new ListTile(
                 title: new Text(
-                  _formatDate(inspection.inspectionDate),
+                  FormHelper.formatDate(inspection.inspectionDate),
                 ),
                 subtitle: new Text(inspection.userid.toString()),
+                trailing: new IconButton(
+                    icon: new Icon(Icons.edit),
+                    onPressed: () => _open(context, inspection)),
               );
             }).toList(),
           );
@@ -90,18 +108,11 @@ class _InspectionFormState extends State<InspectionForm> {
 
   void _save() {
     Inspection inspection = new Inspection(_formDate, userid);
-    Firestore.instance
-        .collection('Inspection')
-        .document()
-        .setData(inspection.toJson())
-        .then((__) {
-      Navigator.of(context).pop();
-    }).catchError((error) {
-      print(error.toString());
-    });
+    if (inspectionRepos.addInspection(inspection) == true)
+      Navigator.pop(context);
   }
 
-  Future<Null> _selectDate(BuildContext context) async {
+  selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
       firstDate: new DateTime(DateTime.now().year),
@@ -131,11 +142,11 @@ class _InspectionFormState extends State<InspectionForm> {
         children: <Widget>[
           new Row(
             children: <Widget>[
-              new Text(_formatDate(_formDate)),
+              new Text(FormHelper.formatDate(_formDate)),
               new IconButton(
-                icon: new Icon(Icons.arrow_drop_down_circle),
-                onPressed: () => _selectDate(context),
-              )
+                icon: new Icon(Icons.arrow_drop_down),
+                onPressed: () => selectDate(context),
+              ),
             ],
           )
         ],

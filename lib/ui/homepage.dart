@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 UserData currentUser;
 FireBaseHelper fireHelper = new FireBaseHelper();
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TextEditingController displayNameController = new TextEditingController();
   bool isLoggedIn = false;
   bool boolEdit = false;
@@ -42,15 +42,20 @@ class _HomePageState extends State<HomePage> {
 
   void _allowEdit() {
     setState(() {
-      boolEdit = !boolEdit;
+      boolEdit = true;
       if (boolEdit) this.displayNameController.text = currentUser.displayName;
     });
   }
 
-  void changeName(String value) async {
-    await fireHelper.updateProfileName(value);
+  void _changeName() async {
     setState(() {
+      _loading = true;
+    });
+    await fireHelper.updateProfileName(displayNameController.text);
+    setState(() {
+      _loading = false;
       _assureLogin();
+      boolEdit = false;
     });
   }
 
@@ -68,6 +73,58 @@ class _HomePageState extends State<HomePage> {
         );
   }
 
+  bool _loading = false;
+  Widget _saveIcon() => _loading == true
+      ? new Container(
+          height: 20.0,
+          width: 20.0,
+          child: new CircularProgressIndicator(
+              strokeWidth: 2.0,
+              valueColor: new Tween<Color>(begin: Colors.red, end: Colors.white)
+                  .animate(new AnimationController(
+                      duration: Duration(milliseconds: 500), vsync: this))))
+      : new Icon(
+          Icons.save,
+          size: 20.0,
+          color: Colors.grey[800],
+        );
+
+  Widget userNameField() => boolEdit == false
+      ? Row(
+          children: <Widget>[
+            new Expanded(
+                flex: 1,
+                child: new Text(
+                  currentUser?.displayName ?? 'N/A',
+                  style: new TextStyle(
+                      fontSize: 24.0, fontWeight: FontWeight.bold),
+                )),
+            new FlatButton(
+              child: new Icon(
+                Icons.edit,
+                size: 20.0,
+                color: Colors.grey[800],
+              ),
+              onPressed: _allowEdit,
+            ),
+          ],
+        )
+      : new Row(
+          children: <Widget>[
+            new Expanded(
+              flex: 1,
+              child: new TextField(
+                controller: displayNameController,
+                style: new TextStyle(fontSize: 24.0, color: Colors.black),
+              ),
+            ),
+            new FlatButton(
+              child: _saveIcon(),
+              onPressed: _changeName,
+            ),
+          ],
+        );
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -83,43 +140,15 @@ class _HomePageState extends State<HomePage> {
               decoration:
                   new BoxDecoration(color: Theme.of(context).primaryColor),
               child: new Container(
-                padding: EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(5.0),
                 child: new Column(
+                  mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        boolEdit == false
-                            ? new Text(
-                                currentUser.displayName ?? 'N/A',
-                                style: new TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold),
-                              )
-                            : new Flexible(
-                                child: new TextField(
-                                  controller: displayNameController,
-                                  onSubmitted: changeName,
-                                  style: new TextStyle(
-                                      fontSize: 20.0, color: Colors.black),
-                                ),
-                              ),
-                        new Padding(
-                          padding: EdgeInsets.only(left: 10.0),
-                          child: new GestureDetector(
-                            child: new Icon(
-                              Icons.edit,
-                              size: 15.0,
-                              color: Colors.grey[800],
-                            ),
-                            onTap: _allowEdit,
-                          ),
-                        ),
-                      ],
-                    ),
+                    userNameField(),
                     new Text(
-                      currentUser.email,
+                      currentUser?.email ?? "N/A",
                       style: new TextStyle(fontSize: 20.0),
                     ),
                   ],
