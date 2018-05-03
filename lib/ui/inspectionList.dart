@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../Helper/Route.dart';
 import '../Models/Inspection.dart';
+
+String _formatDate(DateTime value) {
+  return new DateFormat("yyyy.MM.dd").format(value);
+}
 
 class InspectionRecord extends StatefulWidget {
   @override
@@ -12,7 +18,6 @@ class InspectionRecord extends StatefulWidget {
 
 class _InspectionRecordState extends State<InspectionRecord> {
   void _addNew() {
-    Navigator.of(context).pop();
     Navigator.of(context).push(
           new AnimatedRoute(
             builder: (_) => new InspectionForm(),
@@ -52,13 +57,12 @@ class InspectionList extends StatelessWidget {
 
           return new ListView(
             children: snapshot.data.documents.map((document) {
+              Inspection inspection = Inspection.fromDocument(document);
               return new ListTile(
                 title: new Text(
-                  document.documentID,
+                  _formatDate(inspection.inspectionDate),
                 ),
-                subtitle: new Text(
-                  document.data['inspectionDate'],
-                ),
+                subtitle: new Text(inspection.userid.toString()),
               );
             }).toList(),
           );
@@ -72,21 +76,43 @@ class InspectionForm extends StatefulWidget {
 }
 
 class _InspectionFormState extends State<InspectionForm> {
-  final String userid = FirebaseAuth.instance.currentUser().toString();
-  DateTime _formDateTime;
+  String userid;
+  DateTime _formDate;
 
   @override
   void initState() {
     super.initState();
-    _formDateTime ??= DateTime.now();
+    _formDate ??= DateTime.now();
+    FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
+      if (user != null) userid = user.uid;
+    });
   }
 
   void _save() {
-    Inspection inspection = new Inspection(_formDateTime, userid);
+    Inspection inspection = new Inspection(_formDate, userid);
     Firestore.instance
         .collection('Inspection')
         .document()
-        .setData(inspection.toJson());
+        .setData(inspection.toJson())
+        .then((__) {
+      Navigator.of(context).pop();
+    }).catchError((error) {
+      print(error.toString());
+    });
+  }
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      firstDate: new DateTime(DateTime.now().year),
+      initialDate: DateTime.now(),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _formDate) {
+      setState(() {
+        _formDate = picked;
+      });
+    }
   }
 
   @override
@@ -103,83 +129,17 @@ class _InspectionFormState extends State<InspectionForm> {
           ]),
       body: new Column(
         children: <Widget>[
-          new DateTimeItem(
-            dateTime: _formDateTime,
-            onChanged: (DateTime value) {
-              setState(
-                () {
-                  _formDateTime = value;
-                },
-              );
-            },
-          ),
+          new Row(
+            children: <Widget>[
+              new Text(_formatDate(_formDate)),
+              new IconButton(
+                icon: new Icon(Icons.arrow_drop_down_circle),
+                onPressed: () => _selectDate(context),
+              )
+            ],
+          )
         ],
       ),
     );
-  }
-}
-
-class DateTimeItem extends StatelessWidget {
-  DateTimeItem({Key key, DateTime dateTime, this.onChanged})
-      : date = new DateTime(dateTime.year, dateTime.month, dateTime.day),
-        time = new TimeOfDay(hour: dateTime.hour, minute: dateTime.minute),
-        super(key: key) {
-    assert(onChanged != null);
-  }
-  final DateTime date;
-  final TimeOfDay time;
-  final ValueChanged<DateTime> onChanged;
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    return new DefaultTextStyle(
-        style: theme.textTheme.subhead,
-        child: new Row(children: <Widget>[
-          new Flexible(
-              child: new Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  decoration: new BoxDecoration(
-                      border: new Border(
-                          bottom: new BorderSide(color: theme.dividerColor))),
-                  child: new InkWell(
-                      onTap: () {
-                        showDatePicker(
-                            context: context,
-                            initialDate: date,
-                            firstDate: date.subtract(const Duration(days: 30)),
-                            lastDate:
-                                date.add(const Duration(days: 30))).then(
-                            (DateTime value) {
-                          onChanged(new DateTime(value.year, value.month,
-                              value.day, time.hour, time.minute));
-                        });
-                      },
-                      child: new Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            new Text(
-                                new DateFormat('EEE, MMM d yyyy').format(date)),
-                            new Icon(Icons.arrow_drop_down,
-                                color: Colors.black54),
-                          ])))),
-          new Container(
-              margin: const EdgeInsets.only(left: 8.0),
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              decoration: new BoxDecoration(
-                  border: new Border(
-                      bottom: new BorderSide(color: theme.dividerColor))),
-              child: new InkWell(
-                  onTap: () {
-                    showTimePicker(context: context, initialTime: time)
-                        .then((TimeOfDay value) {
-                      onChanged(new DateTime(date.year, date.month, date.day,
-                          value.hour, value.minute));
-                    });
-                  },
-                  child: new Row(children: <Widget>[
-                    new Text('$time'),
-                    new Icon(Icons.arrow_drop_down, color: Colors.black54),
-                  ])))
-        ]));
   }
 }

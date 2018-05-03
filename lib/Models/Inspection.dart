@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'Inspection.g.dart';
 
@@ -12,6 +13,9 @@ class Inspection extends Object with _$InspectionSerializerMixin {
 
   @JsonKey(nullable: false)
   final String userid;
+
+  static Inspection fromDocument(DocumentSnapshot document) =>
+      new Inspection.fromJson(document.data);
 
   factory Inspection.fromJson(Map<String, dynamic> json) =>
       _$InspectionFromJson(json);
