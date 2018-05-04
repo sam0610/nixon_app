@@ -1,20 +1,18 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'Inspection.g.dart';
 
 @JsonSerializable()
 class Inspection extends Object with _$InspectionSerializerMixin {
-  Inspection(this.inspectionDate, this.userid);
+  Inspection(this.inspectionDate, {this.userid, this.id});
 
-  final String id = null;
+  String id;
 
   @JsonSerializable(nullable: false)
   final DateTime inspectionDate;
 
   @JsonKey(nullable: false)
-  final String userid;
+  String userid;
 
   static Inspection fromDocument(DocumentSnapshot document) =>
       new Inspection.fromJson(document.data);

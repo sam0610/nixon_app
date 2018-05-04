@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nixon_app/ui/inspectionList.dart';
 import './ui/login.dart';
 import './ui/homepage.dart';
-import 'Helper/Route.dart';
+import 'Helper/AnimatedPageRoute.dart';
 
 void main() => runApp(new MyApp());
 

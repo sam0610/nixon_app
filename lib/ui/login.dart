@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import '../Helper/formHelper.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -20,33 +21,6 @@ class _LoginPageState extends State<LoginPage> {
   void showMessage(String value, [Color color]) {
     color == null ? color = Colors.red[50] : null;
     Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(value)));
-  }
-
-  Future<Null> _showDialog(String title, String message) async {
-    return showDialog<Null>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(title),
-          content: new SingleChildScrollView(
-            child: new ListBody(
-              children: <Widget>[
-                new Text(message),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -179,7 +153,8 @@ class _LoginPageState extends State<LoginPage> {
       _handleSignIn().then((FirebaseUser user) {
         Navigator.of(context).pushReplacementNamed('/home');
       }).catchError((onError) {
-        _showDialog("Error", onError.message.toString());
+        FormHelper.showAlertDialog(
+            context, "Login Failed", onError.message.toString());
       });
     }
   }

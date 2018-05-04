@@ -10,7 +10,8 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
     json['inspectionDate'] == null
         ? null
         : DateTime.parse(json['inspectionDate'] as String),
-    json['userid'] as String);
+    userid: json['userid'] as String,
+    id: json['id'] as String);
 
 abstract class _$InspectionSerializerMixin {
   String get id;

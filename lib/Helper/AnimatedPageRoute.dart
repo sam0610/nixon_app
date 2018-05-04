@@ -19,7 +19,7 @@ class AnimatedRoute<T> extends MaterialPageRoute<T> {
         ).animate(
           new CurvedAnimation(
             parent: animation,
-            curve: Curves.fastOutSlowIn,
+            curve: Curves.bounceInOut,
           ),
         ),
         child: child);

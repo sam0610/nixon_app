@@ -7,4 +7,32 @@ class FormHelper {
   static String formatDate(DateTime value) {
     return new DateFormat("yyyy.MM.dd").format(value);
   }
+
+  static Future<Null> showAlertDialog(
+      BuildContext context, String title, String message) async {
+    return showDialog<Null>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text(title),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
