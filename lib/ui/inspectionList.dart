@@ -114,6 +114,7 @@ class InspectionBody extends StatelessWidget {
 
 TextEditingController _formDateController = new TextEditingController();
 DateTime _formDate;
+TextEditingController _staffNameController = new TextEditingController();
 
 class InspectionForm extends StatefulWidget {
   InspectionForm([this.inspection]);
@@ -137,19 +138,22 @@ class _InspectionFormState extends State<InspectionForm> {
         _formDate = widget.inspection.inspectionDate;
         _formDateController.text =
             FormHelper.formatDate(widget.inspection.inspectionDate);
+        _staffNameController.text = widget.inspection.staffName;
       }
     });
   }
 
   void _save() {
     if (isnewRecord) {
-      Inspection inspection = new Inspection(_formDate);
+      Inspection inspection =
+          new Inspection(_formDate, _staffNameController.text);
       inspectionRepos.addInspection(inspection).then((bool result) {
         Navigator.pop(context);
       }).catchError((onError) => FormHelper.showAlertDialog(
           context, "Error on Save", onError.toString()));
     } else {
-      Inspection inspection = new Inspection(_formDate,
+      Inspection inspection = new Inspection(
+          _formDate, _staffNameController.text,
           id: widget.inspection.id, userid: widget.inspection.userid);
       inspectionRepos.updateInspection(inspection).then((bool result) {
         Navigator.pop(context);
@@ -221,6 +225,15 @@ class _InsFormBodyState extends State<InsFormBody> {
                   onPressed: () => selectDate(context),
                 ),
               ],
+            ),
+            new Expanded(
+              child: new TextFormField(
+                controller: _staffNameController,
+                style: new TextStyle(fontSize: 20.0, color: Colors.black),
+                decoration: new InputDecoration(
+                  labelText: "Staff",
+                ),
+              ),
             ),
           ],
         ));
