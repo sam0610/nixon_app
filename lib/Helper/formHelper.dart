@@ -40,7 +40,7 @@ class FormHelper {
       {BuildContext ctx, DateTime firstDate, initialDate, lastDate}) async {
     final DateTime picked = await showDatePicker(
       context: ctx,
-      firstDate: firstDate ?? DateTime.now(),
+      firstDate: firstDate ?? new DateTime(DateTime.now().year - 1),
       initialDate: initialDate ?? DateTime.now(),
       lastDate: lastDate ?? DateTime.now(),
     );

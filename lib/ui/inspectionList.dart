@@ -5,7 +5,6 @@ import '../Helper/formHelper.dart';
 import '../Helper/AnimatedPageRoute.dart';
 import '../Models/Inspection.dart';
 import '../Models/InspectionRepository.dart';
-import 'inspectionForm.dart';
 import 'inspectionForm2.dart';
 
 InspectionRepos inspectionRepos;
@@ -28,7 +27,7 @@ class _InspectionRecordState extends State<InspectionRecord> {
   void _addNew() {
     Navigator.of(context).push(
           new AnimatedRoute(
-            builder: (_) => new InspectionForm2(),
+            builder: (_) => new InspectionForm2(form: new Inspection()),
           ),
         );
   }
@@ -54,7 +53,7 @@ class InspectionBody extends StatelessWidget {
   void _open(BuildContext context, Inspection inspection) {
     Navigator.of(context).push(
           new AnimatedRoute(
-            builder: (_) => new InspectionForm(inspection),
+            builder: (_) => new InspectionForm2(form: inspection),
           ),
         );
   }
@@ -94,7 +93,7 @@ class InspectionBody extends StatelessWidget {
               final Inspection inspection = Inspection.fromDocument(document);
               return new ListTile(
                 title: new Text(
-                  FormHelper.formatDate(inspection.inspectionDate),
+                  FormHelper.datetoString(inspection.inspectionDate),
                 ),
                 subtitle: new Text(inspection.staffName.toString()),
                 trailing: new Row(
