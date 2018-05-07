@@ -58,11 +58,6 @@ class MyApp extends StatelessWidget {
                 builder: (_) => new LoginPage(),
                 settings: settings,
               );
-            case '/p1':
-              return new AnimatedRoute(
-                builder: (_) => new InspectionForm(),
-                settings: settings,
-              );
           }
           assert(false);
         }

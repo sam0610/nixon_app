@@ -35,4 +35,18 @@ class FormHelper {
       },
     );
   }
+
+  static Future<DateTime> selectDateDialog(
+      {BuildContext ctx, DateTime firstDate, initialDate, lastDate}) async {
+    final DateTime picked = await showDatePicker(
+      context: ctx,
+      firstDate: firstDate ?? DateTime.now(),
+      initialDate: initialDate ?? DateTime.now(),
+      lastDate: lastDate ?? DateTime.now(),
+    );
+    if (picked != null) {
+      return picked;
+    }
+    return null;
+  }
 }

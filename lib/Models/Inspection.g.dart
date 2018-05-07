@@ -7,10 +7,10 @@ part of 'Inspection.dart';
 // **************************************************************************
 
 Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
-    json['inspectionDate'] == null
+    inspectionDate: json['inspectionDate'] == null
         ? null
         : DateTime.parse(json['inspectionDate'] as String),
-    json['staffName'] as String,
+    staffName: json['staffName'] as String,
     userid: json['userid'] as String,
     id: json['id'] as String);
 

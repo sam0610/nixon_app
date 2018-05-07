@@ -4,15 +4,15 @@ part 'Inspection.g.dart';
 
 @JsonSerializable()
 class Inspection extends Object with _$InspectionSerializerMixin {
-  Inspection(this.inspectionDate, this.staffName, {this.userid, this.id});
+  Inspection({this.inspectionDate, this.staffName, this.userid, this.id});
 
   String id;
 
   @JsonSerializable(nullable: false)
-  final DateTime inspectionDate;
+  DateTime inspectionDate;
 
   @JsonSerializable(nullable: false)
-  final String staffName;
+  String staffName;
 
   @JsonKey(nullable: false)
   String userid;
