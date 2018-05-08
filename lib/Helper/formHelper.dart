@@ -4,8 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class FormHelper {
-  static String formatDate(DateTime value) {
-    return new DateFormat("yyyy.MM.dd").format(value);
+  static String datetoString(DateTime date) {
+    try {
+      String str = new DateFormat.yMd().format(date);
+      return str;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static DateTime strToDate(String str) {
+    try {
+      DateTime d = new DateFormat.yMd().parseStrict(str);
+      return d;
+    } catch (e) {
+      return null;
+    }
   }
 
   static Future<Null> showAlertDialog(
@@ -43,6 +57,18 @@ class FormHelper {
       firstDate: firstDate ?? new DateTime(DateTime.now().year - 1),
       initialDate: initialDate ?? DateTime.now(),
       lastDate: lastDate ?? DateTime.now(),
+    );
+    if (picked != null) {
+      return picked;
+    }
+    return null;
+  }
+
+  static Future<TimeOfDay> selectTimeDialog(
+      {BuildContext ctx, DateTime firstDate, initialDate, lastDate}) async {
+    final TimeOfDay picked = await showTimePicker(
+      context: ctx,
+      initialTime: new TimeOfDay.now(),
     );
     if (picked != null) {
       return picked;

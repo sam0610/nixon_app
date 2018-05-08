@@ -27,7 +27,7 @@ class _InspectionRecordState extends State<InspectionRecord> {
   void _addNew() {
     Navigator.of(context).push(
           new AnimatedRoute(
-            builder: (_) => new InspectionForm2(form: new Inspection()),
+            builder: (_) => new InspectionForm(form: new Inspection()),
           ),
         );
   }
@@ -53,7 +53,7 @@ class InspectionBody extends StatelessWidget {
   void _open(BuildContext context, Inspection inspection) {
     Navigator.of(context).push(
           new AnimatedRoute(
-            builder: (_) => new InspectionForm2(form: inspection),
+            builder: (_) => new InspectionForm(form: inspection),
           ),
         );
   }
@@ -68,7 +68,7 @@ class InspectionBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('Inspection').snapshots,
+        stream: Firestore.instance.collection('Inspection').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return new Center(

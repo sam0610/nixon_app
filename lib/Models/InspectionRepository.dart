@@ -43,7 +43,7 @@ class InspectionRepos {
     print('updating' + item.id);
     var olddoc = await inspectionCollection.document(item.id).get();
     if (olddoc.exists && item.userid == user.uid) {
-      olddoc.reference.setData(item.toJson(), SetOptions.merge).then((__) {
+      olddoc.reference.setData(item.toJson(), merge: true).then((__) {
         return true;
       }).catchError((error) {
         return error;
