@@ -122,12 +122,14 @@ class _InspectionFormState extends State<InspectionForm> {
                     labelText: '到達時間',
                     initialValue: myform.arrivedTime,
                     controller: _arrivedTimeController,
-                    onSave: (value) => myform.arrivedTime = value),
+                    onSave: (value) =>
+                        myform.arrivedTime = FormHelper.timetoString(value)),
                 TimeTextField(
                     labelText: '離開時間',
                     initialValue: myform.leaveTime,
                     controller: _leaveTimeController,
-                    onSave: (value) => myform.leaveTime = value),
+                    onSave: (value) =>
+                        myform.leaveTime = FormHelper.timetoString(value)),
                 MyFormTextField(
                     labelText: '顧客比例',
                     initialValue: myform.guestsProportion,
@@ -139,6 +141,9 @@ class _InspectionFormState extends State<InspectionForm> {
         ));
   }
 }
+
+var _labelStyle = new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
+var _textStyle = new TextStyle(fontSize: 25.0, color: Colors.black);
 
 class DateTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -158,9 +163,11 @@ class _DateTextFieldState extends State<DateTextField> {
     return new Row(children: [
       new Expanded(
         child: new TextFormField(
+          style: _textStyle,
           controller: widget.controller,
           decoration: InputDecoration(
             labelText: widget.labelText,
+            labelStyle: _labelStyle,
           ),
           keyboardType: TextInputType.datetime,
           validator: (value) =>
@@ -205,8 +212,10 @@ class _TimeTextFieldState extends State<TimeTextField> {
     return new Row(children: [
       new Expanded(
         child: new TextFormField(
+          style: _textStyle,
           controller: widget.controller,
           decoration: InputDecoration(
+            labelStyle: _labelStyle,
             labelText: widget.labelText,
           ),
           keyboardType: TextInputType.datetime,
@@ -216,18 +225,19 @@ class _TimeTextFieldState extends State<TimeTextField> {
         ),
       ),
       new IconButton(
-        icon: new Icon(Icons.arrow_drop_down),
-        onPressed: () => selectTime(context),
-      )
+          icon: new Icon(Icons.arrow_drop_down),
+          onPressed: () => selectTime(context,
+              initialTime: FormHelper.strToTime(widget.controller.text)))
     ]);
   }
 
-  selectTime(BuildContext context) async {
-    final TimeOfDay picked = await FormHelper.selectTimeDialog(ctx: context);
+  selectTime(BuildContext context, {TimeOfDay initialTime}) async {
+    final TimeOfDay picked = await FormHelper.selectTimeDialog(
+        ctx: context, initialTime: initialTime);
     if (picked != null) {
       setState(
         () {
-          widget.controller.text = picked.format(context);
+          widget.controller.text = FormHelper.timetoString(picked);
         },
       );
     }
@@ -247,20 +257,21 @@ class MyFormTextField extends StatefulWidget {
 }
 
 class _MyFormTextFieldState extends State<MyFormTextField> {
-  TextEditingController _controller;
-
   @override
   void initState() {
     super.initState();
-    if (_controller == null)
-      _controller = new TextEditingController(text: widget.initialValue);
+    if (widget.controller != null) widget.controller.text = widget.initialValue;
   }
 
   @override
   Widget build(BuildContext context) {
     return new TextFormField(
-      decoration: InputDecoration(labelText: widget.labelText),
-      controller: _controller,
+      decoration: InputDecoration(
+        labelText: widget.labelText,
+        labelStyle: _labelStyle,
+      ),
+      style: _textStyle,
+      controller: widget.controller,
       validator: (value) =>
           value.isEmpty ? '${widget.labelText} can\'t be empty' : null,
       onSaved: widget.onSave,
