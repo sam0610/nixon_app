@@ -48,13 +48,13 @@ abstract class _$InspectionSerializerMixin {
       };
 }
 
-Grooming _$GroomingFromJson(Map<String, dynamic> json) => new Grooming(
-    groomingScore: json['groomingScore'] as int,
-    hairScore: json['hairScore'] as int,
-    uniformScore: json['uniformScore'] as int,
-    decorationScore: json['decorationScore'] as int,
-    maskWearScore: json['maskWearScore'] as int,
-    maskCleanScore: json['maskCleanScore'] as int);
+Grooming _$GroomingFromJson(Map<String, dynamic> json) => new Grooming()
+  ..groomingScore = json['groomingScore'] as int
+  ..hairScore = json['hairScore'] as int
+  ..uniformScore = json['uniformScore'] as int
+  ..decorationScore = json['decorationScore'] as int
+  ..maskWearScore = json['maskWearScore'] as int
+  ..maskCleanScore = json['maskCleanScore'] as int;
 
 abstract class _$GroomingSerializerMixin {
   int get groomingScore;
@@ -63,6 +63,7 @@ abstract class _$GroomingSerializerMixin {
   int get decorationScore;
   int get maskWearScore;
   int get maskCleanScore;
+
   Map<String, dynamic> toJson() => <String, dynamic>{
         'groomingScore': groomingScore,
         'hairScore': hairScore,

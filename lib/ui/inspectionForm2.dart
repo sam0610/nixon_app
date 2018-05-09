@@ -6,7 +6,7 @@ import '../Models/Inspection.dart';
 import '../Models/InspectionRepository.dart';
 
 class InspectionForm extends StatefulWidget {
-  InspectionForm({this.form});
+  InspectionForm({Key key, this.form}) : super(key: key);
   final Inspection form;
   @override
   _InspectionFormState createState() => new _InspectionFormState();
@@ -14,25 +14,28 @@ class InspectionForm extends StatefulWidget {
 
 Inspection myform;
 
-class _InspectionFormState extends State<InspectionForm> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+class _InspectionFormState extends State<InspectionForm>
+    with SingleTickerProviderStateMixin {
   InspectionRepos repos;
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
-  TextEditingController _formDateController = new TextEditingController();
-  TextEditingController _staffNameController = new TextEditingController();
-  TextEditingController _leaveTimeController = new TextEditingController();
-  TextEditingController _arrivedTimeController = new TextEditingController();
-  TextEditingController _situationRemarkController =
-      new TextEditingController();
-  TextEditingController _guestsProportionController =
-      new TextEditingController();
-  TextEditingController _foundLocationController = new TextEditingController();
-  TextEditingController _postNameController = new TextEditingController();
+  TabController _tabController;
+  final List<Tab> myTabs = <Tab>[
+    new Tab(
+      text: 'Info',
+    ),
+    new Tab(
+      text: 'Grooming',
+    )
+  ];
 
   @override
   void initState() {
     super.initState();
+    _tabController =
+        new TabController(initialIndex: 0, length: myTabs.length, vsync: this);
     myform = widget.form;
+    if (myform.grooming == null) myform.grooming = new Grooming();
     //_formDateController.text =
     //    FormHelper.datetoString(myform.inspectionDate ?? new DateTime.now());
     FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
@@ -43,6 +46,7 @@ class _InspectionFormState extends State<InspectionForm> {
   void _save() {
     print('save');
     print(myform);
+    print(myform.grooming);
     final form = _formKey.currentState;
     if (form.validate()) {
       form.save();
@@ -71,74 +75,203 @@ class _InspectionFormState extends State<InspectionForm> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text("Form2"),
-          actions: <Widget>[
-            new IconButton(
-              icon: new Icon(Icons.save),
-              color: Colors.red,
-              onPressed: _save,
-            ),
-          ],
+      appBar: new AppBar(
+        title: new Text("Form2"),
+        actions: <Widget>[
+          new IconButton(
+            icon: new Icon(Icons.save),
+            color: Colors.red,
+            onPressed: _save,
+          ),
+        ],
+        bottom: new TabBar(
+          controller: _tabController,
+          tabs: myTabs,
         ),
-        body: new SafeArea(
-          top: false,
-          bottom: false,
-          child: new Form(
-            key: _formKey,
-            autovalidate: false,
-            child: new ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              children: <Widget>[
-                new DateTextField(
-                  labelText: '日期',
-                  initialValue: FormHelper.datetoString(
-                      myform.inspectionDate ?? new DateTime.now()),
-                  controller: _formDateController,
-                  onSave: (value) =>
-                      myform.inspectionDate = FormHelper.strToDate(value),
-                ),
-                MyFormTextField(
-                    labelText: '員工姓名',
-                    initialValue: myform.staffName,
-                    controller: _staffNameController,
-                    onSave: (value) => myform.staffName = value),
-                MyFormTextField(
-                    labelText: '位置',
-                    initialValue: myform.foundLocation,
-                    controller: _foundLocationController,
-                    onSave: (value) => myform.foundLocation = value),
-                MyFormTextField(
-                    labelText: '崗位',
-                    initialValue: myform.postName,
-                    controller: _postNameController,
-                    onSave: (value) => myform.postName = value),
-                MyFormTextField(
-                    labelText: '處境摘要',
-                    initialValue: myform.situationRemark,
-                    controller: _situationRemarkController,
-                    onSave: (value) => myform.situationRemark = value),
-                TimeTextField(
+      ),
+      body: new SafeArea(
+        top: false,
+        bottom: false,
+        child: new Form(
+          key: _formKey,
+          autovalidate: false,
+          child: new TabBarView(
+              controller: _tabController,
+              children: <Widget>[new ViewInfo(), new ViewGrooming()]),
+        ),
+      ),
+    );
+  }
+}
+
+class ViewInfo extends StatefulWidget {
+  @override
+  _ViewInfoState createState() => new _ViewInfoState();
+}
+
+class _ViewInfoState extends State<ViewInfo>
+    with AutomaticKeepAliveClientMixin {
+  TextEditingController _formDateController = new TextEditingController(),
+      _staffNameController = new TextEditingController(),
+      _leaveTimeController = new TextEditingController(),
+      _arrivedTimeController = new TextEditingController(),
+      _situationRemarkController = new TextEditingController(),
+      _guestsProportionController = new TextEditingController(),
+      _foundLocationController = new TextEditingController(),
+      _postNameController = new TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return new ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      children: <Widget>[
+        new DateTextField(
+          labelText: '日期',
+          initialValue: FormHelper
+              .datetoString(myform.inspectionDate ?? new DateTime.now()),
+          controller: _formDateController,
+          onSave: (value) =>
+              myform.inspectionDate = FormHelper.strToDate(value),
+        ),
+        new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            new Expanded(
+                flex: 1,
+                child: TimeTextField(
                     labelText: '到達時間',
                     initialValue: myform.arrivedTime,
                     controller: _arrivedTimeController,
-                    onSave: (value) =>
-                        myform.arrivedTime = FormHelper.timetoString(value)),
-                TimeTextField(
-                    labelText: '離開時間',
-                    initialValue: myform.leaveTime,
-                    controller: _leaveTimeController,
-                    onSave: (value) =>
-                        myform.leaveTime = FormHelper.timetoString(value)),
-                MyFormTextField(
-                    labelText: '顧客比例',
-                    initialValue: myform.guestsProportion,
-                    controller: _guestsProportionController,
-                    onSave: (value) => myform.guestsProportion = value),
-              ],
+                    onSave: (value) => myform.arrivedTime =
+                        value //FormHelper.timetoString(value)),
+                    )),
+            new Expanded(
+              flex: 1,
+              child: TimeTextField(
+                  labelText: '離開時間',
+                  initialValue: myform.leaveTime,
+                  controller: _leaveTimeController,
+                  onSave: (value) => myform.leaveTime =
+                      value // FormHelper.timetoString(value))),
+                  ),
             ),
+          ],
+        ),
+        MyFormTextField(
+            labelText: '員工姓名',
+            initialValue: myform.staffName,
+            controller: _staffNameController,
+            onSave: (value) => myform.staffName = value),
+        MyFormTextField(
+            labelText: '位置',
+            initialValue: myform.foundLocation,
+            controller: _foundLocationController,
+            onSave: (value) => myform.foundLocation = value),
+        MyFormTextField(
+            labelText: '崗位',
+            initialValue: myform.postName,
+            controller: _postNameController,
+            onSave: (value) => myform.postName = value),
+        MyFormTextField(
+            labelText: '處境摘要',
+            initialValue: myform.situationRemark,
+            controller: _situationRemarkController,
+            onSave: (value) => myform.situationRemark = value),
+        MyFormTextField(
+            labelText: '顧客比例',
+            initialValue: myform.guestsProportion,
+            controller: _guestsProportionController,
+            onSave: (value) => myform.guestsProportion = value),
+      ],
+    );
+  }
+
+  // TODO: implement wantKeepAlive
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class ViewGrooming extends StatefulWidget {
+  @override
+  _ViewGroomingState createState() => new _ViewGroomingState();
+}
+
+class _ViewGroomingState extends State<ViewGrooming> {
+  @override
+  Widget build(BuildContext context) {
+    return new ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+        children: <Widget>[
+          new SliderFormField(
+            intialValue: 0.0,
+            labelText: "儀容",
+            onSave: (value) => myform.grooming.groomingScore = value.toInt(),
           ),
-        ));
+          new SliderFormField(
+            intialValue: 0.0,
+            labelText: "髮型",
+            onSave: (value) => myform.grooming.hairScore = value.toInt(),
+          ),
+          new SliderFormField(
+            intialValue: 0.0,
+            labelText: "制服",
+            onSave: (value) => myform.grooming.uniformScore = value.toInt(),
+          ),
+          new SliderFormField(
+            intialValue: 0.0,
+            labelText: "配載飾物",
+            onSave: (value) => myform.grooming.decorationScore = value.toInt(),
+          ),
+          new SliderFormField(
+            intialValue: 0.0,
+            labelText: "口罩配帶技巧",
+            onSave: (value) => myform.grooming.maskWearScore = value.toInt(),
+          ),
+          new SliderFormField(
+            intialValue: 0.0,
+            labelText: "口罩清潔",
+            onSave: (value) => myform.grooming.maskCleanScore = value.toInt(),
+          ),
+        ]);
+  }
+}
+
+class SliderFormField extends StatefulWidget {
+  SliderFormField(
+      {this.intialValue, this.onSave, this.labelText, this.controller});
+  final double intialValue;
+  final Function onSave;
+  final TextEditingController controller;
+  final String labelText;
+
+  @override
+  _SliderFormFieldState createState() => new _SliderFormFieldState();
+}
+
+class _SliderFormFieldState extends State<SliderFormField> {
+  @override
+  Widget build(BuildContext context) {
+    return new FormField<double>(
+        initialValue: widget.intialValue,
+        onSaved: widget.onSave,
+        validator: (value) =>
+            value < 0 ? '${widget.labelText} can\'t be empty' : null,
+        builder: (FormFieldState<double> field) {
+          return new InputDecorator(
+              decoration: new InputDecoration(
+                  labelStyle: _labelStyle,
+                  labelText: widget.labelText,
+                  border: InputBorder.none),
+              child: new Slider(
+                min: 0.0,
+                max: 100.0,
+                divisions: 5,
+                activeColor: Colors.red[100 + (field.value * 5.0).round()],
+                label: '${field.value.round()}',
+                value: field.value,
+                onChanged: field.didChange,
+              ));
+        });
   }
 }
 
@@ -227,7 +360,9 @@ class _TimeTextFieldState extends State<TimeTextField> {
       new IconButton(
           icon: new Icon(Icons.arrow_drop_down),
           onPressed: () => selectTime(context,
-              initialTime: FormHelper.strToTime(widget.controller.text)))
+              initialTime: widget.controller.text.isNotEmpty
+                  ? FormHelper.strToTime(widget.controller.text)
+                  : TimeOfDay.now()))
     ]);
   }
 

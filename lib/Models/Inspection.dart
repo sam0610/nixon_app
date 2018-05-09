@@ -59,14 +59,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
 
 @JsonSerializable()
 class Grooming extends Object with _$GroomingSerializerMixin {
-  Grooming(
-      {this.groomingScore,
-      this.hairScore,
-      this.uniformScore,
-      this.decorationScore,
-      this.maskWearScore,
-      this.maskCleanScore});
-
+  Grooming();
   @JsonKey(nullable: false)
   int groomingScore;
 
