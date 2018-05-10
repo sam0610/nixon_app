@@ -5,6 +5,19 @@ part 'Inspection.g.dart';
 //run code => flutter packages pub run build_runner build
 @JsonSerializable()
 class Inspection extends Object with _$InspectionSerializerMixin {
+  String id;
+  DateTime inspectionDate;
+  String arrivedTime;
+  String leaveTime;
+  String staffName;
+  String postName;
+  String foundLocation;
+  String guestsProportion;
+  String situationRemark;
+  String userid;
+  @JsonKey(nullable: false)
+  Grooming grooming;
+
   Inspection(
       {this.inspectionDate,
       this.staffName,
@@ -18,38 +31,6 @@ class Inspection extends Object with _$InspectionSerializerMixin {
       this.id,
       this.grooming});
 
-  String id;
-
-  @JsonSerializable(nullable: false)
-  DateTime inspectionDate;
-
-  @JsonSerializable(nullable: false)
-  String arrivedTime;
-
-  @JsonSerializable(nullable: false)
-  String leaveTime;
-
-  @JsonSerializable(nullable: false)
-  String staffName;
-
-  @JsonSerializable(nullable: false)
-  String postName;
-
-  @JsonSerializable(nullable: false)
-  String foundLocation;
-
-  @JsonSerializable(nullable: false)
-  String guestsProportion;
-
-  @JsonSerializable(nullable: false)
-  String situationRemark;
-
-  @JsonKey(nullable: false)
-  String userid;
-
-  @JsonKey(nullable: false)
-  Grooming grooming;
-
   static Inspection fromDocument(DocumentSnapshot document) =>
       new Inspection.fromJson(document.data);
 
@@ -59,24 +40,20 @@ class Inspection extends Object with _$InspectionSerializerMixin {
 
 @JsonSerializable()
 class Grooming extends Object with _$GroomingSerializerMixin {
-  Grooming();
-  @JsonKey(nullable: false)
   int groomingScore;
-
-  @JsonKey(nullable: false)
   int hairScore;
-
-  @JsonKey(nullable: false)
   int uniformScore;
-
-  @JsonKey(nullable: false)
   int decorationScore;
-
-  @JsonKey(nullable: false)
   int maskWearScore;
-
-  @JsonKey(nullable: false)
   int maskCleanScore;
+
+  Grooming(
+      {this.groomingScore,
+      this.hairScore,
+      this.uniformScore,
+      this.decorationScore,
+      this.maskCleanScore,
+      this.maskWearScore});
 
   factory Grooming.fromJson(Map<String, dynamic> json) =>
       _$GroomingFromJson(json);

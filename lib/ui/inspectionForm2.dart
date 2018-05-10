@@ -203,32 +203,32 @@ class _ViewGroomingState extends State<ViewGrooming> {
         padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
         children: <Widget>[
           new SliderFormField(
-            intialValue: 0.0,
+            intialValue: myform.grooming.groomingScore ?? 0.toDouble(),
             labelText: "儀容",
             onSave: (value) => myform.grooming.groomingScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: 0.0,
+            intialValue: myform.grooming.hairScore ?? 0.toDouble(),
             labelText: "髮型",
             onSave: (value) => myform.grooming.hairScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: 0.0,
+            intialValue: myform.grooming.uniformScore ?? 0.toDouble(),
             labelText: "制服",
             onSave: (value) => myform.grooming.uniformScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: 0.0,
+            intialValue: myform.grooming.decorationScore ?? 0.toDouble(),
             labelText: "配載飾物",
             onSave: (value) => myform.grooming.decorationScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: 0.0,
+            intialValue: myform.grooming.maskWearScore ?? 0.toDouble(),
             labelText: "口罩配帶技巧",
             onSave: (value) => myform.grooming.maskWearScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: 0.0,
+            intialValue: myform.grooming.maskCleanScore ?? 0.toDouble(),
             labelText: "口罩清潔",
             onSave: (value) => myform.grooming.maskCleanScore = value.toInt(),
           ),
@@ -249,6 +249,21 @@ class SliderFormField extends StatefulWidget {
 }
 
 class _SliderFormFieldState extends State<SliderFormField> {
+  double _value;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _value = widget.intialValue;
+  }
+
+  void _onChanged(value) {
+    setState(() {
+      _value = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new FormField<double>(
@@ -275,8 +290,8 @@ class _SliderFormFieldState extends State<SliderFormField> {
   }
 }
 
-var _labelStyle = new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
-var _textStyle = new TextStyle(fontSize: 25.0, color: Colors.black);
+var _labelStyle = new TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold);
+var _textStyle = new TextStyle(fontSize: 18.0, color: Colors.black);
 
 class DateTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -291,6 +306,13 @@ class DateTextField extends StatefulWidget {
 }
 
 class _DateTextFieldState extends State<DateTextField> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.controller.text = widget.initialValue;
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Row(children: [
@@ -340,6 +362,13 @@ class TimeTextField extends StatefulWidget {
 }
 
 class _TimeTextFieldState extends State<TimeTextField> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.controller.text = widget.initialValue;
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Row(children: [

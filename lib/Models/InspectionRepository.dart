@@ -31,6 +31,12 @@ class InspectionRepos {
     item.id = newdoc.documentID;
     item.userid = user.uid;
 
+    inspectionCollection.add(item.toJson()).then((onValue) {
+      onValue.setData({'id': onValue.documentID});
+    }).catchError((error) {
+      print(error.toString());
+    });
+
     newdoc.reference.setData(item.toJson()).then((__) {
       return true;
     }).catchError((error) {
