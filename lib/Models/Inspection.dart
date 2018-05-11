@@ -48,12 +48,12 @@ class Grooming extends Object with _$GroomingSerializerMixin {
   int maskCleanScore;
 
   Grooming(
-      {this.groomingScore,
-      this.hairScore,
-      this.uniformScore,
-      this.decorationScore,
-      this.maskCleanScore,
-      this.maskWearScore});
+      {this.groomingScore = 0,
+      this.hairScore = 0,
+      this.uniformScore = 0,
+      this.decorationScore = 0,
+      this.maskCleanScore = 0,
+      this.maskWearScore = 0});
 
   factory Grooming.fromJson(Map<String, dynamic> json) =>
       _$GroomingFromJson(json);
