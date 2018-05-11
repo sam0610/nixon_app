@@ -203,32 +203,44 @@ class _ViewGroomingState extends State<ViewGrooming> {
         padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
         children: <Widget>[
           new SliderFormField(
-            intialValue: myform.grooming.groomingScore ?? 0.toDouble(),
+            intialValue: myform.grooming.groomingScore != null
+                ? myform.grooming.groomingScore.toDouble()
+                : 0.0,
             labelText: "儀容",
             onSave: (value) => myform.grooming.groomingScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: myform.grooming.hairScore ?? 0.toDouble(),
+            intialValue: myform.grooming.hairScore != null
+                ? myform.grooming.hairScore.toDouble()
+                : 0.0,
             labelText: "髮型",
             onSave: (value) => myform.grooming.hairScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: myform.grooming.uniformScore ?? 0.toDouble(),
+            intialValue: myform.grooming.uniformScore != null
+                ? myform.grooming.uniformScore.toDouble()
+                : 0.0,
             labelText: "制服",
             onSave: (value) => myform.grooming.uniformScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: myform.grooming.decorationScore ?? 0.toDouble(),
+            intialValue: myform.grooming.decorationScore != null
+                ? myform.grooming.decorationScore.toDouble()
+                : 0.0,
             labelText: "配載飾物",
             onSave: (value) => myform.grooming.decorationScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: myform.grooming.maskWearScore ?? 0.toDouble(),
+            intialValue: myform.grooming.maskWearScore != null
+                ? myform.grooming.maskWearScore.toDouble()
+                : 0.0,
             labelText: "口罩配帶技巧",
             onSave: (value) => myform.grooming.maskWearScore = value.toInt(),
           ),
           new SliderFormField(
-            intialValue: myform.grooming.maskCleanScore ?? 0.toDouble(),
+            intialValue: myform.grooming.maskCleanScore != null
+                ? myform.grooming.maskCleanScore.toDouble()
+                : 0.0,
             labelText: "口罩清潔",
             onSave: (value) => myform.grooming.maskCleanScore = value.toInt(),
           ),
@@ -249,21 +261,6 @@ class SliderFormField extends StatefulWidget {
 }
 
 class _SliderFormFieldState extends State<SliderFormField> {
-  double _value;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _value = widget.intialValue;
-  }
-
-  void _onChanged(value) {
-    setState(() {
-      _value = value;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return new FormField<double>(
