@@ -63,7 +63,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.13+1"
+    version: "0.8.8"
   built_collection:
     dependency: transitive
     description:
@@ -262,14 +262,14 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.2"
+    version: "0.2.4"
   json_serializable:
     dependency: "direct dev"
     description:
       name: json_serializable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.2"
+    version: "0.5.2"
   kernel:
     dependency: transitive
     description:
@@ -407,7 +407,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.6"
+    version: "0.8.1"
   source_map_stack_trace:
     dependency: transitive
     description:
@@ -514,5 +514,5 @@ packages:
     source: hosted
     version: "2.1.13"
 sdks:
-  dart: ">=2.0.0-dev.32 <=2.0.0-edge.c080951d45e79cd25df98036c4be835b284a269c"
+  dart: ">=2.0.0-dev.48 <=2.0.0-edge.c080951d45e79cd25df98036c4be835b284a269c"
   flutter: ">=0.2.4 <2.0.0"

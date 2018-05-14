@@ -128,55 +128,54 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("welcome"),
-        centerTitle: true,
-      ),
-      drawer: new Drawer(
-        child: new ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            new DrawerHeader(
-              decoration:
-                  new BoxDecoration(color: Theme.of(context).primaryColor),
-              child: new Container(
-                padding: EdgeInsets.all(5.0),
-                child: new Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    userNameField(),
-                    new Text(
-                      currentUser?.email ?? "N/A",
-                      style: new TextStyle(fontSize: 20.0),
-                    ),
-                  ],
+        appBar: new AppBar(
+          title: new Text("welcome"),
+          centerTitle: true,
+        ),
+        drawer: new Drawer(
+          child: new ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              new DrawerHeader(
+                decoration:
+                    new BoxDecoration(color: Theme.of(context).primaryColor),
+                child: new Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: new Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      userNameField(),
+                      new Text(
+                        currentUser?.email ?? "N/A",
+                        style: new TextStyle(fontSize: 20.0),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            new ListTile(
-              title: new Text('Go To Page 1'),
-              onTap: () => _navigate('/p1'),
-            ),
-            new Divider(),
-            new ListTile(
-              title: new Text(
-                'Logout',
-                style:
-                    new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+              new ListTile(
+                title: new Text('Go To Page 1'),
+                onTap: () => _navigate('/p1'),
               ),
-              trailing: new Icon(Icons.exit_to_app),
-              onTap: _signOut,
-            )
-          ],
+              new Divider(),
+              new ListTile(
+                title: new Text(
+                  'Logout',
+                  style: new TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 20.0),
+                ),
+                trailing: new Icon(Icons.exit_to_app),
+                onTap: _signOut,
+              )
+            ],
+          ),
         ),
-      ),
-      body: new Center(
-        child: new Text(
-          isLoggedIn.toString(),
-        ),
-      ),
-    );
+        body: _body);
   }
+
+  Widget _body = new Container(
+    child: new Text('hello'),
+  );
 }

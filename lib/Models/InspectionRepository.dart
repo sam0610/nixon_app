@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,6 +20,7 @@ class InspectionRepos {
     QuerySnapshot snapshot = await inspectionCollection
         .where('userid', isEqualTo: user.uid)
         .getDocuments();
+
     List<Inspection> inspectionList = snapshot.documents.map((document) {
       return Inspection.fromDocument(document);
     }).toList();
