@@ -196,64 +196,35 @@ class ViewGrooming extends StatefulWidget {
   _ViewGroomingState createState() => new _ViewGroomingState();
 }
 
-class _ViewGroomingState extends State<ViewGrooming> {
+class _ViewGroomingState extends State<ViewGrooming>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     return new ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-        children: <Widget>[
-          new SliderFormField(
-            intialValue: myform.grooming.groomingScore != null
-                ? myform.grooming.groomingScore.toDouble()
-                : 0.0,
-            labelText: "儀容",
-            onSave: (value) => myform.grooming.groomingScore = value.toInt(),
-          ),
-          new SliderFormField(
-            intialValue: myform.grooming.hairScore != null
-                ? myform.grooming.hairScore.toDouble()
-                : 0.0,
-            labelText: "髮型",
-            onSave: (value) => myform.grooming.hairScore = value.toInt(),
-          ),
-          new SliderFormField(
-            intialValue: myform.grooming.uniformScore != null
-                ? myform.grooming.uniformScore.toDouble()
-                : 0.0,
-            labelText: "制服",
-            onSave: (value) => myform.grooming.uniformScore = value.toInt(),
-          ),
-          new SliderFormField(
-            intialValue: myform.grooming.decorationScore != null
-                ? myform.grooming.decorationScore.toDouble()
-                : 0.0,
-            labelText: "配載飾物",
-            onSave: (value) => myform.grooming.decorationScore = value.toInt(),
-          ),
-          new SliderFormField(
-            intialValue: myform.grooming.maskWearScore != null
-                ? myform.grooming.maskWearScore.toDouble()
-                : 0.0,
-            labelText: "口罩配帶技巧",
-            onSave: (value) => myform.grooming.maskWearScore = value.toInt(),
-          ),
-          new SliderFormField(
-            intialValue: myform.grooming.maskCleanScore != null
-                ? myform.grooming.maskCleanScore.toDouble()
-                : 0.0,
-            labelText: "口罩清潔",
-            onSave: (value) => myform.grooming.maskCleanScore = value.toInt(),
-          ),
-        ]);
+      children: <Widget>[
+        new ExpansionTile(title: new Text('Grooming'),
+            //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+            children: <Widget>[
+              new SliderFormField(
+                initialValue: myform.grooming.groomingScore,
+                labelText: "儀容",
+              )
+            ]),
+      ],
+    );
   }
+
+  // TODO: implement wantKeepAlive
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class SliderFormField extends StatefulWidget {
   SliderFormField(
-      {this.intialValue, this.onSave, this.labelText, this.controller});
-  final double intialValue;
-  final Function onSave;
+      {this.initialValue, this.onChange, this.controller, this.labelText});
+  final int initialValue;
   final TextEditingController controller;
+  final Function onChange;
   final String labelText;
 
   @override
@@ -262,28 +233,57 @@ class SliderFormField extends StatefulWidget {
 
 class _SliderFormFieldState extends State<SliderFormField> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return new FormField<double>(
-        initialValue: widget.intialValue,
-        onSaved: widget.onSave,
-        validator: (value) =>
-            value < 0 ? '${widget.labelText} can\'t be empty' : null,
-        builder: (FormFieldState<double> field) {
+    return new FormField<int>(
+        initialValue: widget.initialValue,
+        validator: (int result) {
+          result == null ? '${widget.labelText} can\'t be empty' : null;
+        },
+        onSaved: (int result) {
+          widget.controller.text = result.toString();
+        },
+        builder: (FormFieldState<int> field) {
           return new InputDecorator(
-              decoration: new InputDecoration(
-                  labelStyle: _labelStyle,
-                  labelText: widget.labelText,
-                  border: InputBorder.none),
-              child: new Slider(
-                min: 0.0,
-                max: 100.0,
-                divisions: 5,
-                activeColor: Colors.red[100 + (field.value * 5.0).round()],
-                label: '${field.value.round()}',
-                value: field.value,
-                onChanged: field.didChange,
-              ));
+            decoration: new InputDecoration(
+              labelText: widget.labelText,
+              labelStyle: _labelStyle,
+              contentPadding: new EdgeInsets.all(10.0),
+            ),
+            child: new Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _allRadio(field, field.didChange),
+            ),
+          );
         });
+  }
+
+  List<Widget> _allRadio(FormFieldState _field, Function _onChanged) {
+    List<Widget> widget = new List<Widget>();
+    widget.add(_radio(-1, _field, _onChanged, title: "NA"));
+    for (var i = 0; i <= 10; i++) {
+      Widget r = _radio(i * 10, _field, _onChanged);
+      widget.add(r);
+    }
+    return widget;
+  }
+
+  Widget _radio(int _value, FormFieldState _field, Function _onChanged,
+      {String title}) {
+    return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      new Radio<int>(
+        value: _value,
+        groupValue: _field.value,
+        onChanged: _onChanged,
+      ),
+      Text(title ?? _value.toString())
+    ]);
   }
 }
 

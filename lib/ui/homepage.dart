@@ -176,6 +176,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
         ),
+<<<<<<< HEAD
         body: _list != null
             ? new ListView.builder(
                 itemCount: _list.length,
@@ -208,5 +209,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         }
       },
     ),
+=======
+        body: _body);
+  }
+
+  Widget _body = new Container(
+    child: new Text('hello'),
+>>>>>>> f8f9e7b11ccdae9e57d2143786374d612ff5f256
   );
 }
