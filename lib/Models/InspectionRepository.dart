@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,47 +26,34 @@ class InspectionRepos {
     return inspectionList;
   }
 
-  Future<bool> addInspection(Inspection item) async {
+  Future<void> addInspection(Inspection item) async {
     print('creating');
-    var newdoc = await inspectionCollection.document().get();
-    item.id = newdoc.documentID;
     item.userid = user.uid;
-
-    inspectionCollection.add(item.toJson()).then((onValue) {
-      onValue.setData({'id': onValue.documentID});
-    }).catchError((error) {
-      print(error.toString());
+    Firestore.instance.runTransaction((transaction) async {
+      CollectionReference reference = inspectionCollection;
+      await reference.add(item.toJson()).then((docRef) {
+        docRef.documentID;
+        docRef.updateData({"id": docRef.documentID});
+      });
     });
-
-    newdoc.reference.setData(item.toJson()).then((__) {
-      return true;
-    }).catchError((error) {
-      print(error.toString());
-    });
-    return false;
   }
 
-  Future<bool> updateInspection(Inspection item) async {
+  Future<void> updateInspection(Inspection item) async {
     print('updating' + item.id);
-    var olddoc = await inspectionCollection.document(item.id).get();
-    if (olddoc.exists && item.userid == user.uid) {
-      olddoc.reference.setData(item.toJson(), merge: true).then((__) {
-        return true;
-      }).catchError((error) {
-        return error;
-      });
-    } else {
-      throw Exception('permission denied');
-    }
-    return false;
+    var oldDoc = await inspectionCollection.document(item.id).get();
+    Firestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(oldDoc.reference);
+      await transaction.update(snapshot.reference, item.toJson());
+    });
   }
 
   Future<bool> deleteInspection(String docid) async {
     print('deleting');
-    inspectionCollection.document(docid).delete().then((__) {
+    Firestore.instance.runTransaction((Transaction transaction) async {
+      CollectionReference reference = inspectionCollection;
+      await reference.document(docid).delete();
+    }).then((value) {
       return true;
-    }).catchError((error) {
-      print(error.toString());
     });
     return false;
   }

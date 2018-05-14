@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../Helper/formHelper.dart';
 import '../Helper/AnimatedPageRoute.dart';
 import '../Models/Inspection.dart';
 import '../Models/InspectionRepository.dart';
@@ -50,6 +49,20 @@ class _InspectionRecordState extends State<InspectionRecord> {
 }
 
 class InspectionBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new StreamBuilder(
+        stream: Firestore.instance.collection('Inspection').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) return CircularProgressIndicator();
+          return FirestoreListView(documents: snapshot.data.documents);
+        });
+  }
+}
+
+class FirestoreListView extends StatelessWidget {
+  final List<DocumentSnapshot> documents;
+
   void _open(BuildContext context, Inspection inspection) {
     Navigator.of(context).push(
           new AnimatedRoute(
@@ -58,57 +71,40 @@ class InspectionBody extends StatelessWidget {
         );
   }
 
-  void _delete(BuildContext context, String docid) {
-    inspectionRepos.deleteInspection(docid).then((bool result) {
-      FormHelper.showAlertDialog(context, "Deleted", 'Successful');
-    }).catchError((onError) => FormHelper.showAlertDialog(
-        context, "Error on Save", onError.toString()));
+  void _delete(DocumentReference reference) {
+    Firestore.instance.runTransaction((Transaction transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(reference);
+      await transaction.delete(snapshot.reference);
+    });
   }
 
+  FirestoreListView({this.documents});
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('Inspection').snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return new Center(
-                child: new Column(
-              children: <Widget>[
-                new CircularProgressIndicator(),
-                new Text("Loading....")
-              ],
-            ));
-          }
-          if (snapshot.data.documents.length == 0) {
-            return new Center(
-                child: new Column(
-              children: <Widget>[new Text("no Data")],
-            ));
-          }
-          final int _count = snapshot.data.documents.length;
-          return new ListView.builder(
-            itemCount: _count,
-            itemBuilder: (_, int index) {
-              final DocumentSnapshot document = snapshot.data.documents[index];
-              final Inspection inspection = Inspection.fromDocument(document);
-              return new ListTile(
-                title: new Text(
-                  FormHelper.datetoString(inspection.inspectionDate),
-                ),
-                subtitle: new Text(inspection.staffName.toString()),
-                trailing: new Row(
-                  children: <Widget>[
-                    new IconButton(
-                        icon: new Icon(Icons.edit),
-                        onPressed: () => _open(context, inspection)),
-                    new IconButton(
-                        icon: new Icon(Icons.delete),
-                        onPressed: () => _delete(context, document.documentID)),
-                  ],
-                ),
-              );
-            },
-          );
-        });
+    return ListView.builder(
+      itemCount: documents.length,
+      itemExtent: 90.0,
+      itemBuilder: (BuildContext context, int index) {
+        Inspection inspection = new Inspection.fromJson(documents[index].data);
+        String title = inspection.inspectionDate.toIso8601String();
+
+        return new Card(
+          child: new Row(
+            children: <Widget>[
+              new Expanded(child: new Text(title)),
+              new IconButton(
+                  icon: new Icon(Icons.edit),
+                  onPressed: () => _open(context, inspection)),
+              new IconButton(
+                icon: new Icon(Icons.delete),
+                onPressed: () {
+                  _delete(documents[index].reference);
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
 }

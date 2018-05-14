@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 import '../Helper/formHelper.dart';
 import '../Models/Inspection.dart';
@@ -51,25 +52,13 @@ class _InspectionFormState extends State<InspectionForm>
     if (form.validate()) {
       form.save();
       if (myform.id == null) {
-        _addRecord();
+        repos.addInspection(myform);
+        Navigator.of(context).pop();
       } else {
-        _updateRecord();
+        repos.updateInspection(myform);
+        Navigator.of(context).pop();
       }
     }
-  }
-
-  void _addRecord() {
-    repos.addInspection(myform).then((bool result) {
-      Navigator.pop(context);
-    }).catchError((onError) => FormHelper.showAlertDialog(
-        context, "Error on Save", onError.toString()));
-  }
-
-  void _updateRecord() {
-    repos.updateInspection(myform).then((bool result) {
-      Navigator.pop(context);
-    }).catchError((onError) => FormHelper.showAlertDialog(
-        context, "Error on Save", onError.toString()));
   }
 
   @override
@@ -208,6 +197,56 @@ class _ViewGroomingState extends State<ViewGrooming>
               new SliderFormField(
                 initialValue: myform.grooming.groomingScore,
                 labelText: "儀容",
+                onChanged: (int value) {
+                  setState(() {
+                    myform.grooming.groomingScore = value;
+                  });
+                },
+              ),
+              new SliderFormField(
+                initialValue: myform.grooming.hairScore,
+                labelText: "髮型",
+                onChanged: (int value) {
+                  setState(() {
+                    myform.grooming.hairScore = value;
+                  });
+                },
+              ),
+              new SliderFormField(
+                initialValue: myform.grooming.uniformScore,
+                labelText: "制服",
+                onChanged: (int value) {
+                  setState(() {
+                    myform.grooming.uniformScore = value;
+                  });
+                },
+              ),
+              new SliderFormField(
+                initialValue: myform.grooming.decorationScore,
+                labelText: "飾物",
+                onChanged: (int value) {
+                  setState(() {
+                    myform.grooming.decorationScore = value;
+                  });
+                },
+              ),
+              new SliderFormField(
+                initialValue: myform.grooming.maskWearScore,
+                labelText: "口罩技巧",
+                onChanged: (int value) {
+                  setState(() {
+                    myform.grooming.maskWearScore = value;
+                  });
+                },
+              ),
+              new SliderFormField(
+                initialValue: myform.grooming.maskCleanScore,
+                labelText: "口罩清潔",
+                onChanged: (int value) {
+                  setState(() {
+                    myform.grooming.maskCleanScore = value;
+                  });
+                },
               )
             ]),
       ],
@@ -220,11 +259,14 @@ class _ViewGroomingState extends State<ViewGrooming>
 }
 
 class SliderFormField extends StatefulWidget {
-  SliderFormField(
-      {this.initialValue, this.onChange, this.controller, this.labelText});
+  SliderFormField({
+    this.initialValue,
+    this.labelText,
+    @required this.onChanged,
+  });
+
   final int initialValue;
-  final TextEditingController controller;
-  final Function onChange;
+  final ValueChanged<int> onChanged;
   final String labelText;
 
   @override
@@ -232,60 +274,138 @@ class SliderFormField extends StatefulWidget {
 }
 
 class _SliderFormFieldState extends State<SliderFormField> {
+  int _selected = 0;
+  bool _checked = false;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _selected = widget.initialValue;
+    if (_selected == -1) _checked = true;
+  }
+
+  void _checkChanged(bool value) {
+    setState(() {
+      _checked = !_checked;
+      _checked ? _selected = -1 : _selected = 0;
+      widget.onChanged(_selected);
+    });
+  }
+
+  void _sliderChanged(double value) {
+    setState(() {
+      _selected = value.toInt();
+      widget.onChanged(value.toInt());
+    });
+  }
+
+  Widget _makeCheckBox() {
+    return new Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: new Row(
+        children: <Widget>[
+          new Text("NA:"),
+          new Checkbox(value: _checked, onChanged: _checkChanged),
+        ],
+      ),
+    );
+  }
+
+  Widget _makeSlider() {
+    return _checked == false
+        ? new Slider(
+            value: _selected.toDouble(),
+            min: 0.0,
+            max: 100.0,
+            divisions: 10,
+            onChanged: _sliderChanged)
+        // : null;
+        : new Text("NA");
   }
 
   @override
   Widget build(BuildContext context) {
-    return new FormField<int>(
-        initialValue: widget.initialValue,
-        validator: (int result) {
-          result == null ? '${widget.labelText} can\'t be empty' : null;
-        },
-        onSaved: (int result) {
-          widget.controller.text = result.toString();
-        },
-        builder: (FormFieldState<int> field) {
-          return new InputDecorator(
-            decoration: new InputDecoration(
-              labelText: widget.labelText,
-              labelStyle: _labelStyle,
-              contentPadding: new EdgeInsets.all(10.0),
-            ),
-            child: new Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _allRadio(field, field.didChange),
-            ),
-          );
-        });
-  }
-
-  List<Widget> _allRadio(FormFieldState _field, Function _onChanged) {
-    List<Widget> widget = new List<Widget>();
-    widget.add(_radio(-1, _field, _onChanged, title: "NA"));
-    for (var i = 0; i <= 10; i++) {
-      Widget r = _radio(i * 10, _field, _onChanged);
-      widget.add(r);
-    }
-    return widget;
-  }
-
-  Widget _radio(int _value, FormFieldState _field, Function _onChanged,
-      {String title}) {
-    return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-      new Radio<int>(
-        value: _value,
-        groupValue: _field.value,
-        onChanged: _onChanged,
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new InputDecorator(
+        decoration: new InputDecoration(
+          labelText: widget.labelText,
+          labelStyle: _labelStyle,
+          border:
+              OutlineInputBorder(borderRadius: new BorderRadius.circular(5.0)),
+          contentPadding: new EdgeInsets.all(8.0),
+        ),
+        child: new Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              _makeCheckBox(),
+              new Expanded(child: _makeSlider()),
+              new Padding(
+                padding: new EdgeInsets.all(10.0),
+                child: new Text(
+                  _selected.toString(),
+                  style: new TextStyle(fontWeight: FontWeight.bold),
+                ),
+              )
+            ]),
       ),
-      Text(title ?? _value.toString())
-    ]);
+    );
   }
 }
+
+// class _SliderFormFieldState2 extends State<SliderFormField> {
+//   int _selected = 0;
+
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//     _selected = widget.initialValue;
+//   }
+
+//   Widget _radio(int value, {String title}) {
+//     return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+//       new Radio<int>(
+//         value: value,
+//         groupValue: _selected,
+//         onChanged: (int value) {
+//           setState(() {
+//             _selected = value;
+//             widget.onChanged(value);
+//           });
+//         },
+//       ),
+//       new Text(title ?? value.toString())
+//     ]);
+//   }
+
+//   List<Widget> _makeRadio() {
+//     List<Widget> widget = new List<Widget>();
+//     widget.add(_radio(-1, title: "NA"));
+//     for (var i = 0; i <= 5; i++) {
+//       widget.add(_radio(i * 20));
+//     }
+//     return widget;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return new InputDecorator(
+//       decoration: new InputDecoration(
+//         labelText: widget.labelText,
+//         labelStyle: _labelStyle,
+//         contentPadding: new EdgeInsets.all(10.0),
+//       ),
+//       child: new Row(
+//         mainAxisSize: MainAxisSize.min,
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: _makeRadio(),
+//       ),
+//     );
+//   }
+// }
 
 var _labelStyle = new TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold);
 var _textStyle = new TextStyle(fontSize: 18.0, color: Colors.black);

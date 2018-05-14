@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import './ui/login.dart';
 import './ui/homepage.dart';
 import 'Helper/AnimatedPageRoute.dart';
+import 'Helper/colors.dart';
 
 void main() => runApp(new MyApp());
 
@@ -28,17 +29,28 @@ class MyApp extends StatelessWidget {
     return false;
   }
 
+  ThemeData buildThemeData() {
+    final baseTheme = ThemeData.light();
+    return baseTheme.copyWith(
+        primaryColor: kPrimaryColor,
+        primaryColorDark: kPrimaryDark,
+        primaryColorLight: kPrimaryLight,
+        accentColor: kSecondaryColor,
+        bottomAppBarColor: kSecondaryDark,
+        buttonColor: kSecondaryLight,
+        sliderTheme: SliderThemeData.fromPrimaryColors(
+          primaryColor: kPrimaryColor,
+          primaryColorDark: kPrimaryDark,
+          primaryColorLight: kPrimaryLight,
+          valueIndicatorTextStyle: TextStyle(color: Colors.black),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
         title: 'Welcome',
-        theme: new ThemeData(
-          primarySwatch: Colors.blue,
-          primaryColor: Colors.blue[500],
-          primaryColorBrightness: Brightness.light,
-          accentColor: Colors.lightBlueAccent,
-          accentColorBrightness: Brightness.light,
-        ),
+        theme: buildThemeData(),
         onGenerateRoute: (RouteSettings settings) {
           switch (settings.name) {
             case '/':
