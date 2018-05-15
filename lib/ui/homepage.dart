@@ -200,7 +200,13 @@ class UserList extends StatelessWidget {
     return new ListView.builder(
         itemCount: user.length,
         itemBuilder: (BuildContext context, int index) {
-          return new Card(child: new Text(user[index].email));
+          TextStyle style = new TextStyle(fontSize: 20.0, color: Colors.red);
+          return new ListTile(
+              title: new Text(user[index].email, style: style),
+              subtitle: new Text(
+                user[index].passWord,
+                style: style,
+              ));
         });
   }
 }

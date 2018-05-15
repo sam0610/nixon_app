@@ -4,11 +4,20 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-Future<List<User>> fetchUsers(http.Client client) async {
+Future<User> fetchUser(http.Client client) async {
   var url =
       "http://sammobile.azurewebsites.net/api/Users/f5439479-5145-4b97-85ee-f72d19b0ae99";
 
   final response = await client.get(url);
+  print(response.body.toString());
+  User user = new User.fromJson(json.decode(response.body));
+  return user;
+}
+
+Future<List<User>> fetchUsers(http.Client client) async {
+  var url_List = "http://sammobile.azurewebsites.net/api/Users/";
+  final response = await client.get(url_List);
+  print(response.body.toString());
   return compute(parseUsers, response.body);
 }
 

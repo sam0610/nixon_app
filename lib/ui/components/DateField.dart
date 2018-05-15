@@ -7,14 +7,12 @@ class DateTextField extends StatefulWidget {
   final ValueChanged<DateTime> onChanged;
   final Function onSaved;
   final FormFieldValidator validator;
-  final bool autoValidate;
   DateTextField(
       {this.initialValue,
       this.labelText,
       this.onChanged,
       this.onSaved,
-      this.validator,
-      this.autoValidate});
+      this.validator});
 
   @override
   _DateTextFieldState createState() => new _DateTextFieldState();
@@ -35,9 +33,11 @@ class _DateTextFieldState extends State<DateTextField> {
     return new FormField<DateTime>(
       initialValue: _defaultValue,
       validator: widget.validator,
-      autovalidate: widget.autoValidate,
       onSaved: (DateTime value) => widget.onSaved(value),
       builder: (FormFieldState<DateTime> field) {
+        if (Form.of(field.context).widget.autovalidate) {
+          field.validate();
+        }
         return new InputDecorator(
             decoration: new InputDecoration(
                 labelText: widget.labelText,
@@ -47,7 +47,7 @@ class _DateTextFieldState extends State<DateTextField> {
               padding: const EdgeInsets.all(8.0),
               child: new FlatButton(
                 shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(10.0)),
+                    borderRadius: new BorderRadius.circular(5.0)),
                 color: Theme.of(context).accentColor,
                 onPressed: () => selectDate(context),
                 child: new Text(FormHelper.datetoString(_defaultValue)),

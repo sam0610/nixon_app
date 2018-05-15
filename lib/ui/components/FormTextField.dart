@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 class MyFormTextField extends StatefulWidget {
   MyFormTextField(
       {this.labelText,
       this.initialValue,
       this.onSave,
-      this.controller,
+      @required this.controller,
       this.maxLines = 1});
   final String labelText;
   final TextEditingController controller;
@@ -21,7 +22,10 @@ class _MyFormTextFieldState extends State<MyFormTextField> {
   @override
   void initState() {
     super.initState();
-    if (widget.controller != null) widget.controller.text = widget.initialValue;
+    if (widget.controller != null)
+      widget.controller.text.isEmpty
+          ? widget.controller.text = widget.initialValue
+          : '';
   }
 
   @override
@@ -32,6 +36,7 @@ class _MyFormTextFieldState extends State<MyFormTextField> {
         labelText: widget.labelText,
       ),
       controller: widget.controller,
+      onFieldSubmitted: (value) => widget.controller.text = value,
       validator: (value) =>
           value.isEmpty ? '${widget.labelText} can\'t be empty' : null,
       onSaved: widget.onSave,

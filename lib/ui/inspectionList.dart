@@ -93,14 +93,10 @@ class FirestoreListView extends StatelessWidget {
           child: new Row(
             children: <Widget>[
               new Expanded(
-                child: new Column(
-                  children: <Widget>[
-                    new Container(child: new Text(inspDate)),
-                    new Container(
-                        child: new Text(inspection.staffName,
-                            style: new TextStyle(fontSize: 20.0))),
-                  ],
-                ),
+                child: new ListTile(
+                    title: new Text(inspDate),
+                    subtitle: new Text(inspection.staffName,
+                        style: new TextStyle(fontSize: 20.0))),
               ),
               new IconButton(
                   icon: new Icon(Icons.edit),

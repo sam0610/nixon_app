@@ -7,15 +7,13 @@ class TimeTextField extends StatefulWidget {
   final TimeOfDay initialValue;
   final ValueChanged<TimeOfDay> onChanged;
   final FormFieldValidator validator;
-  final bool autoValidate;
   final Function onSaved;
   TimeTextField(
       {this.initialValue,
       this.labelText,
       this.onChanged,
       this.onSaved,
-      this.validator,
-      this.autoValidate = false});
+      this.validator});
 
   @override
   _TimeTextFieldState createState() => new _TimeTextFieldState();
@@ -36,11 +34,13 @@ class _TimeTextFieldState extends State<TimeTextField> {
   @override
   Widget build(BuildContext context) {
     return new FormField<TimeOfDay>(
-      autovalidate: widget.autoValidate,
       initialValue: _defaultValue,
       validator: widget.validator,
       onSaved: (TimeOfDay value) => widget.onSaved(value),
       builder: (FormFieldState<TimeOfDay> field) {
+        if (Form.of(field.context).widget.autovalidate) {
+          field.validate();
+        }
         return new InputDecorator(
           decoration: new InputDecoration(
               errorText: field.errorText,
@@ -50,7 +50,7 @@ class _TimeTextFieldState extends State<TimeTextField> {
             padding: const EdgeInsets.all(8.0),
             child: new FlatButton(
               shape: new RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(10.0)),
+                  borderRadius: new BorderRadius.circular(5.0)),
               color: Theme.of(context).accentColor,
               onPressed: () {
                 selectTime(context, field, initialTime: _defaultValue);

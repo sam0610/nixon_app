@@ -1,14 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:nixon_app/ui/components/SliderField.dart';
+import 'package:nixon_app/ui/components/SliderFormField.dart';
 import '../Helper/formHelper.dart';
 import '../Models/Inspection.dart';
 import '../Models/InspectionRepository.dart';
 import 'components/DateField.dart';
 import 'components/TimeField.dart';
 import 'components/FormTextField.dart';
-
-bool _autoValidate = false;
 
 class InspectionForm extends StatefulWidget {
   InspectionForm({Key key, this.form}) : super(key: key);
@@ -21,6 +19,7 @@ Inspection myform;
 
 class _InspectionFormState extends State<InspectionForm>
     with SingleTickerProviderStateMixin {
+  bool _autoValidate = false;
   InspectionRepos repos;
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   TabController _tabController;
@@ -130,52 +129,52 @@ class _ViewInfoState extends State<ViewInfo>
   @override
   Widget build(BuildContext context) {
     return new ListView(
-      padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+      padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
       children: <Widget>[
-        new DateTextField(
-          labelText: '日期',
-          initialValue: myform.inspectionDate,
-          autoValidate: _autoValidate,
-          validator: (value) =>
-              myform.inspectionDate == null ? 'Date is Empty' : null,
-          onChanged: (value) => myform.inspectionDate = value,
-          onSaved: (value) => myform.inspectionDate = value,
-        ),
-        new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            new Expanded(
-              flex: 1,
-              child: TimeTextField(
-                  labelText: '到達時間',
-                  initialValue: FormHelper.strToTime(myform.arrivedTime),
-                  autoValidate: _autoValidate,
-                  validator: (value) =>
-                      myform.arrivedTime == null ? "not set" : null,
-                  onChanged: (value) {
-                    myform.arrivedTime = FormHelper.timetoString(value);
-                  },
-                  onSaved: (value) => myform.arrivedTime = FormHelper
-                      .timetoString(value) //FormHelper.timetoString(value)),
-                  ),
-            ),
-            new Expanded(
-              flex: 1,
-              child: TimeTextField(
-                  labelText: '離開時間',
-                  initialValue: FormHelper.strToTime(myform.leaveTime),
-                  autoValidate: _autoValidate,
-                  validator: (value) =>
-                      myform.leaveTime == null ? "not set" : null,
-                  onChanged: (value) =>
-                      myform.leaveTime = FormHelper.timetoString(value),
-                  onSaved: (value) => myform.leaveTime = FormHelper
-                      .timetoString(value) // FormHelper.timetoString(value))),
-                  ),
-            ),
-          ],
-        ),
+        new ExpansionTile(title: new Text('日期'), children: <Widget>[
+          new DateTextField(
+            labelText: '日期',
+            initialValue: myform.inspectionDate,
+            validator: (value) =>
+                myform.inspectionDate == null ? 'Date is Empty' : null,
+            onChanged: (value) => myform.inspectionDate = value,
+            onSaved: (value) => myform.inspectionDate = value,
+          ),
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              new Expanded(
+                flex: 1,
+                child: TimeTextField(
+                    labelText: '到達時間',
+                    initialValue: FormHelper.strToTime(myform.arrivedTime),
+                    validator: (value) =>
+                        myform.arrivedTime == null ? "not set" : null,
+                    onChanged: (value) {
+                      myform.arrivedTime = FormHelper.timetoString(value);
+                    },
+                    onSaved: (value) => myform.arrivedTime = FormHelper
+                        .timetoString(value) //FormHelper.timetoString(value)),
+                    ),
+              ),
+              new Expanded(
+                flex: 1,
+                child: TimeTextField(
+                    labelText: '離開時間',
+                    initialValue: FormHelper.strToTime(myform.leaveTime),
+                    validator: (value) =>
+                        myform.leaveTime == null ? "not set" : null,
+                    onChanged: (value) =>
+                        myform.leaveTime = FormHelper.timetoString(value),
+                    onSaved: (value) => myform.leaveTime =
+                        FormHelper.timetoString(
+                            value) // FormHelper.timetoString(value))),
+                    ),
+              ),
+            ],
+          ),
+        ]),
         MyFormTextField(
             labelText: '員工姓名',
             initialValue: myform.staffName,
@@ -235,8 +234,9 @@ class _ViewGroomingState extends State<ViewGrooming>
         new ExpansionTile(title: new Text('Grooming'),
             //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
             children: <Widget>[
-              new SliderField(
+              new SliderFormField(
                 initialValue: myform.grooming.groomingScore,
+                validator: (value) => value == 0 ? 'Not Set' : null,
                 labelText: "儀容",
                 onChanged: (int value) {
                   setState(() {
@@ -244,8 +244,9 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderField(
+              new SliderFormField(
                 initialValue: myform.grooming.hairScore,
+                validator: (value) => value == 0 ? 'Not Set' : null,
                 labelText: "髮型",
                 onChanged: (int value) {
                   setState(() {
@@ -253,8 +254,9 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderField(
+              new SliderFormField(
                 initialValue: myform.grooming.uniformScore,
+                validator: (value) => value == 0 ? 'Not Set' : null,
                 labelText: "制服",
                 onChanged: (int value) {
                   setState(() {
@@ -262,7 +264,7 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderField(
+              new SliderFormField(
                 initialValue: myform.grooming.decorationScore,
                 labelText: "飾物",
                 onChanged: (int value) {
@@ -271,8 +273,9 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderField(
+              new SliderFormField(
                 initialValue: myform.grooming.maskWearScore,
+                validator: (value) => value == 0 ? 'Not Set' : null,
                 labelText: "口罩技巧",
                 onChanged: (int value) {
                   setState(() {
@@ -280,8 +283,9 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderField(
+              new SliderFormField(
                 initialValue: myform.grooming.maskCleanScore,
+                validator: (value) => value == 0 ? 'Not Set' : null,
                 labelText: "口罩清潔",
                 onChanged: (int value) {
                   setState(() {
