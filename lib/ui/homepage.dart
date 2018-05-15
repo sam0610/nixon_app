@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
 import '../Helper/AnimatedPageRoute.dart';
 import '../Helper/firebase.dart';
 import '../Models/api.dart';
@@ -27,7 +26,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // TODO: implement initState
     super.initState();
     _assureLogin();
-    _get();
   }
 
   _assureLogin() async {
@@ -176,37 +174,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
         ),
-        body: _list != null
-            ? new ListView.builder(
-                itemCount: _list.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return new ListTile(
-                    title: new Text(_list[index].email),
-                  );
-                },
-              )
-            : new Text('loading'));
+        body: body1);
   }
 
-  List<User> _list;
-  Future<void> _get() async {
-    User.fetchUserList().then((List<User> l) {
-      setState(() {
-        _list = l;
-      });
-    }).catchError((e) => print(e));
-  }
-
-  var body1 = new Center(
-    child: new FutureBuilder<User>(
-      future: User.fetchUser(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return new Text(snapshot.data.email);
-        } else {
-          return new Text("${snapshot.error}");
-        }
-      },
-    ),
+  var body1 = new FutureBuilder<List<User>>(
+    future: fetchUsers(new http.Client()),
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return new Text(snapshot.error);
+      }
+      return snapshot.hasData
+          ? new UserList(user: snapshot.data)
+          : new Center(child: new CircularProgressIndicator());
+    },
   );
+}
+
+class UserList extends StatelessWidget {
+  final List<User> user;
+
+  UserList({Key key, this.user}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return new ListView.builder(
+        itemCount: user.length,
+        itemBuilder: (BuildContext context, int index) {
+          return new Card(child: new Text(user[index].email));
+        });
+  }
 }

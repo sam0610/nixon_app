@@ -1,10 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nixon_app/ui/components/SliderField.dart';
-
 import '../Helper/formHelper.dart';
 import '../Models/Inspection.dart';
 import '../Models/InspectionRepository.dart';
+import 'components/DateField.dart';
+import 'components/TimeField.dart';
+import 'components/FormTextField.dart';
+
+bool _autoValidate = false;
 
 class InspectionForm extends StatefulWidget {
   InspectionForm({Key key, this.form}) : super(key: key);
@@ -19,7 +23,6 @@ class _InspectionFormState extends State<InspectionForm>
     with SingleTickerProviderStateMixin {
   InspectionRepos repos;
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-
   TabController _tabController;
   final List<Tab> myTabs = <Tab>[
     new Tab(
@@ -56,9 +59,13 @@ class _InspectionFormState extends State<InspectionForm>
     print('save');
     print(myform);
     print(myform.grooming);
+    setState(() {
+      _autoValidate = true;
+    });
     final form = _formKey.currentState;
     if (formValidated()) {
       form.save();
+
       if (myform.id == null) {
         repos
             .addInspection(myform)
@@ -97,7 +104,7 @@ class _InspectionFormState extends State<InspectionForm>
         bottom: false,
         child: new Form(
           key: _formKey,
-          autovalidate: false,
+          autovalidate: _autoValidate,
           child: new TabBarView(
               controller: _tabController,
               children: <Widget>[new ViewInfo(), new ViewGrooming()]),
@@ -128,6 +135,7 @@ class _ViewInfoState extends State<ViewInfo>
         new DateTextField(
           labelText: '日期',
           initialValue: myform.inspectionDate,
+          autoValidate: _autoValidate,
           validator: (value) =>
               myform.inspectionDate == null ? 'Date is Empty' : null,
           onChanged: (value) => myform.inspectionDate = value,
@@ -141,8 +149,13 @@ class _ViewInfoState extends State<ViewInfo>
               flex: 1,
               child: TimeTextField(
                   labelText: '到達時間',
-                  initialValue: myform.arrivedTime,
-                  onChanged: (value) => myform.arrivedTime = value,
+                  initialValue: FormHelper.strToTime(myform.arrivedTime),
+                  autoValidate: _autoValidate,
+                  validator: (value) =>
+                      myform.arrivedTime == null ? "not set" : null,
+                  onChanged: (value) {
+                    myform.arrivedTime = FormHelper.timetoString(value);
+                  },
                   onSaved: (value) => myform.arrivedTime = FormHelper
                       .timetoString(value) //FormHelper.timetoString(value)),
                   ),
@@ -151,8 +164,12 @@ class _ViewInfoState extends State<ViewInfo>
               flex: 1,
               child: TimeTextField(
                   labelText: '離開時間',
-                  initialValue: myform.leaveTime,
-                  onChanged: (value) => myform.leaveTime = value,
+                  initialValue: FormHelper.strToTime(myform.leaveTime),
+                  autoValidate: _autoValidate,
+                  validator: (value) =>
+                      myform.leaveTime == null ? "not set" : null,
+                  onChanged: (value) =>
+                      myform.leaveTime = FormHelper.timetoString(value),
                   onSaved: (value) => myform.leaveTime = FormHelper
                       .timetoString(value) // FormHelper.timetoString(value))),
                   ),
@@ -280,185 +297,4 @@ class _ViewGroomingState extends State<ViewGrooming>
   // TODO: implement wantKeepAlive
   @override
   bool get wantKeepAlive => true;
-}
-
-class DateTextField extends StatefulWidget {
-  final String labelText;
-  final DateTime initialValue;
-  final ValueChanged<DateTime> onChanged;
-  final Function onSaved;
-  final FormFieldValidator validator;
-  DateTextField(
-      {this.initialValue,
-      this.labelText,
-      this.onChanged,
-      this.onSaved,
-      this.validator});
-
-  @override
-  _DateTextFieldState createState() => new _DateTextFieldState();
-}
-
-class _DateTextFieldState extends State<DateTextField> {
-  DateTime _value;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _value = widget.initialValue ?? DateTime.now();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new InputDecorator(
-        decoration: new InputDecoration(
-            labelText: widget.labelText, border: InputBorder.none),
-        child: new FormField<DateTime>(
-          initialValue: _value,
-          validator: widget.validator,
-          onSaved: (DateTime value) => widget.onSaved(value),
-          builder: (FormFieldState<DateTime> field) {
-            return new Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: new FlatButton(
-                shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(20.0)),
-                color: Theme.of(context).accentColor,
-                onPressed: () => selectDate(context),
-                child: new Text(FormHelper.datetoString(_value)),
-              ),
-            );
-          },
-        ));
-  }
-
-  selectDate(BuildContext context) async {
-    final DateTime picked = await FormHelper.selectDateDialog(ctx: context);
-    if (picked != null) {
-      setState(
-        () {
-          _value = picked;
-          widget.onChanged(picked);
-        },
-      );
-    }
-  }
-}
-
-class TimeTextField extends StatefulWidget {
-  final String labelText;
-  final String initialValue;
-  final ValueChanged<String> onChanged;
-  final FormFieldValidator validator;
-  final Function onSaved;
-  TimeTextField(
-      {this.initialValue,
-      this.labelText,
-      this.onChanged,
-      this.onSaved,
-      this.validator});
-
-  @override
-  _TimeTextFieldState createState() => new _TimeTextFieldState();
-}
-
-class _TimeTextFieldState extends State<TimeTextField> {
-  TimeOfDay _value;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _value = widget.initialValue != null
-        ? FormHelper.strToTime(widget.initialValue)
-        : TimeOfDay.now();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new InputDecorator(
-        decoration: new InputDecoration(
-            labelText: widget.labelText, border: InputBorder.none),
-        child: new FormField<TimeOfDay>(
-          initialValue: _value,
-          validator: (TimeOfDay value) => widget.initialValue == null
-              ? '${widget.labelText}cant be empty'
-              : null,
-          onSaved: (TimeOfDay value) => widget.onSaved(value),
-          builder: (FormFieldState<TimeOfDay> field) {
-            return new Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: new FlatButton(
-                shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(20.0)),
-                color: Theme.of(context).accentColor,
-                onPressed: () => selectTime(context, initialTime: _value),
-                child: new Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    new Icon(Icons.timer),
-                    new Padding(
-                      padding: EdgeInsets.only(right: 5.0),
-                    ),
-                    new Text(FormHelper.timetoString(_value)),
-                  ],
-                ),
-              ),
-            );
-          },
-        ));
-  }
-
-  selectTime(BuildContext context, {TimeOfDay initialTime}) async {
-    final TimeOfDay picked = await FormHelper.selectTimeDialog(
-        ctx: context, initialTime: initialTime);
-    if (picked != null) {
-      setState(
-        () {
-          _value = picked;
-        },
-      );
-    }
-  }
-}
-
-class MyFormTextField extends StatefulWidget {
-  MyFormTextField(
-      {this.labelText,
-      this.initialValue,
-      this.onSave,
-      this.controller,
-      this.maxLines = 1});
-  final String labelText;
-  final TextEditingController controller;
-  final Function onSave;
-  final String initialValue;
-  final int maxLines;
-
-  @override
-  _MyFormTextFieldState createState() => new _MyFormTextFieldState();
-}
-
-class _MyFormTextFieldState extends State<MyFormTextField> {
-  @override
-  void initState() {
-    super.initState();
-    if (widget.controller != null) widget.controller.text = widget.initialValue;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new TextFormField(
-      maxLines: widget.maxLines,
-      decoration: InputDecoration(
-        labelText: widget.labelText,
-      ),
-      controller: widget.controller,
-      validator: (value) =>
-          value.isEmpty ? '${widget.labelText} can\'t be empty' : null,
-      onSaved: widget.onSave,
-    );
-  }
 }

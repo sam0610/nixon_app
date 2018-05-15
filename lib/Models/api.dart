@@ -1,10 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-var url =
-    "http://sammobile.azurewebsites.net/api/Users/f5439479-5145-4b97-85ee-f72d19b0ae99";
+Future<List<User>> fetchUsers(http.Client client) async {
+  var url =
+      "http://sammobile.azurewebsites.net/api/Users/f5439479-5145-4b97-85ee-f72d19b0ae99";
+
+  final response = await client.get(url);
+  return compute(parseUsers, response.body);
+}
+
+List<User> parseUsers(String responseBody) {
+  final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
+
+  return parsed.map<User>((json) => new User.fromJson(json)).toList();
+}
 
 class User {
   String id;
@@ -34,20 +46,5 @@ class User {
       email: json['email'],
       passWord: json['passWord'],
     );
-  }
-  static Future<List<User>> fetchUserList() async {
-    final response = await http.get(url);
-    final data = json.decode(response.body);
-    List<User> list = new List<User>();
-    for (var i in data) {
-      list.add(new User.fromJson(i.cast<String, dynamic>()));
-    }
-    return list;
-  }
-
-  static Future<User> fetchUser() async {
-    final response = await http.get(url);
-    final responseJson = json.decode(response.body);
-    return new User.fromJson(responseJson);
   }
 }

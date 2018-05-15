@@ -2,45 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:nixon_app/Helper/formHelper.dart';
 
 class DateTextField extends StatefulWidget {
-  final TextEditingController controller;
   final String labelText;
-  final String initialValue;
-  final Function onSave;
+  final DateTime initialValue;
+  final ValueChanged<DateTime> onChanged;
+  final Function onSaved;
+  final FormFieldValidator validator;
+  final bool autoValidate;
   DateTextField(
-      {this.controller, this.initialValue, this.labelText, this.onSave});
+      {this.initialValue,
+      this.labelText,
+      this.onChanged,
+      this.onSaved,
+      this.validator,
+      this.autoValidate});
 
   @override
   _DateTextFieldState createState() => new _DateTextFieldState();
 }
 
 class _DateTextFieldState extends State<DateTextField> {
+  DateTime _defaultValue;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.controller.text = widget.initialValue;
+    _defaultValue = widget.initialValue ?? DateTime.now();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Row(children: [
-      new Expanded(
-        child: new TextFormField(
-          controller: widget.controller,
-          decoration: InputDecoration(
-            labelText: widget.labelText,
-          ),
-          keyboardType: TextInputType.datetime,
-          validator: (value) =>
-              value.isEmpty ? '${widget.labelText} can\'t be empty' : null,
-          onSaved: widget.onSave,
-        ),
-      ),
-      new IconButton(
-        icon: new Icon(Icons.arrow_drop_down),
-        onPressed: () => selectDate(context),
-      )
-    ]);
+    return new FormField<DateTime>(
+      initialValue: _defaultValue,
+      validator: widget.validator,
+      autovalidate: widget.autoValidate,
+      onSaved: (DateTime value) => widget.onSaved(value),
+      builder: (FormFieldState<DateTime> field) {
+        return new InputDecorator(
+            decoration: new InputDecoration(
+                labelText: widget.labelText,
+                border: InputBorder.none,
+                errorText: field.errorText),
+            child: new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new FlatButton(
+                shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(10.0)),
+                color: Theme.of(context).accentColor,
+                onPressed: () => selectDate(context),
+                child: new Text(FormHelper.datetoString(_defaultValue)),
+              ),
+            ));
+      },
+    );
   }
 
   selectDate(BuildContext context) async {
@@ -48,7 +62,8 @@ class _DateTextFieldState extends State<DateTextField> {
     if (picked != null) {
       setState(
         () {
-          widget.controller.text = FormHelper.datetoString(picked);
+          _defaultValue = picked;
+          widget.onChanged(picked);
         },
       );
     }

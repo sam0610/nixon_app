@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../Helper/AnimatedPageRoute.dart';
+import '../Helper/formHelper.dart';
 import '../Models/Inspection.dart';
 import '../Models/InspectionRepository.dart';
 import 'inspectionForm.dart';
@@ -86,12 +87,21 @@ class FirestoreListView extends StatelessWidget {
       itemExtent: 90.0,
       itemBuilder: (BuildContext context, int index) {
         Inspection inspection = new Inspection.fromJson(documents[index].data);
-        String title = inspection.inspectionDate.toIso8601String();
+        String inspDate = FormHelper.datetoString(inspection.inspectionDate);
 
         return new Card(
           child: new Row(
             children: <Widget>[
-              new Expanded(child: new Text(title)),
+              new Expanded(
+                child: new Column(
+                  children: <Widget>[
+                    new Container(child: new Text(inspDate)),
+                    new Container(
+                        child: new Text(inspection.staffName,
+                            style: new TextStyle(fontSize: 20.0))),
+                  ],
+                ),
+              ),
               new IconButton(
                   icon: new Icon(Icons.edit),
                   onPressed: () => _open(context, inspection)),
