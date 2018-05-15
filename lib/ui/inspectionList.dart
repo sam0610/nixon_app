@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../Helper/AnimatedPageRoute.dart';
 import '../Models/Inspection.dart';
 import '../Models/InspectionRepository.dart';
-import 'inspectionForm2.dart';
+import 'inspectionForm.dart';
 
 InspectionRepos inspectionRepos;
 

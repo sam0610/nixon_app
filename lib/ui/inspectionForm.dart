@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
+import 'package:nixon_app/ui/components/SliderField.dart';
 
 import '../Helper/formHelper.dart';
 import '../Models/Inspection.dart';
@@ -44,19 +44,33 @@ class _InspectionFormState extends State<InspectionForm>
     });
   }
 
+  bool formValidated() {
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      return true;
+    }
+    return false;
+  }
+
   void _save() {
     print('save');
     print(myform);
     print(myform.grooming);
     final form = _formKey.currentState;
-    if (form.validate()) {
+    if (formValidated()) {
       form.save();
       if (myform.id == null) {
-        repos.addInspection(myform);
-        Navigator.of(context).pop();
+        repos
+            .addInspection(myform)
+            .then((onValue) => Navigator.of(context).pop())
+            .catchError((onError) => FormHelper.showAlertDialog(
+                context, 'Fail', onError.toString()));
       } else {
-        repos.updateInspection(myform);
-        Navigator.of(context).pop();
+        repos
+            .updateInspection(myform)
+            .then((onValue) => Navigator.of(context).pop())
+            .catchError((onError) => FormHelper.showAlertDialog(
+                context, 'Fail', onError.toString()));
       }
     }
   }
@@ -100,10 +114,7 @@ class ViewInfo extends StatefulWidget {
 
 class _ViewInfoState extends State<ViewInfo>
     with AutomaticKeepAliveClientMixin {
-  TextEditingController _formDateController = new TextEditingController(),
-      _staffNameController = new TextEditingController(),
-      _leaveTimeController = new TextEditingController(),
-      _arrivedTimeController = new TextEditingController(),
+  TextEditingController _staffNameController = new TextEditingController(),
       _situationRemarkController = new TextEditingController(),
       _guestsProportionController = new TextEditingController(),
       _foundLocationController = new TextEditingController(),
@@ -112,36 +123,38 @@ class _ViewInfoState extends State<ViewInfo>
   @override
   Widget build(BuildContext context) {
     return new ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
       children: <Widget>[
         new DateTextField(
           labelText: '日期',
-          initialValue: FormHelper
-              .datetoString(myform.inspectionDate ?? new DateTime.now()),
-          controller: _formDateController,
-          onSave: (value) =>
-              myform.inspectionDate = FormHelper.strToDate(value),
+          initialValue: myform.inspectionDate,
+          validator: (value) =>
+              myform.inspectionDate == null ? 'Date is Empty' : null,
+          onChanged: (value) => myform.inspectionDate = value,
+          onSaved: (value) => myform.inspectionDate = value,
         ),
         new Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             new Expanded(
-                flex: 1,
-                child: TimeTextField(
-                    labelText: '到達時間',
-                    initialValue: myform.arrivedTime,
-                    controller: _arrivedTimeController,
-                    onSave: (value) => myform.arrivedTime =
-                        value //FormHelper.timetoString(value)),
-                    )),
+              flex: 1,
+              child: TimeTextField(
+                  labelText: '到達時間',
+                  initialValue: myform.arrivedTime,
+                  onChanged: (value) => myform.arrivedTime = value,
+                  onSaved: (value) => myform.arrivedTime = FormHelper
+                      .timetoString(value) //FormHelper.timetoString(value)),
+                  ),
+            ),
             new Expanded(
               flex: 1,
               child: TimeTextField(
                   labelText: '離開時間',
                   initialValue: myform.leaveTime,
-                  controller: _leaveTimeController,
-                  onSave: (value) => myform.leaveTime =
-                      value // FormHelper.timetoString(value))),
+                  onChanged: (value) => myform.leaveTime = value,
+                  onSaved: (value) => myform.leaveTime = FormHelper
+                      .timetoString(value) // FormHelper.timetoString(value))),
                   ),
             ),
           ],
@@ -151,26 +164,37 @@ class _ViewInfoState extends State<ViewInfo>
             initialValue: myform.staffName,
             controller: _staffNameController,
             onSave: (value) => myform.staffName = value),
-        MyFormTextField(
-            labelText: '位置',
-            initialValue: myform.foundLocation,
-            controller: _foundLocationController,
-            onSave: (value) => myform.foundLocation = value),
-        MyFormTextField(
-            labelText: '崗位',
-            initialValue: myform.postName,
-            controller: _postNameController,
-            onSave: (value) => myform.postName = value),
-        MyFormTextField(
-            labelText: '處境摘要',
-            initialValue: myform.situationRemark,
-            controller: _situationRemarkController,
-            onSave: (value) => myform.situationRemark = value),
+        new Row(
+          children: <Widget>[
+            new Expanded(
+              flex: 1,
+              child: MyFormTextField(
+                  labelText: '位置',
+                  initialValue: myform.foundLocation,
+                  controller: _foundLocationController,
+                  onSave: (value) => myform.foundLocation = value),
+            ),
+            new Expanded(
+              flex: 1,
+              child: MyFormTextField(
+                  labelText: '崗位',
+                  initialValue: myform.postName,
+                  controller: _postNameController,
+                  onSave: (value) => myform.postName = value),
+            ),
+          ],
+        ),
         MyFormTextField(
             labelText: '顧客比例',
             initialValue: myform.guestsProportion,
             controller: _guestsProportionController,
             onSave: (value) => myform.guestsProportion = value),
+        MyFormTextField(
+            labelText: '處境摘要',
+            initialValue: myform.situationRemark,
+            maxLines: 3,
+            controller: _situationRemarkController,
+            onSave: (value) => myform.situationRemark = value),
       ],
     );
   }
@@ -194,7 +218,7 @@ class _ViewGroomingState extends State<ViewGrooming>
         new ExpansionTile(title: new Text('Grooming'),
             //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
             children: <Widget>[
-              new SliderFormField(
+              new SliderField(
                 initialValue: myform.grooming.groomingScore,
                 labelText: "儀容",
                 onChanged: (int value) {
@@ -203,7 +227,7 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderFormField(
+              new SliderField(
                 initialValue: myform.grooming.hairScore,
                 labelText: "髮型",
                 onChanged: (int value) {
@@ -212,7 +236,7 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderFormField(
+              new SliderField(
                 initialValue: myform.grooming.uniformScore,
                 labelText: "制服",
                 onChanged: (int value) {
@@ -221,7 +245,7 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderFormField(
+              new SliderField(
                 initialValue: myform.grooming.decorationScore,
                 labelText: "飾物",
                 onChanged: (int value) {
@@ -230,7 +254,7 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderFormField(
+              new SliderField(
                 initialValue: myform.grooming.maskWearScore,
                 labelText: "口罩技巧",
                 onChanged: (int value) {
@@ -239,7 +263,7 @@ class _ViewGroomingState extends State<ViewGrooming>
                   });
                 },
               ),
-              new SliderFormField(
+              new SliderField(
                 initialValue: myform.grooming.maskCleanScore,
                 labelText: "口罩清潔",
                 onChanged: (int value) {
@@ -258,200 +282,55 @@ class _ViewGroomingState extends State<ViewGrooming>
   bool get wantKeepAlive => true;
 }
 
-class SliderFormField extends StatefulWidget {
-  SliderFormField({
-    this.initialValue,
-    this.labelText,
-    @required this.onChanged,
-  });
-
-  final int initialValue;
-  final ValueChanged<int> onChanged;
-  final String labelText;
-
-  @override
-  _SliderFormFieldState createState() => new _SliderFormFieldState();
-}
-
-class _SliderFormFieldState extends State<SliderFormField> {
-  int _selected = 0;
-  bool _checked = false;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _selected = widget.initialValue;
-    if (_selected == -1) _checked = true;
-  }
-
-  void _checkChanged(bool value) {
-    setState(() {
-      _checked = !_checked;
-      _checked ? _selected = -1 : _selected = 0;
-      widget.onChanged(_selected);
-    });
-  }
-
-  void _sliderChanged(double value) {
-    setState(() {
-      _selected = value.toInt();
-      widget.onChanged(value.toInt());
-    });
-  }
-
-  Widget _makeCheckBox() {
-    return new Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: new Row(
-        children: <Widget>[
-          new Text("NA:"),
-          new Checkbox(value: _checked, onChanged: _checkChanged),
-        ],
-      ),
-    );
-  }
-
-  Widget _makeSlider() {
-    return _checked == false
-        ? new Slider(
-            value: _selected.toDouble(),
-            min: 0.0,
-            max: 100.0,
-            divisions: 10,
-            onChanged: _sliderChanged)
-        // : null;
-        : new Text("NA");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new InputDecorator(
-        decoration: new InputDecoration(
-          labelText: widget.labelText,
-          labelStyle: _labelStyle,
-          border:
-              OutlineInputBorder(borderRadius: new BorderRadius.circular(5.0)),
-          contentPadding: new EdgeInsets.all(8.0),
-        ),
-        child: new Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              _makeCheckBox(),
-              new Expanded(child: _makeSlider()),
-              new Padding(
-                padding: new EdgeInsets.all(10.0),
-                child: new Text(
-                  _selected.toString(),
-                  style: new TextStyle(fontWeight: FontWeight.bold),
-                ),
-              )
-            ]),
-      ),
-    );
-  }
-}
-
-// class _SliderFormFieldState2 extends State<SliderFormField> {
-//   int _selected = 0;
-
-//   @override
-//   void initState() {
-//     // TODO: implement initState
-//     super.initState();
-//     _selected = widget.initialValue;
-//   }
-
-//   Widget _radio(int value, {String title}) {
-//     return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-//       new Radio<int>(
-//         value: value,
-//         groupValue: _selected,
-//         onChanged: (int value) {
-//           setState(() {
-//             _selected = value;
-//             widget.onChanged(value);
-//           });
-//         },
-//       ),
-//       new Text(title ?? value.toString())
-//     ]);
-//   }
-
-//   List<Widget> _makeRadio() {
-//     List<Widget> widget = new List<Widget>();
-//     widget.add(_radio(-1, title: "NA"));
-//     for (var i = 0; i <= 5; i++) {
-//       widget.add(_radio(i * 20));
-//     }
-//     return widget;
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return new InputDecorator(
-//       decoration: new InputDecoration(
-//         labelText: widget.labelText,
-//         labelStyle: _labelStyle,
-//         contentPadding: new EdgeInsets.all(10.0),
-//       ),
-//       child: new Row(
-//         mainAxisSize: MainAxisSize.min,
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: _makeRadio(),
-//       ),
-//     );
-//   }
-// }
-
-var _labelStyle = new TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold);
-var _textStyle = new TextStyle(fontSize: 18.0, color: Colors.black);
-
 class DateTextField extends StatefulWidget {
-  final TextEditingController controller;
   final String labelText;
-  final String initialValue;
-  final Function onSave;
+  final DateTime initialValue;
+  final ValueChanged<DateTime> onChanged;
+  final Function onSaved;
+  final FormFieldValidator validator;
   DateTextField(
-      {this.controller, this.initialValue, this.labelText, this.onSave});
+      {this.initialValue,
+      this.labelText,
+      this.onChanged,
+      this.onSaved,
+      this.validator});
 
   @override
   _DateTextFieldState createState() => new _DateTextFieldState();
 }
 
 class _DateTextFieldState extends State<DateTextField> {
+  DateTime _value;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.controller.text = widget.initialValue;
+    _value = widget.initialValue ?? DateTime.now();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Row(children: [
-      new Expanded(
-        child: new TextFormField(
-          style: _textStyle,
-          controller: widget.controller,
-          decoration: InputDecoration(
-            labelText: widget.labelText,
-            labelStyle: _labelStyle,
-          ),
-          keyboardType: TextInputType.datetime,
-          validator: (value) =>
-              value.isEmpty ? '${widget.labelText} can\'t be empty' : null,
-          onSaved: widget.onSave,
-        ),
-      ),
-      new IconButton(
-        icon: new Icon(Icons.arrow_drop_down),
-        onPressed: () => selectDate(context),
-      )
-    ]);
+    return new InputDecorator(
+        decoration: new InputDecoration(
+            labelText: widget.labelText, border: InputBorder.none),
+        child: new FormField<DateTime>(
+          initialValue: _value,
+          validator: widget.validator,
+          onSaved: (DateTime value) => widget.onSaved(value),
+          builder: (FormFieldState<DateTime> field) {
+            return new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new FlatButton(
+                shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(20.0)),
+                color: Theme.of(context).accentColor,
+                onPressed: () => selectDate(context),
+                child: new Text(FormHelper.datetoString(_value)),
+              ),
+            );
+          },
+        ));
   }
 
   selectDate(BuildContext context) async {
@@ -459,7 +338,8 @@ class _DateTextFieldState extends State<DateTextField> {
     if (picked != null) {
       setState(
         () {
-          widget.controller.text = FormHelper.datetoString(picked);
+          _value = picked;
+          widget.onChanged(picked);
         },
       );
     }
@@ -467,49 +347,68 @@ class _DateTextFieldState extends State<DateTextField> {
 }
 
 class TimeTextField extends StatefulWidget {
-  final TextEditingController controller;
   final String labelText;
   final String initialValue;
-  final Function onSave;
+  final ValueChanged<String> onChanged;
+  final FormFieldValidator validator;
+  final Function onSaved;
   TimeTextField(
-      {this.controller, this.initialValue, this.labelText, this.onSave});
+      {this.initialValue,
+      this.labelText,
+      this.onChanged,
+      this.onSaved,
+      this.validator});
 
   @override
   _TimeTextFieldState createState() => new _TimeTextFieldState();
 }
 
 class _TimeTextFieldState extends State<TimeTextField> {
+  TimeOfDay _value;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.controller.text = widget.initialValue;
+    _value = widget.initialValue != null
+        ? FormHelper.strToTime(widget.initialValue)
+        : TimeOfDay.now();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Row(children: [
-      new Expanded(
-        child: new TextFormField(
-          style: _textStyle,
-          controller: widget.controller,
-          decoration: InputDecoration(
-            labelStyle: _labelStyle,
-            labelText: widget.labelText,
-          ),
-          keyboardType: TextInputType.datetime,
-          validator: (value) =>
-              value.isEmpty ? '${widget.labelText} can\'t be empty' : null,
-          onSaved: widget.onSave,
-        ),
-      ),
-      new IconButton(
-          icon: new Icon(Icons.arrow_drop_down),
-          onPressed: () => selectTime(context,
-              initialTime: widget.controller.text.isNotEmpty
-                  ? FormHelper.strToTime(widget.controller.text)
-                  : TimeOfDay.now()))
-    ]);
+    return new InputDecorator(
+        decoration: new InputDecoration(
+            labelText: widget.labelText, border: InputBorder.none),
+        child: new FormField<TimeOfDay>(
+          initialValue: _value,
+          validator: (TimeOfDay value) => widget.initialValue == null
+              ? '${widget.labelText}cant be empty'
+              : null,
+          onSaved: (TimeOfDay value) => widget.onSaved(value),
+          builder: (FormFieldState<TimeOfDay> field) {
+            return new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new FlatButton(
+                shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(20.0)),
+                color: Theme.of(context).accentColor,
+                onPressed: () => selectTime(context, initialTime: _value),
+                child: new Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new Icon(Icons.timer),
+                    new Padding(
+                      padding: EdgeInsets.only(right: 5.0),
+                    ),
+                    new Text(FormHelper.timetoString(_value)),
+                  ],
+                ),
+              ),
+            );
+          },
+        ));
   }
 
   selectTime(BuildContext context, {TimeOfDay initialTime}) async {
@@ -518,7 +417,7 @@ class _TimeTextFieldState extends State<TimeTextField> {
     if (picked != null) {
       setState(
         () {
-          widget.controller.text = FormHelper.timetoString(picked);
+          _value = picked;
         },
       );
     }
@@ -527,11 +426,16 @@ class _TimeTextFieldState extends State<TimeTextField> {
 
 class MyFormTextField extends StatefulWidget {
   MyFormTextField(
-      {this.labelText, this.initialValue, this.onSave, this.controller});
+      {this.labelText,
+      this.initialValue,
+      this.onSave,
+      this.controller,
+      this.maxLines = 1});
   final String labelText;
   final TextEditingController controller;
   final Function onSave;
   final String initialValue;
+  final int maxLines;
 
   @override
   _MyFormTextFieldState createState() => new _MyFormTextFieldState();
@@ -547,11 +451,10 @@ class _MyFormTextFieldState extends State<MyFormTextField> {
   @override
   Widget build(BuildContext context) {
     return new TextFormField(
+      maxLines: widget.maxLines,
       decoration: InputDecoration(
         labelText: widget.labelText,
-        labelStyle: _labelStyle,
       ),
-      style: _textStyle,
       controller: widget.controller,
       validator: (value) =>
           value.isEmpty ? '${widget.labelText} can\'t be empty' : null,

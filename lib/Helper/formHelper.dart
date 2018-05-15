@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 class FormHelper {
   static String datetoString(DateTime date) {
     try {
-      String str = new DateFormat.yMd().format(date);
+      String str = new DateFormat("yyyy.MM.dd").format(date);
       return str;
     } catch (e) {
       return null;
@@ -42,7 +42,7 @@ class FormHelper {
 
   static DateTime strToDate(String str) {
     try {
-      DateTime d = new DateFormat.yMd().parseStrict(str);
+      DateTime d = new DateFormat("yyyy.MM.dd").parseStrict(str);
       return d;
     } catch (e) {
       return null;
