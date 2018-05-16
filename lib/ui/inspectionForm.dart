@@ -153,6 +153,7 @@ class _ViewInfoState extends State<ViewInfo>
                         myform.arrivedTime == null ? "not set" : null,
                     onChanged: (value) {
                       myform.arrivedTime = FormHelper.timetoString(value);
+                      myform.leaveTime = myform.arrivedTime;
                     },
                     onSaved: (value) => myform.arrivedTime = FormHelper
                         .timetoString(value) //FormHelper.timetoString(value)),

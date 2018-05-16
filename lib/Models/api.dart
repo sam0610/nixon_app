@@ -15,8 +15,8 @@ Future<User> fetchUser(http.Client client) async {
 }
 
 Future<List<User>> fetchUsers(http.Client client) async {
-  var url_List = "http://sammobile.azurewebsites.net/api/Users/";
-  final response = await client.get(url_List);
+  var urlList = "http://sammobile.azurewebsites.net/api/Users/";
+  final response = await client.get(urlList);
   print(response.body.toString());
   return compute(parseUsers, response.body);
 }
