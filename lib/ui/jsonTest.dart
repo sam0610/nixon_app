@@ -21,8 +21,6 @@ class _JsonTestState extends State<JsonTest> {
     //    FormHelper.datetoString(myform.inspectionDate ?? new DateTime.now());
     FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
       if (user != null) repos = new JsonRepos.forUser(user: user);
-
-      _add();
     });
   }
 
@@ -59,12 +57,12 @@ class FirestoreListView extends StatelessWidget {
             builder: (_) => new MasterPage(master),
           ),
         );
-    ;
   }
 
-  void _delete(DocumentReference reference) {
+  void _delete(BuildContext context, DocumentReference reference) {
     Firestore.instance.runTransaction((Transaction transaction) async {
-      DocumentSnapshot snapshot = await transaction.get(reference);
+      DocumentSnapshot snapshot = await transaction.get(reference).whenComplete(
+          () => FormHelper.showAlertDialog(context, 'delete', 'done'));
       await transaction.delete(snapshot.reference);
     });
   }
@@ -93,7 +91,7 @@ class FirestoreListView extends StatelessWidget {
               new IconButton(
                 icon: new Icon(Icons.delete),
                 onPressed: () {
-                  _delete(documents[index].reference);
+                  _delete(context, documents[index].reference);
                 },
               )
             ],

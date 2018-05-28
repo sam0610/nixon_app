@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 class SliderFormField extends StatefulWidget {
   final String labelText;
@@ -7,25 +8,25 @@ class SliderFormField extends StatefulWidget {
   final Function onSaved;
   final FormFieldValidator validator;
   SliderFormField(
-      {this.initialValue,
-      this.labelText,
-      this.onChanged,
-      this.onSaved,
-      this.validator});
+      {@required this.initialValue,
+      @required this.labelText,
+      @required this.onChanged,
+      @required this.onSaved,
+      @required this.validator});
 
   @override
   _SliderFormFieldState createState() => new _SliderFormFieldState();
 }
 
 class _SliderFormFieldState extends State<SliderFormField> {
-  int _selected = 0; //-2 for null -1 for na positive for score
+  int _selected = 0; //0 for not set -1 for na positive for score
   bool _checked = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _selected = widget.initialValue;
+    _selected = widget.initialValue ?? 0;
     if (_selected == -1) _checked = true;
   }
 

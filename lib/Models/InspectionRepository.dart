@@ -1,8 +1,9 @@
 import 'dart:async';
-
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
+import 'package:nixon_app/Helper/formHelper.dart';
 import 'Inspection.dart';
 
 final CollectionReference inspectionCollection =
@@ -26,25 +27,37 @@ class InspectionRepos {
     return inspectionList;
   }
 
-  Future<void> addInspection(Inspection item) async {
+  Future<void> addInspection(BuildContext context, Inspection item) async {
     print('creating');
     item.userid = user.uid;
     Firestore.instance.runTransaction((transaction) async {
       CollectionReference reference = inspectionCollection;
-      await reference.add(item.toJson()).then((docRef) {
-        docRef.documentID;
-        docRef.updateData({"id": docRef.documentID});
-      });
+      await reference
+          .add(item.toJson())
+          .then((docRef) {
+            docRef.documentID;
+            docRef.updateData({"id": docRef.documentID});
+          })
+          .whenComplete(
+              () => FormHelper.showAlertDialog(context, "done", "data saved"))
+          .catchError((e) =>
+              FormHelper.showAlertDialog(context, 'error', e.toString()));
     });
   }
 
-  Future<void> updateInspection(Inspection item) async {
+  Future<void> updateInspection(BuildContext context, Inspection item) async {
     print('updating' + item.id);
     var oldDoc = await inspectionCollection.document(item.id).get();
-    Firestore.instance.runTransaction((transaction) async {
-      DocumentSnapshot snapshot = await transaction.get(oldDoc.reference);
-      await transaction.update(snapshot.reference, item.toJson());
-    });
+    Firestore.instance
+        .runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(oldDoc.reference);
+          transaction.set(snapshot.reference, item.toJson());
+          await transaction.update(snapshot.reference, item.toJson());
+        })
+        .whenComplete(
+            () => FormHelper.showAlertDialog(context, "done", "data saved"))
+        .catchError(
+            (e) => FormHelper.showAlertDialog(context, 'error', e.toString()));
   }
 
   Future<bool> deleteInspection(String docid) async {
