@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:nixon_app/ui/components/SliderFormField.dart';
+import '../ui/inspectionSummary.dart';
 import '../Helper/formHelper.dart';
 import '../Models/Inspection.dart';
 import '../Models/InspectionRepository.dart';
@@ -49,7 +50,8 @@ class _InspectionFormState extends State<InspectionForm>
     if (myform.handleCust == null) myform.handleCust = new HandleCust();
     if (myform.listenCust == null) myform.listenCust = new ListenCust();
     if (myform.closure == null) myform.closure = new Closure();
-    if (myform.communicationSkill== null) myform.communicationSkill= new CommunicationSkill();
+    if (myform.communicationSkill == null)
+      myform.communicationSkill = new CommunicationSkill();
 
     //_formDateController.text =
     //    FormHelper.datetoString(myform.inspectionDate ?? new DateTime.now());
@@ -110,9 +112,11 @@ class _InspectionFormState extends State<InspectionForm>
         child: new Form(
           key: _formKey,
           autovalidate: _autoValidate,
-          child: new TabBarView(
-              controller: _tabController,
-              children: <Widget>[new ViewInfo(), new ViewGrooming(),new ViewSummary()]),
+          child: new TabBarView(controller: _tabController, children: <Widget>[
+            new ViewInfo(),
+            new ViewGrooming(),
+            new ViewSummary(myform),
+          ]),
         ),
       ),
     );
@@ -265,122 +269,121 @@ class _ViewGroomingState extends State<ViewGrooming>
 
   @override
   Widget build(BuildContext context) {
-    return new ListView(children: <Widget>[
-      cardContainer(title: new Text('儀容'),
-          //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+    return new ListView(
+      children: <Widget>[
+        cardContainer(title: new Text('儀容'),
+            //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+            children: <Widget>[
+              makeSliderWidget(
+                initialValue: myform.grooming.groomingScore,
+                labelText: "儀容",
+                onChanged: (value) {
+                  setState(() {
+                    myform.grooming.groomingScore = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.grooming.hairScore,
+                labelText: "髮型",
+                onChanged: (value) {
+                  setState(() {
+                    myform.grooming.hairScore = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.grooming.uniformScore,
+                labelText: "制服",
+                onChanged: (value) {
+                  setState(() {
+                    myform.grooming.uniformScore = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.grooming.decorationScore,
+                labelText: "飾物",
+                onChanged: (value) {
+                  setState(() {
+                    myform.grooming.decorationScore = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.grooming.maskWearScore,
+                labelText: "口罩技巧",
+                onChanged: (value) {
+                  setState(() {
+                    myform.grooming.maskWearScore = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.grooming.maskCleanScore,
+                labelText: "口罩清潔",
+                onChanged: (value) {
+                  setState(() {
+                    myform.grooming.maskCleanScore = value;
+                  });
+                },
+              )
+            ]),
+        cardContainer(
+          title: new Text('舉止'),
           children: <Widget>[
             makeSliderWidget(
-              initialValue: myform.grooming.groomingScore,
-              labelText: "儀容",
+              initialValue: myform.behavior.behaviorScore,
+              labelText: "行為舉止",
               onChanged: (value) {
                 setState(() {
-                  myform.grooming.groomingScore = value;
+                  myform.behavior.behaviorScore = value;
                 });
               },
             ),
             makeSliderWidget(
-              initialValue: myform.grooming.hairScore,
-              labelText: "髮型",
+              initialValue: myform.behavior.mindScore,
+              labelText: "精神狀態",
               onChanged: (value) {
                 setState(() {
-                  myform.grooming.hairScore = value;
+                  myform.behavior.mindScore = value;
                 });
               },
             ),
-            makeSliderWidget(
-              initialValue: myform.grooming.uniformScore,
-              labelText: "制服",
-              onChanged: (value) {
-                setState(() {
-                  myform.grooming.uniformScore = value;
-                });
-              },
-            ),
-            makeSliderWidget(
-              initialValue: myform.grooming.decorationScore,
-              labelText: "飾物",
-              onChanged: (value) {
-                setState(() {
-                  myform.grooming.decorationScore = value;
-                });
-              },
-            ),
-            makeSliderWidget(
-              initialValue: myform.grooming.maskWearScore,
-              labelText: "口罩技巧",
-              onChanged: (value) {
-                setState(() {
-                  myform.grooming.maskWearScore = value;
-                });
-              },
-            ),
-            makeSliderWidget(
-              initialValue: myform.grooming.maskCleanScore,
-              labelText: "口罩清潔",
-              onChanged: (value) {
-                setState(() {
-                  myform.grooming.maskCleanScore = value;
-                });
-              },
-            )
-          ]),
-      cardContainer(
-        title: new Text('舉止'),
-        children: <Widget>[
+          ],
+        ),
+        cardContainer(title: new Text('接待顧客'), children: [
           makeSliderWidget(
-            initialValue: myform.behavior.behaviorScore,
-            labelText: "行為舉止",
+            initialValue: myform.serveCust.smileScore,
+            labelText: '向客人展露笑容',
             onChanged: (value) {
               setState(() {
-                myform.behavior.behaviorScore = value;
+                myform.serveCust.smileScore = value;
               });
             },
           ),
           makeSliderWidget(
-            initialValue: myform.behavior.mindScore,
-            labelText: "精神狀態",
+            initialValue: myform.serveCust.greetingScore,
+            labelText: '打招呼',
             onChanged: (value) {
               setState(() {
-                myform.behavior.mindScore = value;
+                myform.serveCust.greetingScore = value;
               });
             },
           ),
-        ],
-      ),
-      cardContainer(title: new Text('接待顧客'), children: [
-        makeSliderWidget(
-          initialValue: myform.serveCust.smileScore,
-          labelText: '向客人展露笑容',
-          onChanged: (value) {
-            setState(() {
-              myform.serveCust.smileScore = value;
-            });
-          },
-        ),
-        makeSliderWidget(
-          initialValue: myform.serveCust.greetingScore,
-          labelText: '打招呼',
-          onChanged: (value) {
-            setState(() {
-              myform.serveCust.greetingScore = value;
-            });
-          },
-        ),
-      ]),
-      cardContainer(title: new Text('了解需要'), children: [
-        makeSliderWidget(
-          initialValue: myform.listenCust.listenCustScore,
-          labelText: '聆聽',
-          onChanged: (value) {
-            setState(() {
-              myform.listenCust.listenCustScore = value;
-            });
-          },
-        ),
-      ]),
-      cardContainer(
-        title: new Text('處理顧客需要'),
-        children: [
+        ]),
+        cardContainer(title: new Text('了解需要'), children: [
+          makeSliderWidget(
+            initialValue: myform.listenCust.listenCustScore,
+            labelText: '聆聽',
+            onChanged: (value) {
+              setState(() {
+                myform.listenCust.listenCustScore = value;
+              });
+            },
+          ),
+        ]),
+        cardContainer(title: new Text('處理顧客需要'), children: [
           makeSliderWidget(
             initialValue: myform.handleCust.indicateWithPalmScore,
             labelText: '使用手掌指示方向',
@@ -407,99 +410,82 @@ class _ViewGroomingState extends State<ViewGrooming>
                 myform.handleCust.unexpectedSituationScore = value;
               });
             },
-          ),]),
-          cardContainer(title: new Text('結束對話'), children: [
-            makeSliderWidget(
-              initialValue: myform.closure.farewellScore,
-              labelText: '道別',
-              onChanged: (value) {
-                setState(() {
-                  myform.closure.farewellScore = value;
-                });
-              },
-            ),
-          ]),
-          cardContainer(title: new Text('溝通能力'), children: [
-            makeSliderWidget(
-              initialValue: myform.communicationSkill.soundLevel,
-              labelText: '說話聲量',
-              onChanged: (value) {
-                setState(() {
-                  myform.communicationSkill.soundLevel = value;
-                });
-              },
-            ),
-            makeSliderWidget(
-              initialValue: myform.communicationSkill.soundSpeed,
-              labelText: '說話速度',
-              onChanged: (value) {
-                setState(() {
-                  myform.communicationSkill.soundSpeed = value;
-                });
-              },
-            ),
-            makeSliderWidget(
-              initialValue: myform.communicationSkill.polite,
-              labelText: '用詞及禮貌',
-              onChanged: (value) {
-                setState(() {
-                  myform.communicationSkill.polite = value;
-                });
-              },
-            ),
-            makeSliderWidget(
-              initialValue: myform.communicationSkill.attitudeScore,
-              labelText: '說話態度',
-              onChanged: (value) {
-                setState(() {
-                  myform.communicationSkill.attitudeScore = value;
-                });
-              },
-            ),
-            makeSliderWidget(
-              initialValue: myform.communicationSkill.skillScore,
-              labelText: '溝通技巧',
-              onChanged: (value) {
-                setState(() {
-                  myform.communicationSkill.skillScore = value;
-                });
-              },
-            ),
-          ]),
-          cardContainer(title: new Text('窩心'), children: [
-            makeSliderWidget(
-              initialValue: myform.warmHeart.warmHeartScore,
-              labelText: '窩心',
-              onChanged: (value) {
-                setState(() {
-                  myform.warmHeart.warmHeartScore = value;
-                });
-              },
-            ),
-          ])
-        ],
-      
+          ),
+        ]),
+        cardContainer(title: new Text('結束對話'), children: [
+          makeSliderWidget(
+            initialValue: myform.closure.farewellScore,
+            labelText: '道別',
+            onChanged: (value) {
+              setState(() {
+                myform.closure.farewellScore = value;
+              });
+            },
+          ),
+        ]),
+        cardContainer(title: new Text('溝通能力'), children: [
+          makeSliderWidget(
+            initialValue: myform.communicationSkill.soundLevel,
+            labelText: '說話聲量',
+            onChanged: (value) {
+              setState(() {
+                myform.communicationSkill.soundLevel = value;
+              });
+            },
+          ),
+          makeSliderWidget(
+            initialValue: myform.communicationSkill.soundSpeed,
+            labelText: '說話速度',
+            onChanged: (value) {
+              setState(() {
+                myform.communicationSkill.soundSpeed = value;
+              });
+            },
+          ),
+          makeSliderWidget(
+            initialValue: myform.communicationSkill.polite,
+            labelText: '用詞及禮貌',
+            onChanged: (value) {
+              setState(() {
+                myform.communicationSkill.polite = value;
+              });
+            },
+          ),
+          makeSliderWidget(
+            initialValue: myform.communicationSkill.attitudeScore,
+            labelText: '說話態度',
+            onChanged: (value) {
+              setState(() {
+                myform.communicationSkill.attitudeScore = value;
+              });
+            },
+          ),
+          makeSliderWidget(
+            initialValue: myform.communicationSkill.skillScore,
+            labelText: '溝通技巧',
+            onChanged: (value) {
+              setState(() {
+                myform.communicationSkill.skillScore = value;
+              });
+            },
+          ),
+        ]),
+        cardContainer(title: new Text('窩心'), children: [
+          makeSliderWidget(
+            initialValue: myform.warmHeart.warmHeartScore,
+            labelText: '窩心',
+            onChanged: (value) {
+              setState(() {
+                myform.warmHeart.warmHeartScore = value;
+              });
+            },
+          ),
+        ])
+      ],
     );
   }
 
   // TODO: implement wantKeepAlive
   @override
   bool get wantKeepAlive => true;
-}
-
-
-class ViewSummary extends StatefulWidget {
-  @override
-  _ViewSummaryState createState() => new _ViewSummaryState();
-}
-
-class _ViewSummaryState extends State<ViewSummary> {
-
-  
-  @override
-  Widget build(BuildContext context) {
-    return new Container(
-      
-    );
-  }
 }

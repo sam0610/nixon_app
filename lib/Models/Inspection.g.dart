@@ -28,7 +28,7 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
       serveCust: json['serveCust'] == null
           ? null
           : new ServeCust.fromJson(json['serveCust'].cast<String, dynamic>()),
-      listenCust: json['listeCust'] == null
+      listenCust: json['listenCust'] == null
           ? null
           : new ListenCust.fromJson(json['listenCust'].cast<String, dynamic>()),
       handleCust: json['handleCust'] == null
