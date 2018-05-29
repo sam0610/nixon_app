@@ -93,19 +93,16 @@ class _InspectionFormState extends State<InspectionForm>
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Form2"),
-        actions: <Widget>[
-          new IconButton(
-            icon: new Icon(Icons.save),
-            color: Colors.red,
-            onPressed: _save,
-          ),
-        ],
+        title: new Text("巡查表格"),
         bottom: new TabBar(
           controller: _tabController,
           tabs: myTabs,
         ),
       ),
+      floatingActionButton:
+          new FloatingActionButton(child: Icon(Icons.save), onPressed: _save),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: new BottomNavBar(),
       body: new SafeArea(
         top: false,
         bottom: false,
@@ -118,6 +115,26 @@ class _InspectionFormState extends State<InspectionForm>
             new ViewSummary(myform),
           ]),
         ),
+      ),
+    );
+  }
+}
+
+class BottomNavBar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      color: Theme.of(context).primaryColor,
+      hasNotch: true,
+      child: new Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {},
+          ),
+        ],
       ),
     );
   }
