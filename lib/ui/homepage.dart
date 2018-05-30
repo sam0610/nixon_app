@@ -5,7 +5,6 @@ import '../Helper/AnimatedPageRoute.dart';
 import '../Helper/firebase.dart';
 import '../Models/api.dart';
 import 'inspectionList.dart';
-import 'jsonTest.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -72,15 +71,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     Navigator.of(context).push(
           new AnimatedRoute(
             builder: (_) => new InspectionRecord(),
-          ),
-        );
-  }
-
-  void _navigate2() {
-    Navigator.of(context).pop();
-    Navigator.of(context).push(
-          new AnimatedRoute(
-            builder: (_) => new JsonTest(),
           ),
         );
   }
@@ -170,10 +160,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               new ListTile(
                 title: new Text('Go To Page 1'),
                 onTap: () => _navigate('/p1'),
-              ),
-              new ListTile(
-                title: new Text('Go To Page 2'),
-                onTap: () => _navigate2(),
               ),
               new Divider(),
               new ListTile(

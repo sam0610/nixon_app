@@ -4,6 +4,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+//http://sammobile.azurewebsites.net/api/Staff/bldg/212702/2018-05-28
+//http://sammobile.azurewebsites.net/api/BuildingData/r/NK1H
+
 Future<User> fetchUser(http.Client client) async {
   var url =
       "http://sammobile.azurewebsites.net/api/Users/f5439479-5145-4b97-85ee-f72d19b0ae99";

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import './ui/login.dart';
+import 'package:nixon_app/nixon_app.dart';
 import './ui/homepage.dart';
 import 'Helper/AnimatedPageRoute.dart';
 import 'Helper/colors.dart';
@@ -12,7 +12,7 @@ void main() => runApp(new MyApp());
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-  Future<bool> _checkLogin() async {
+  /*Future<bool> _checkLogin() async {
     bool result;
     await FirebaseAuth.instance
         .currentUser()
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     });
     return false;
   }
-
+*/
   ThemeData buildThemeData() {
     final baseTheme = ThemeData.light();
     return baseTheme.copyWith(
@@ -49,30 +49,28 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: 'Welcome',
-        theme: buildThemeData(),
-        onGenerateRoute: (RouteSettings settings) {
-          switch (settings.name) {
-            case '/':
-              return new AnimatedRoute(
-                builder: (_) =>
-                    (_login != true ? new HomePage() : new LoginPage()),
-                settings: settings,
-              );
-            case '/home':
-              return new AnimatedRoute(
-                builder: (_) => new HomePage(),
-                settings: settings,
-              );
-            case '/login':
-              return new AnimatedRoute(
-                builder: (_) => new LoginPage(),
-                settings: settings,
-              );
-          }
-          assert(false);
+      title: 'Welcome',
+      onGenerateRoute: (RouteSettings settings) {
+        switch (settings.name) {
+          case '/':
+            return new AnimatedRoute(
+              builder: (_) => new SplashPage(),
+              settings: settings,
+            );
+          case '/home':
+            return new AnimatedRoute(
+              builder: (_) => new HomePage(),
+              settings: settings,
+            );
+          case '/login':
+            return new AnimatedRoute(
+              builder: (_) => new LoginPage(),
+              settings: settings,
+            );
         }
-        //home: (_login != true ? new HomePage() : new LoginPage()));
-        );
+        assert(false);
+      },
+      theme: buildThemeData(),
+    );
   }
 }

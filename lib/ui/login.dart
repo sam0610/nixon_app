@@ -1,11 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-import '../Helper/formHelper.dart';
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
+part of nixon_app;
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -15,48 +8,28 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(body: BodyWidget());
+  }
+}
+
+class BodyWidget extends StatefulWidget {
+  @override
+  _BodyWidgetState createState() => new _BodyWidgetState();
+}
+
+class _BodyWidgetState extends State<BodyWidget> {
   TextEditingController _emailEditController = new TextEditingController();
   TextEditingController _passwordEditController = new TextEditingController();
 
-  void showMessage(String value, [Color color]) {
-    color == null ? color = Colors.red[50] : null;
-    Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(value)));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new Center(
-        child: new ListView(
-          shrinkWrap: true,
-          padding: EdgeInsets.only(left: 20.0, right: 20.0),
-          children: <Widget>[
-            new NxLogo(),
-            _emailTextField(),
-            _pwTextField(),
-            _buttonBar()
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _emailTextField() {
-    return new Container(
-      padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
-      child: new TextFormField(
-        validator: (value) => value.isEmpty ? "email invalid" : null,
-        keyboardType: TextInputType.emailAddress,
-        decoration: new InputDecoration(
-            hintText: "login email",
-            icon: new Icon(
-              Icons.email,
-              color: Theme.of(context).primaryColor,
-            )),
-        controller: _emailEditController,
-        maxLines: 1,
-      ),
-    );
+  void showSnackBar(String msg) {
+    Scaffold.of(context).showSnackBar(
+          new SnackBar(
+              duration: new Duration(seconds: 10),
+              content: new Text(msg),
+              backgroundColor: Theme.of(context).primaryColor),
+        );
   }
 
   Widget _pwTextField() {
@@ -152,9 +125,8 @@ class _LoginPageState extends State<LoginPage> {
       print("LOGIN REQUESTED");
       _handleSignIn().then((FirebaseUser user) {
         Navigator.of(context).pushReplacementNamed('/home');
-      }).catchError((onError) {
-        FormHelper.showAlertDialog(
-            context, "Login Failed", onError.message.toString());
+      }).catchError((e) {
+        showSnackBar("Login Failed:" + e.toString());
       });
     }
   }
@@ -164,6 +136,40 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailEditController.text.toLowerCase().trim(),
         password: _passwordEditController.text.trim());
     return user;
+  }
+
+  Widget _emailTextField() {
+    return new Container(
+      padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
+      child: new TextFormField(
+        validator: (value) => value.isEmpty ? "email invalid" : null,
+        keyboardType: TextInputType.emailAddress,
+        decoration: new InputDecoration(
+            hintText: "login email",
+            icon: new Icon(
+              Icons.email,
+              color: Theme.of(context).primaryColor,
+            )),
+        controller: _emailEditController,
+        maxLines: 1,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Center(
+      child: new ListView(
+        shrinkWrap: true,
+        padding: EdgeInsets.only(left: 20.0, right: 20.0),
+        children: <Widget>[
+          new NxLogo(),
+          _emailTextField(),
+          _pwTextField(),
+          _buttonBar()
+        ],
+      ),
+    );
   }
 }
 

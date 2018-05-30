@@ -49,6 +49,14 @@ class FormHelper {
     }
   }
 
+  static void showSnackBar(BuildContext context, String message) {
+    SnackBar bar = new SnackBar(
+      content: new Text(message),
+      duration: new Duration(seconds: 2),
+    );
+    Scaffold.of(context).showSnackBar(bar);
+  }
+
   static Future<Null> showAlertDialog(
       BuildContext context, String title, String message) async {
     return showDialog<Null>(
