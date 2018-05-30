@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'package:nixon_app/ui/components/SliderFormField.dart';
+import '../ui/components/CheckBoxFormField.dart';
+import '../ui/components/SliderFormField.dart';
 import '../ui/inspectionSummary.dart';
 import '../Helper/formHelper.dart';
 import '../Models/Inspection.dart';
@@ -33,7 +34,7 @@ class _InspectionFormState extends State<InspectionForm>
       text: '評分',
     ),
     new Tab(
-      text: '得分',
+      text: '總表',
     )
   ];
 
@@ -126,15 +127,9 @@ class BottomNavBar extends StatelessWidget {
     return BottomAppBar(
       color: Theme.of(context).primaryColor,
       hasNotch: true,
-      child: new Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {},
-          ),
-        ],
+      child: new Padding(
+        padding: EdgeInsets.all(15.0),
+        child: new Text(""),
       ),
     );
   }
@@ -262,9 +257,12 @@ class _ViewGroomingState extends State<ViewGrooming>
       shape: new RoundedRectangleBorder(
         borderRadius: new BorderRadius.circular(5.0),
       ),
-      child: new ExpansionTile(
-        title: title,
-        children: children,
+      child: new Container(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: new ExpansionTile(
+          title: title,
+          children: children,
+        ),
       ),
     );
   }
@@ -276,6 +274,21 @@ class _ViewGroomingState extends State<ViewGrooming>
     return new Padding(
       padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
       child: new SliderFormField(
+          initialValue: initialValue,
+          validator: (value) => value == 0 ? '$labelText Not Set' : null,
+          onSaved: (value) => print(value),
+          labelText: labelText,
+          onChanged: (value) => onChanged(value)),
+    );
+  }
+
+  Widget makeSwitchWidget(
+      {@required String labelText,
+      @required int initialValue,
+      @required ValueChanged<int> onChanged(value)}) {
+    return new Padding(
+      padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+      child: new CheckBoxFormField(
           initialValue: initialValue,
           validator: (value) => value == 0 ? '$labelText Not Set' : null,
           onSaved: (value) => print(value),
@@ -488,7 +501,7 @@ class _ViewGroomingState extends State<ViewGrooming>
           ),
         ]),
         cardContainer(title: new Text('窩心'), children: [
-          makeSliderWidget(
+          makeSwitchWidget(
             initialValue: myform.warmHeart.warmHeartScore,
             labelText: '窩心',
             onChanged: (value) {

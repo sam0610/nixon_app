@@ -39,9 +39,9 @@ class MyApp extends StatelessWidget {
         bottomAppBarColor: kSecondaryDark,
         buttonColor: kSecondaryLight,
         sliderTheme: SliderThemeData.fromPrimaryColors(
-          primaryColor: kPrimaryColor,
-          primaryColorDark: kPrimaryDark,
-          primaryColorLight: kPrimaryLight,
+          primaryColor: kSecondaryColor,
+          primaryColorDark: kSecondaryDark,
+          primaryColorLight: kSecondaryLight,
           valueIndicatorTextStyle: TextStyle(color: Colors.black),
         ));
   }
