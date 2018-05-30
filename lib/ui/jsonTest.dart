@@ -7,6 +7,9 @@ import '../Helper/formHelper.dart';
 import '../Models/testJson.dart';
 import '../Models/testJsonRepository.dart';
 
+//http://sammobile.azurewebsites.net/api/Staff/bldg/212702/2018-05-28
+//http://sammobile.azurewebsites.net/api/BuildingData/r/NK1H
+
 class JsonTest extends StatefulWidget {
   @override
   _JsonTestState createState() => new _JsonTestState();
