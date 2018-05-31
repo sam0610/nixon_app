@@ -22,6 +22,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.6"
+  async_loader:
+    dependency: "direct main"
+    description:
+      name: async_loader
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   barback:
     dependency: transitive
     description:
@@ -514,5 +521,5 @@ packages:
     source: hosted
     version: "2.1.13"
 sdks:
-  dart: ">=2.0.0-dev.48 <=2.0.0-edge.c080951d45e79cd25df98036c4be835b284a269c"
+  dart: ">=2.0.0-dev.48 <=2.0.0-edge.3c4dccbd46f152be9e1b6ca95c57357e8e48057c"
   flutter: ">=0.2.4 <2.0.0"

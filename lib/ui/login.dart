@@ -22,6 +22,7 @@ class BodyWidget extends StatefulWidget {
 class _BodyWidgetState extends State<BodyWidget> {
   TextEditingController _emailEditController = new TextEditingController();
   TextEditingController _passwordEditController = new TextEditingController();
+
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool _autoValidate = false;
   bool _showLoading = false;
@@ -33,6 +34,24 @@ class _BodyWidgetState extends State<BodyWidget> {
               content: new Text(msg),
               backgroundColor: Theme.of(context).primaryColor),
         );
+  }
+
+  Widget _emailTextField() {
+    return new Container(
+      padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
+      child: new TextFormField(
+        validator: (value) => value.isEmpty ? "email is required" : null,
+        keyboardType: TextInputType.emailAddress,
+        decoration: new InputDecoration(
+            hintText: "login email",
+            icon: new Icon(
+              Icons.email,
+              color: Theme.of(context).primaryColor,
+            )),
+        controller: _emailEditController,
+        maxLines: 1,
+      ),
+    );
   }
 
   Widget _passwordTextField() {
@@ -95,7 +114,7 @@ class _BodyWidgetState extends State<BodyWidget> {
               padding: const EdgeInsets.only(right: 8.0),
               child: new Icon(Icons.clear),
             ),
-            new Text("Clear")
+            new Text("clear")
           ],
         ),
       ),
@@ -118,46 +137,33 @@ class _BodyWidgetState extends State<BodyWidget> {
     );
   }
 
+  void _setLoading(bool bool) {
+    setState(() {
+      _showLoading = bool;
+    });
+  }
+
   login() async {
     final form = _formKey.currentState;
-    if (form.validate()) {
-      _showLoading = true;
-      _handleSignIn().then((FirebaseUser user) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }).catchError((e) {
-        _showLoading = false;
-        showSnackBar("Login Failed:" + e.toString());
-      });
-    } else {
+    if (!form.validate()) {
       setState(() {
         _autoValidate = true;
       });
+    } else {
+      _setLoading(true);
+      AuthHelper
+          .loginUser(
+              email: _emailEditController.text.trim(),
+              password: _passwordEditController.text.trim())
+          .then((FirebaseUser user) {
+        AuthHelper.setCurrentUser(user).then((_) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        });
+      }).catchError((e) {
+        _setLoading(false);
+        showSnackBar("Login Failed:" + e.toString());
+      });
     }
-  }
-
-  Future<FirebaseUser> _handleSignIn() async {
-    FirebaseUser user = await _auth.signInWithEmailAndPassword(
-        email: _emailEditController.text.toLowerCase().trim(),
-        password: _passwordEditController.text.trim());
-    return user;
-  }
-
-  Widget _emailTextField() {
-    return new Container(
-      padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
-      child: new TextFormField(
-        validator: (value) => value.isEmpty ? "email is required" : null,
-        keyboardType: TextInputType.emailAddress,
-        decoration: new InputDecoration(
-            hintText: "login email",
-            icon: new Icon(
-              Icons.email,
-              color: Theme.of(context).primaryColor,
-            )),
-        controller: _emailEditController,
-        maxLines: 1,
-      ),
-    );
   }
 
   @override
@@ -174,11 +180,13 @@ class _BodyWidgetState extends State<BodyWidget> {
           _emailTextField(),
           _passwordTextField(),
           _buttonBar(),
-          _showLoading
-              ? new CircularProgressIndicator(
-                  strokeWidth: 8.0,
-                )
-              : null,
+          new Container(
+              height: 40.0,
+              child: _showLoading
+                  ? new Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[new AnimatedCircularProgress()])
+                  : new Text("")),
         ],
       ),
     ));

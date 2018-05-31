@@ -27,16 +27,4 @@ class FireBaseHelper {
   UserData getUser(FirebaseUser user) {
     return new UserData(user);
   }
-
-  void setDefaultName(FirebaseUser user) async {
-    if (user.displayName == null) {
-      await updateProfileName("no name");
-    }
-  }
-
-  updateProfileName(String name) async {
-    UserUpdateInfo updateInfo = new UserUpdateInfo();
-    updateInfo.displayName = name;
-    await FirebaseAuth.instance.updateProfile(updateInfo);
-  }
 }

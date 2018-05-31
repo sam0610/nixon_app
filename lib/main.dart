@@ -1,9 +1,5 @@
-import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nixon_app/nixon_app.dart';
-import './ui/homepage.dart';
 import 'Helper/AnimatedPageRoute.dart';
 import 'Helper/colors.dart';
 

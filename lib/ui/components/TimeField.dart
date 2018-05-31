@@ -100,8 +100,7 @@ class _TimeTextFieldState extends State<TimeTextField> {
                     color: Theme.of(context).accentColor,
                     child: new Column(
                       children: <Widget>[
-                        new Icon(Icons.add),
-                        new Icon(Icons.remove),
+                        new Icon(Icons.swap_vertical_circle),
                       ],
                     )),
               ),

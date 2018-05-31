@@ -1,10 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart' as http;
-import '../Helper/AnimatedPageRoute.dart';
-import '../Helper/firebase.dart';
-import '../Models/api.dart';
-import 'inspectionList.dart';
+part of nixon_app;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -13,12 +7,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => new _HomePageState();
 }
 
-UserData currentUser;
-FireBaseHelper fireHelper = new FireBaseHelper();
-
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  TextEditingController displayNameController = new TextEditingController();
-  bool isLoggedIn = false;
+class _HomePageState extends State<HomePage> {
   bool boolEdit = false;
 
   @override
@@ -29,41 +18,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   _assureLogin() async {
-    await FirebaseAuth.instance.currentUser().then((user) => user != null
-        ? setState(() {
-            isLoggedIn = true;
-            currentUser = UserData(user);
-          })
-        : setState(() {
-            isLoggedIn = false;
-            user = null;
-            if (isLoggedIn == false)
-              Navigator.pushReplacementNamed(context, "/login");
-          }));
-  }
-
-  void _allowEdit() {
-    setState(() {
-      boolEdit = true;
-      if (boolEdit) this.displayNameController.text = currentUser.displayName;
-    });
-  }
-
-  void _changeName() async {
-    setState(() {
-      _loading = true;
-    });
-    await fireHelper.updateProfileName(displayNameController.text);
-    setState(() {
-      _loading = false;
-      _assureLogin();
-      boolEdit = false;
-    });
+    if (_user == null) Navigator.pushReplacementNamed(context, "/login");
   }
 
   void _signOut() {
-    FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacementNamed('/login');
+    _auth.signOut().then((_) {
+      Navigator.of(context).pushReplacementNamed('/login');
+    });
   }
 
   void _navigate(String page) {
@@ -76,56 +37,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   bool _loading = false;
-  Widget _saveIcon() => _loading == true
-      ? new Container(
-          height: 20.0,
-          width: 20.0,
-          child: new CircularProgressIndicator(
-              strokeWidth: 2.0,
-              valueColor: new Tween<Color>(begin: Colors.red, end: Colors.white)
-                  .animate(new AnimationController(
-                      duration: Duration(milliseconds: 500), vsync: this))))
-      : new Icon(
-          Icons.save,
-          size: 20.0,
-          color: Colors.grey[800],
-        );
-
-  Widget userNameField() => boolEdit == false
-      ? Row(
-          children: <Widget>[
-            new Expanded(
-                flex: 1,
-                child: new Text(
-                  currentUser?.displayName ?? 'N/A',
-                  style: new TextStyle(
-                      fontSize: 24.0, fontWeight: FontWeight.bold),
-                )),
-            new FlatButton(
-              child: new Icon(
-                Icons.edit,
-                size: 20.0,
-                color: Colors.grey[800],
-              ),
-              onPressed: _allowEdit,
-            ),
-          ],
-        )
-      : new Row(
-          children: <Widget>[
-            new Expanded(
-              flex: 1,
-              child: new TextField(
-                controller: displayNameController,
-                style: new TextStyle(fontSize: 24.0, color: Colors.black),
-              ),
-            ),
-            new FlatButton(
-              child: _saveIcon(),
-              onPressed: _changeName,
-            ),
-          ],
-        );
 
   @override
   Widget build(BuildContext context) {
@@ -138,25 +49,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           child: new ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              new DrawerHeader(
-                decoration:
-                    new BoxDecoration(color: Theme.of(context).primaryColor),
-                child: new Container(
-                  padding: EdgeInsets.all(5.0),
-                  child: new Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      userNameField(),
-                      new Text(
-                        currentUser?.email ?? "N/A",
-                        style: new TextStyle(fontSize: 20.0),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              new Header(),
               new ListTile(
                 title: new Text('Go To Page 1'),
                 onTap: () => _navigate('/p1'),
@@ -174,39 +67,186 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
         ),
-        body: body1);
+        body: new Form(
+          autovalidate: false,
+          child: new DropDownFormField(
+              labelText: "BLDG",
+              initialValue: null,
+              validator: (value) => value == null ? "error" : null,
+              onChanged: (value) => print(value),
+              onSaved: (value) => print(value)),
+        ));
   }
-
-  var body1 = new FutureBuilder<List<User>>(
-    future: fetchUsers(new http.Client()),
-    builder: (context, snapshot) {
-      if (snapshot.hasError) {
-        return new Text(snapshot.error);
-      }
-      return snapshot.hasData
-          ? new UserList(user: snapshot.data)
-          : new Center(child: new CircularProgressIndicator());
-    },
-  );
 }
 
-class UserList extends StatelessWidget {
-  final List<User> user;
+class BuildingDropDown extends StatefulWidget {
+  BuildingDropDown({this.onChanged});
 
-  UserList({Key key, this.user}) : super(key: key);
+  final Function onChanged;
+
+  @override
+  _BuildingDropDownState createState() => new _BuildingDropDownState();
+}
+
+class _BuildingDropDownState extends State<BuildingDropDown> {
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      child: new FutureBuilder<List<BuildingData>>(
+        future: fetchBldgList(new http.Client()),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return new Text(snapshot.error);
+          }
+          return snapshot.hasData
+              ? new Dropdown(snapshot.data)
+              : new Center(child: new AnimatedCircularProgress());
+        },
+      ),
+    );
+  }
+}
+
+class Dropdown extends StatefulWidget {
+  Dropdown(this._values);
+  final List<BuildingData> _values;
+  @override
+  _DropdownState createState() => new _DropdownState();
+}
+
+class _DropdownState extends State<Dropdown> {
+  BuildingData _value;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _onChanged(BuildingData value) {
+    setState(() {
+      _value = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return new ListView.builder(
-        itemCount: user.length,
-        itemBuilder: (BuildContext context, int index) {
-          TextStyle style = new TextStyle(fontSize: 20.0, color: Colors.red);
-          return new ListTile(
-              title: new Text(user[index].email, style: style),
-              subtitle: new Text(
-                user[index].passWord,
-                style: style,
+    return new DropdownButton(
+        value: _value,
+        items: widget._values.map((value) {
+          return new DropdownMenuItem(
+              value: value,
+              child: new Row(
+                children: <Widget>[
+                  new Icon(Icons.home),
+                  new Text(
+                    value.buildingName.toString(),
+                  ),
+                ],
               ));
+        }).toList(),
+        onChanged: (selection) {
+          _onChanged(selection);
         });
+  }
+}
+
+class Header extends StatefulWidget {
+  @override
+  _HeaderState createState() => new _HeaderState();
+}
+
+class _HeaderState extends State<Header> {
+  bool _boolEdit = false;
+  bool _loading = false;
+  TextEditingController _displayNameController = new TextEditingController();
+
+  void _allowEdit() {
+    setState(() {
+      _boolEdit = true;
+      if (_boolEdit) this._displayNameController.text = _user.displayName;
+    });
+  }
+
+  void _changeName() async {
+    setState(() {
+      _loading = true;
+    });
+    AuthHelper.updateProfileName(_displayNameController.text).then((_) {
+      setState(() {
+        _loading = false;
+        _boolEdit = false;
+      });
+    });
+  }
+
+  Widget _saveIcon() => _loading == true
+      ? new Container(
+          height: 20.0,
+          width: 20.0,
+          child: new CircularProgressIndicator(
+            strokeWidth: 2.0,
+          ))
+      : new Icon(
+          Icons.save,
+          size: 20.0,
+          color: Colors.grey[800],
+        );
+
+  @override
+  Widget build(BuildContext context) {
+    Widget userNameField() => _boolEdit == false
+        ? Row(
+            children: <Widget>[
+              new Expanded(
+                  flex: 1,
+                  child: new Text(
+                    _user?.displayName ?? 'N/A',
+                    style: new TextStyle(
+                        fontSize: 24.0, fontWeight: FontWeight.bold),
+                  )),
+              new FlatButton(
+                child: new Icon(
+                  Icons.edit,
+                  size: 20.0,
+                  color: Colors.grey[800],
+                ),
+                onPressed: _allowEdit,
+              ),
+            ],
+          )
+        : new Row(
+            children: <Widget>[
+              new Expanded(
+                flex: 1,
+                child: new TextField(
+                  controller: _displayNameController,
+                  style: new TextStyle(fontSize: 24.0, color: Colors.black),
+                ),
+              ),
+              new FlatButton(
+                child: _saveIcon(),
+                onPressed: _changeName,
+              ),
+            ],
+          );
+
+    return new DrawerHeader(
+      decoration: new BoxDecoration(color: Theme.of(context).primaryColor),
+      child: new Container(
+        padding: EdgeInsets.all(5.0),
+        child: new Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            userNameField(),
+            new Text(
+              _user.email ?? "N/A",
+              style: new TextStyle(fontSize: 20.0),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
