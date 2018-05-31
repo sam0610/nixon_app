@@ -22,6 +22,9 @@ class BodyWidget extends StatefulWidget {
 class _BodyWidgetState extends State<BodyWidget> {
   TextEditingController _emailEditController = new TextEditingController();
   TextEditingController _passwordEditController = new TextEditingController();
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  bool _autoValidate = false;
+  bool _showLoading = false;
 
   void showSnackBar(String msg) {
     Scaffold.of(context).showSnackBar(
@@ -32,11 +35,11 @@ class _BodyWidgetState extends State<BodyWidget> {
         );
   }
 
-  Widget _pwTextField() {
+  Widget _passwordTextField() {
     return new Container(
       padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
       child: new TextFormField(
-        validator: (value) => value.isEmpty ? "password invalid" : null,
+        validator: (value) => value.isEmpty ? "password required" : null,
         keyboardType: TextInputType.text,
         obscureText: true,
         decoration: new InputDecoration(
@@ -92,7 +95,7 @@ class _BodyWidgetState extends State<BodyWidget> {
               padding: const EdgeInsets.only(right: 8.0),
               child: new Icon(Icons.clear),
             ),
-            new Text("Cancel")
+            new Text("Clear")
           ],
         ),
       ),
@@ -116,17 +119,18 @@ class _BodyWidgetState extends State<BodyWidget> {
   }
 
   login() async {
-    if (_emailEditController.text.isNotEmpty &&
-        _passwordEditController.text.isNotEmpty) {
-      _emailEditController.text =
-          _emailEditController.text.toLowerCase().trim();
-      _passwordEditController.text = _passwordEditController.text.trim();
-
-      print("LOGIN REQUESTED");
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      _showLoading = true;
       _handleSignIn().then((FirebaseUser user) {
         Navigator.of(context).pushReplacementNamed('/home');
       }).catchError((e) {
+        _showLoading = false;
         showSnackBar("Login Failed:" + e.toString());
+      });
+    } else {
+      setState(() {
+        _autoValidate = true;
       });
     }
   }
@@ -142,7 +146,7 @@ class _BodyWidgetState extends State<BodyWidget> {
     return new Container(
       padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
       child: new TextFormField(
-        validator: (value) => value.isEmpty ? "email invalid" : null,
+        validator: (value) => value.isEmpty ? "email is required" : null,
         keyboardType: TextInputType.emailAddress,
         decoration: new InputDecoration(
             hintText: "login email",
@@ -159,17 +163,25 @@ class _BodyWidgetState extends State<BodyWidget> {
   @override
   Widget build(BuildContext context) {
     return new Center(
+        child: new Form(
+      key: _formKey,
+      autovalidate: _autoValidate,
       child: new ListView(
         shrinkWrap: true,
         padding: EdgeInsets.only(left: 20.0, right: 20.0),
         children: <Widget>[
           new NxLogo(),
           _emailTextField(),
-          _pwTextField(),
-          _buttonBar()
+          _passwordTextField(),
+          _buttonBar(),
+          _showLoading
+              ? new CircularProgressIndicator(
+                  strokeWidth: 8.0,
+                )
+              : null,
         ],
       ),
-    );
+    ));
   }
 }
 
@@ -190,7 +202,7 @@ class _NxLogoState extends State<NxLogo> with SingleTickerProviderStateMixin {
         duration: const Duration(milliseconds: 2000), vsync: this);
     final CurvedAnimation curve =
         new CurvedAnimation(parent: _controller, curve: Curves.bounceInOut);
-    _animation = new Tween(begin: 0.0, end: 200.0).animate(curve);
+    _animation = new Tween(begin: 0.0, end: 120.0).animate(curve);
     _controller.forward();
   }
 
@@ -228,7 +240,13 @@ class GrowTransition extends StatelessWidget {
           animation: animation,
           builder: (BuildContext context, Widget child) {
             return new Container(
-                height: animation.value, width: animation.value, child: child);
+              height: animation.value,
+              width: animation.value,
+              child: new Opacity(
+                opacity: animation.value / 150,
+                child: child,
+              ),
+            );
           },
           child: child),
     );
