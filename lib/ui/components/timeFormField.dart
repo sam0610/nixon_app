@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-
-import '../../Helper/formHelper.dart';
+part of nixon_app;
 
 class TimeTextField extends StatefulWidget {
   final String labelText;
@@ -46,67 +44,31 @@ class _TimeTextFieldState extends State<TimeTextField> {
         }
         // Draw Widget From here
         return new InputDecorator(
-          decoration: new InputDecoration(
-              errorText: field.errorText,
-              labelText: widget.labelText,
-              border: InputBorder.none),
-          child: new Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              new Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: new RaisedButton(
-                  shape: new RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(5.0)),
-                  color: Theme.of(context).accentColor,
-                  onPressed: () {
+            decoration: new InputDecoration(
+                errorText: field.errorText,
+                labelText: widget.labelText,
+                border: InputBorder.none),
+            child: new Dismissible(
+              key: new ValueKey(field.value),
+              resizeDuration: null,
+              direction: DismissDirection.vertical,
+              onDismissed: (DismissDirection direction) {
+                setState(() {
+                  direction == DismissDirection.up
+                      ? _timeIncrement(field)
+                      : _timeDecrement(field);
+                });
+              },
+              child: new Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: new InkWell(
+                  onTap: () {
                     selectTime(context, field, initialTime: _defaultValue);
                   },
-                  child: new Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      new Icon(Icons.access_time),
-                      new Padding(
-                        padding: EdgeInsets.only(right: 10.0),
-                      ),
-                      new Text(FormHelper.timetoString(field.value)),
-                    ],
-                  ),
+                  child: new Text(FormHelper.timetoString(field.value)),
                 ),
               ),
-              // new GestureDetector(
-              //   child: new Icon(Icons.add_circle_outline),
-              //   onTap: () => _timeIncrement(field),
-              // ),
-              // new GestureDetector(
-              //   child: new Icon(Icons.remove_circle_outline),
-              //   onTap: () => _timeDecrement(field),
-              // ),
-              new Dismissible(
-                key: new ValueKey(field.value),
-                resizeDuration: null,
-                direction: DismissDirection.vertical,
-                onDismissed: (DismissDirection direction) {
-                  setState(() {
-                    direction == DismissDirection.up
-                        ? _timeIncrement(field)
-                        : _timeDecrement(field);
-                  });
-                },
-                child: new Container(
-                    color: Theme.of(context).accentColor,
-                    child: new Column(
-                      children: <Widget>[
-                        new Icon(Icons.swap_vertical_circle),
-                      ],
-                    )),
-              ),
-            ],
-          ),
-        );
+            ));
       },
     );
   }

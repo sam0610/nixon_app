@@ -4,7 +4,7 @@ description: A new Flutter application.
 dependencies:
   flutter:
     sdk: flutter
-  firebase_auth: "^0.5.5"
+  firebase_auth: 
   cloud_firestore:
   json_annotation: ^0.2.2
   intl: "^0.15.6"

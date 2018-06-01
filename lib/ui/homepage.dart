@@ -21,6 +21,91 @@ class _HomePageState extends State<HomePage> {
     if (_user == null) Navigator.pushReplacementNamed(context, "/login");
   }
 
+  bool _loading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+        appBar: new AppBar(
+          title: new Text("Mystery Shopper"),
+          centerTitle: true,
+        ),
+        drawer: DrawerWidget(
+          context: context,
+        ),
+        body: InspectionBody());
+  }
+}
+
+class InspectionBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new StreamBuilder(
+        stream: inspectionCollection.snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) return CircularProgressIndicator();
+          return FirestoreListView(documents: snapshot.data.documents);
+        });
+  }
+}
+
+class FirestoreListView extends StatelessWidget {
+  final List<DocumentSnapshot> documents;
+
+  void _open(BuildContext context, Inspection inspection) {
+    Navigator.of(context).push(
+          new AnimatedRoute(
+            builder: (_) => new InspectionForm(form: inspection),
+          ),
+        );
+  }
+
+  void _delete(DocumentSnapshot snapshot, BuildContext context) {
+    InspectionRepos().deleteInspectionbySnapshot(snapshot).then((onValue) {
+      FormHelper.showSnackBar(context, "Deleted");
+    });
+  }
+
+  FirestoreListView({this.documents});
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: documents.length,
+      itemExtent: 90.0,
+      itemBuilder: (BuildContext context, int index) {
+        Inspection inspection = new Inspection.fromJson(documents[index].data);
+        String inspDate = FormHelper.datetoString(inspection.inspectionDate);
+
+        return new Card(
+          child: new Row(
+            children: <Widget>[
+              new Expanded(
+                child: new ListTile(
+                    title: new Text(inspDate),
+                    subtitle: new Text(inspection.staffName,
+                        style: new TextStyle(fontSize: 20.0))),
+              ),
+              new IconButton(
+                  icon: new Icon(Icons.edit),
+                  onPressed: () => _open(context, inspection)),
+              new IconButton(
+                icon: new Icon(Icons.delete),
+                onPressed: () {
+                  _delete(documents[index], context);
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class DrawerWidget extends StatelessWidget {
+  DrawerWidget({this.context});
+  final BuildContext context;
+
   void _signOut() {
     _auth.signOut().then((_) {
       Navigator.of(context).pushReplacementNamed('/login');
@@ -30,123 +115,34 @@ class _HomePageState extends State<HomePage> {
   void _navigate(String page) {
     Navigator.of(context).pop();
     Navigator.of(context).push(
-          new AnimatedRoute(
-            builder: (_) => new InspectionRecord(),
-          ),
+          new AnimatedRoute(builder: (_) => null //new InspectionRecord(),
+              ),
         );
   }
 
-  bool _loading = false;
-
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text("welcome"),
-          centerTitle: true,
-        ),
-        drawer: new Drawer(
-          child: new ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              new Header(),
-              new ListTile(
-                title: new Text('Go To Page 1'),
-                onTap: () => _navigate('/p1'),
-              ),
-              new Divider(),
-              new ListTile(
-                title: new Text(
-                  'Logout',
-                  style: new TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 20.0),
-                ),
-                trailing: new Icon(Icons.exit_to_app),
-                onTap: _signOut,
-              )
-            ],
+    return new Drawer(
+      child: new ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          new Header(),
+          new ListTile(
+            title: new Text('Go To Page 1'),
+            onTap: () => _navigate('/p1'),
           ),
-        ),
-        body: new Form(
-          autovalidate: false,
-          child: new DropDownFormField(
-              labelText: "BLDG",
-              initialValue: null,
-              validator: (value) => value == null ? "error" : null,
-              onChanged: (value) => print(value),
-              onSaved: (value) => print(value)),
-        ));
-  }
-}
-
-class BuildingDropDown extends StatefulWidget {
-  BuildingDropDown({this.onChanged});
-
-  final Function onChanged;
-
-  @override
-  _BuildingDropDownState createState() => new _BuildingDropDownState();
-}
-
-class _BuildingDropDownState extends State<BuildingDropDown> {
-  @override
-  Widget build(BuildContext context) {
-    return new Container(
-      child: new FutureBuilder<List<BuildingData>>(
-        future: fetchBldgList(new http.Client()),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return new Text(snapshot.error);
-          }
-          return snapshot.hasData
-              ? new Dropdown(snapshot.data)
-              : new Center(child: new AnimatedCircularProgress());
-        },
+          new Divider(),
+          new ListTile(
+            title: new Text(
+              'Logout',
+              style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+            ),
+            trailing: new Icon(Icons.exit_to_app),
+            onTap: _signOut,
+          )
+        ],
       ),
     );
-  }
-}
-
-class Dropdown extends StatefulWidget {
-  Dropdown(this._values);
-  final List<BuildingData> _values;
-  @override
-  _DropdownState createState() => new _DropdownState();
-}
-
-class _DropdownState extends State<Dropdown> {
-  BuildingData _value;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void _onChanged(BuildingData value) {
-    setState(() {
-      _value = value;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new DropdownButton(
-        value: _value,
-        items: widget._values.map((value) {
-          return new DropdownMenuItem(
-              value: value,
-              child: new Row(
-                children: <Widget>[
-                  new Icon(Icons.home),
-                  new Text(
-                    value.buildingName.toString(),
-                  ),
-                ],
-              ));
-        }).toList(),
-        onChanged: (selection) {
-          _onChanged(selection);
-        });
   }
 }
 

@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import '../Models/Inspection.dart';
+part of nixon_app;
 
 class ViewSummary extends StatefulWidget {
   ViewSummary(this.inspection);

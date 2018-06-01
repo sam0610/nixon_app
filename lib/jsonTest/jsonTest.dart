@@ -3,9 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nixon_app/jsonTest/testJson.dart';
 import 'package:nixon_app/jsonTest/testJsonRepository.dart';
-
-import '../Helper/AnimatedPageRoute.dart';
-import '../Helper/formHelper.dart';
+import 'package:nixon_app/nixon_app.dart';
 
 class JsonTest extends StatefulWidget {
   @override

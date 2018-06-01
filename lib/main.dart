@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nixon_app/nixon_app.dart';
-import 'Helper/AnimatedPageRoute.dart';
-import 'Helper/colors.dart';
 
 void main() => runApp(new MyApp());
 

@@ -1,24 +1,12 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:meta/meta.dart';
-import 'package:nixon_app/Helper/formHelper.dart';
-import 'Inspection.dart';
+part of nixon_app;
 
 final CollectionReference inspectionCollection =
     Firestore.instance.collection('Inspection');
 
 class InspectionRepos {
-  final FirebaseUser user;
-
-  InspectionRepos.forUser({
-    @required this.user,
-  }) : assert(user != null);
-
   Future<List<Inspection>> list() async {
     QuerySnapshot snapshot = await inspectionCollection
-        .where('userid', isEqualTo: user.uid)
+        .where('userid', isEqualTo: _user.uid)
         .getDocuments();
 
     List<Inspection> inspectionList = snapshot.documents.map((document) {
@@ -29,7 +17,7 @@ class InspectionRepos {
 
   Future<void> addInspection(BuildContext context, Inspection item) async {
     print('creating');
-    item.userid = user.uid;
+    item.userid = _user.uid;
     Firestore.instance.runTransaction((transaction) async {
       CollectionReference reference = inspectionCollection;
       await reference
@@ -58,6 +46,17 @@ class InspectionRepos {
             () => FormHelper.showAlertDialog(context, "done", "data saved"))
         .catchError(
             (e) => FormHelper.showAlertDialog(context, 'error', e.toString()));
+  }
+
+  Future<bool> deleteInspectionbySnapshot(DocumentSnapshot snapshot) async {
+    Firestore.instance.runTransaction((Transaction transaction) async {
+      await transaction.delete(snapshot.reference);
+    }).then((value) {
+      return true;
+    }).catchError((e) {
+      return e;
+    });
+    return false;
   }
 
   Future<bool> deleteInspection(String docid) async {

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of nixon_app;
 
 class AnimatedRoute<T> extends MaterialPageRoute<T> {
   AnimatedRoute({WidgetBuilder builder, RouteSettings settings})

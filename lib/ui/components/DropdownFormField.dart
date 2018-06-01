@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
-import 'package:http/http.dart' as http;
-import '../../nixon_app.dart';
+part of nixon_app;
 
 class DropDownFormField extends StatefulWidget {
   final String labelText;

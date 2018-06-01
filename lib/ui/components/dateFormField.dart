@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:nixon_app/Helper/formHelper.dart';
+part of nixon_app;
 
 class DateTextField extends StatefulWidget {
   final String labelText;
@@ -45,12 +44,15 @@ class _DateTextFieldState extends State<DateTextField> {
                 errorText: field.errorText),
             child: new Padding(
               padding: const EdgeInsets.all(8.0),
-              child: new FlatButton(
-                shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(5.0)),
-                color: Theme.of(context).accentColor,
-                onPressed: () => selectDate(context),
-                child: new Text(FormHelper.datetoString(_defaultValue)),
+              child: new InkWell(
+                // shape: new RoundedRectangleBorder(
+                //     borderRadius: new BorderRadius.circular(5.0)),
+                // color: Theme.of(context).accentColor,
+                //onPressed:
+                onTap: () => selectDate(context),
+                child: new Text(
+                  FormHelper.datetoString(_defaultValue),
+                ),
               ),
             ));
       },

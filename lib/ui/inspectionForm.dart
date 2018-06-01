@@ -1,15 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
-import '../ui/components/CheckBoxFormField.dart';
-import '../ui/components/SliderFormField.dart';
-import '../ui/inspectionSummary.dart';
-import '../Helper/formHelper.dart';
-import '../Models/Inspection.dart';
-import '../Models/InspectionRepository.dart';
-import 'components/DateField.dart';
-import 'components/TimeField.dart';
-import 'components/FormTextField.dart';
+part of nixon_app;
 
 class InspectionForm extends StatefulWidget {
   InspectionForm({Key key, this.form}) : super(key: key);
@@ -23,7 +12,6 @@ Inspection myform;
 class _InspectionFormState extends State<InspectionForm>
     with SingleTickerProviderStateMixin {
   bool _autoValidate = false;
-  InspectionRepos repos;
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   TabController _tabController;
   final List<Tab> myTabs = <Tab>[
@@ -56,9 +44,6 @@ class _InspectionFormState extends State<InspectionForm>
 
     //_formDateController.text =
     //    FormHelper.datetoString(myform.inspectionDate ?? new DateTime.now());
-    FirebaseAuth.instance.currentUser().then((FirebaseUser user) {
-      if (user != null) repos = new InspectionRepos.forUser(user: user);
-    });
   }
 
   void _save() {
@@ -69,13 +54,13 @@ class _InspectionFormState extends State<InspectionForm>
       print(myform.grooming);
       form.save();
       if (myform.id == null) {
-        repos.addInspection(context, myform).then((onValue) {
+        InspectionRepos().addInspection(context, myform).then((onValue) {
           FormHelper.showAlertDialog(context, 'save', 'succesful');
           Navigator.of(context).pop();
         }).catchError((onError) =>
             FormHelper.showAlertDialog(context, 'Fail', onError.toString()));
       } else {
-        repos.updateInspection(context, myform).then((onValue) {
+        InspectionRepos().updateInspection(context, myform).then((onValue) {
           FormHelper.showAlertDialog(context, 'save', 'succesful');
           Navigator.of(context).pop();
         }).catchError((onError) =>

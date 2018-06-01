@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 part 'Inspection.g.dart';
 
 //run code => flutter packages pub run build_runner build

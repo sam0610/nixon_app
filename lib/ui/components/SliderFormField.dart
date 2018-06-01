@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
+part of nixon_app;
 
 class SliderFormField extends StatefulWidget {
   final String labelText;
