@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
-
 import 'Models/Inspection.dart';
 
 part 'Helper/authentication.dart';

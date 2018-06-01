@@ -55,20 +55,22 @@ class _InspectionFormState extends State<InspectionForm>
       form.save();
       if (myform.id == null) {
         InspectionRepos().addInspection(context, myform).then((onValue) {
-          FormHelper.showAlertDialog(context, 'save', 'succesful');
+          FormHelper.showSnackBar(context, 'save succesful',
+              bgColor: Colors.green);
           Navigator.of(context).pop();
-        }).catchError((onError) =>
-            FormHelper.showAlertDialog(context, 'Fail', onError.toString()));
+        }).catchError((onError) => FormHelper
+            .showSnackBar(context, onError.toString(), bgColor: Colors.red));
       } else {
         InspectionRepos().updateInspection(context, myform).then((onValue) {
-          FormHelper.showAlertDialog(context, 'save', 'succesful');
+          FormHelper.showSnackBar(context, 'save succesful',
+              bgColor: Colors.green);
           Navigator.of(context).pop();
-        }).catchError((onError) =>
-            FormHelper.showAlertDialog(context, 'Fail', onError.toString()));
+        }).catchError((onError) => FormHelper
+            .showSnackBar(context, onError.toString(), bgColor: Colors.red));
       }
     } else {
-      FormHelper.showAlertDialog(
-          context, 'Error', 'Please fill in blank field');
+      FormHelper.showSnackBar(context, 'Please fill in blank field',
+          bgColor: Colors.red);
       setState(() {
         _autoValidate = true;
       });
@@ -139,18 +141,20 @@ class _ViewInfoState extends State<ViewInfo>
       padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
       children: <Widget>[
         new ExpansionTile(title: new Text('日期'), children: <Widget>[
-          new DateTextField(
-            labelText: '日期',
-            initialValue: myform.inspectionDate,
-            validator: (value) =>
-                myform.inspectionDate == null ? 'Date is Empty' : null,
-            onChanged: (value) => myform.inspectionDate = value,
-            onSaved: (value) => myform.inspectionDate = value,
-          ),
           new Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              new Expanded(
+                  flex: 1,
+                  child: new DateTextField(
+                    labelText: '日期',
+                    initialValue: myform.inspectionDate,
+                    validator: (value) =>
+                        myform.inspectionDate == null ? 'Date is Empty' : null,
+                    onChanged: (value) => myform.inspectionDate = value,
+                    onSaved: (value) => myform.inspectionDate = value,
+                  )),
               new Expanded(
                 flex: 1,
                 child: TimeTextField(

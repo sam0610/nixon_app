@@ -10,13 +10,23 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
       inspectionDate: json['inspectionDate'] == null
           ? null
           : DateTime.parse(json['inspectionDate'] as String),
+      bldgCode: json['bldgCode'] == null ? null : json['bldgCode'] as String,
+      bldgName: json['bldgName'] == null ? null : json['bldgName'] as String,
+      nixonNumber:
+          json['nixonNumber'] == null ? null : json['nixonNumber'] as int,
       staffName: json['staffName'] as String,
       arrivedTime: json['arrivedTime'] as String,
       leaveTime: json['leaveTime'] as String,
-      foundLocation: json['foundLocation'] as String,
-      postName: json['postName'] as String,
-      guestsProportion: json['guestsProportion'] as String,
-      situationRemark: json['situationRemark'] as String,
+      foundLocation: json['foundLocation'] == null
+          ? null
+          : json['foundLocation'] as String,
+      postName: json['postName'] == null ? null : json['postName'] as String,
+      guestsProportion: json['guestsProportion'] == null
+          ? null
+          : json['guestsProportion'] as String,
+      situationRemark: json['situationRemark'] == null
+          ? null
+          : json['situationRemark'] as String,
       userid: json['userid'] as String,
       id: json['id'] as String,
       grooming: json['grooming'] == null

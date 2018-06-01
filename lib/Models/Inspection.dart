@@ -10,6 +10,9 @@ class Inspection extends Object with _$InspectionSerializerMixin {
   DateTime inspectionDate;
   String arrivedTime;
   String leaveTime;
+  String bldgCode;
+  String bldgName;
+  int nixonNumber;
   String staffName;
   String postName;
   String foundLocation;
@@ -32,6 +35,9 @@ class Inspection extends Object with _$InspectionSerializerMixin {
       this.inspectionDate,
       this.arrivedTime,
       this.leaveTime,
+      this.bldgCode,
+      this.bldgName,
+      this.nixonNumber,
       this.staffName,
       this.postName,
       this.foundLocation,

@@ -46,10 +46,12 @@ class FormHelper {
     }
   }
 
-  static void showSnackBar(BuildContext context, String message) {
+  static void showSnackBar(BuildContext context, String message,
+      {Color bgColor = Colors.lightBlue}) {
     SnackBar bar = new SnackBar(
       content: new Text(message),
       duration: new Duration(seconds: 2),
+      backgroundColor: bgColor,
     );
     Scaffold.of(context).showSnackBar(bar);
   }
