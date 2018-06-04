@@ -47,6 +47,7 @@ class _TimeTextFieldState extends State<TimeTextField> {
             decoration: new InputDecoration(
                 errorText: field.errorText,
                 labelText: widget.labelText,
+                labelStyle: Theme.of(context).textTheme.body2,
                 border: InputBorder.none),
             child: new Dismissible(
               key: new ValueKey(field.value),
@@ -65,7 +66,10 @@ class _TimeTextFieldState extends State<TimeTextField> {
                   onTap: () {
                     selectTime(context, field, initialTime: _defaultValue);
                   },
-                  child: new Text(FormHelper.timetoString(field.value)),
+                  child: new Text(
+                    FormHelper.timetoString(field.value),
+                    style: Theme.of(context).textTheme.body2,
+                  ),
                 ),
               ),
             ));

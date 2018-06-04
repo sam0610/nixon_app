@@ -109,4 +109,13 @@ class FormHelper {
     }
     return null;
   }
+
+  static int strToInt(dynamic str) {
+    try {
+      var num = int.tryParse(str) ?? null;
+      return num;
+    } catch (e) {
+      return null;
+    }
+  }
 }

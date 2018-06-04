@@ -9,9 +9,12 @@ class InspectionForm extends StatefulWidget {
 
 Inspection myform;
 
+bool _autoValidate = false;
+
 class _InspectionFormState extends State<InspectionForm>
-    with SingleTickerProviderStateMixin {
-  bool _autoValidate = false;
+    // ignore: mixin_inherits_from_not_object
+    with
+        SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   TabController _tabController;
   final List<Tab> myTabs = <Tab>[
@@ -46,35 +49,20 @@ class _InspectionFormState extends State<InspectionForm>
     //    FormHelper.datetoString(myform.inspectionDate ?? new DateTime.now());
   }
 
-  void _save() {
-    final form = _formKey.currentState;
-    if (form.validate()) {
-      print('save');
-      print(myform);
-      print(myform.grooming);
-      form.save();
-      if (myform.id == null) {
-        InspectionRepos().addInspection(context, myform).then((onValue) {
-          FormHelper.showSnackBar(context, 'save succesful',
-              bgColor: Colors.green);
-          Navigator.of(context).pop();
-        }).catchError((onError) => FormHelper
-            .showSnackBar(context, onError.toString(), bgColor: Colors.red));
-      } else {
-        InspectionRepos().updateInspection(context, myform).then((onValue) {
-          FormHelper.showSnackBar(context, 'save succesful',
-              bgColor: Colors.green);
-          Navigator.of(context).pop();
-        }).catchError((onError) => FormHelper
-            .showSnackBar(context, onError.toString(), bgColor: Colors.red));
-      }
-    } else {
-      FormHelper.showSnackBar(context, 'Please fill in blank field',
-          bgColor: Colors.red);
-      setState(() {
-        _autoValidate = true;
-      });
-    }
+  Widget buildBody() {
+    return new SafeArea(
+      top: true,
+      bottom: true,
+      child: new Form(
+        key: _formKey,
+        autovalidate: _autoValidate,
+        child: new TabBarView(controller: _tabController, children: <Widget>[
+          new ViewInfo(),
+          new ViewGrooming(),
+          new ViewSummary(myform),
+        ]),
+      ),
+    );
   }
 
   @override
@@ -87,24 +75,68 @@ class _InspectionFormState extends State<InspectionForm>
           tabs: myTabs,
         ),
       ),
-      floatingActionButton:
-          new FloatingActionButton(child: Icon(Icons.save), onPressed: _save),
+      floatingActionButton: new SaveActionButton(_formKey),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: new BottomNavBar(),
-      body: new SafeArea(
-        top: false,
-        bottom: false,
-        child: new Form(
-          key: _formKey,
-          autovalidate: _autoValidate,
-          child: new TabBarView(controller: _tabController, children: <Widget>[
-            new ViewInfo(),
-            new ViewGrooming(),
-            new ViewSummary(myform),
-          ]),
-        ),
-      ),
+      body: buildBody(),
     );
+  }
+}
+
+class SaveActionButton extends StatefulWidget {
+  SaveActionButton(this.formKey);
+  final GlobalKey<FormState> formKey;
+
+  @override
+  _SaveActionButtonState createState() => new _SaveActionButtonState();
+}
+
+class _SaveActionButtonState extends State<SaveActionButton> {
+  void showSnackBar(String msg, {Color bgcolor = Colors.blue}) {
+    Scaffold.of(context).showSnackBar(
+          new SnackBar(
+              duration: new Duration(seconds: 10),
+              content: new Text(msg),
+              backgroundColor: bgcolor),
+        );
+  }
+
+  void NavigatePop() {
+    Navigator.pop(context);
+  }
+
+  void _save(BuildContext context) {
+    final form = widget.formKey.currentState;
+    if (form.validate()) {
+      print('save');
+      print(myform);
+      print(myform.grooming);
+      form.save();
+      if (myform.id == null) {
+        InspectionRepos.addInspection(myform).then((onValue) {
+          showSnackBar('save succesful', bgcolor: Colors.green);
+          NavigatePop();
+        }).catchError(
+            (onError) => showSnackBar(onError.toString(), bgcolor: Colors.red));
+      } else {
+        InspectionRepos.updateInspection(myform).then((onValue) {
+          showSnackBar('save succesful', bgcolor: Colors.green);
+          NavigatePop();
+        }).catchError(
+            (onError) => showSnackBar(onError.toString(), bgcolor: Colors.red));
+      }
+    } else {
+      showSnackBar('Please fill in blank field', bgcolor: Colors.red);
+      setState(() {
+        _autoValidate = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new FloatingActionButton(
+        child: Icon(Icons.save), onPressed: () => _save(context));
   }
 }
 
@@ -133,64 +165,112 @@ class _ViewInfoState extends State<ViewInfo>
       _situationRemarkController = new TextEditingController(),
       _guestsProportionController = new TextEditingController(),
       _foundLocationController = new TextEditingController(),
-      _postNameController = new TextEditingController();
+      _postNameController = new TextEditingController(),
+      _nxNumberController = new TextEditingController(),
+      _bldgNameController = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _bldgNameController.text = myform.bldgName.toString();
+  }
+
+  void _showD() {
+    List<int> _value = [1, 2, 3, 4, 5];
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new Scaffold(
+            body: new ListView.builder(
+                itemCount: _value.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return new ListTile(
+                    title: new Text(
+                      _value[index].toString(),
+                      
+                    ),onLongPress: ,
+                  );
+                }),
+          );
+        }).then((value) {
+      if (value != null) {
+        setState(() => print(value));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return new ListView(
       padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
       children: <Widget>[
-        new ExpansionTile(title: new Text('日期'), children: <Widget>[
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              new Expanded(
-                  flex: 1,
-                  child: new DateTextField(
-                    labelText: '日期',
-                    initialValue: myform.inspectionDate,
-                    validator: (value) =>
-                        myform.inspectionDate == null ? 'Date is Empty' : null,
-                    onChanged: (value) => myform.inspectionDate = value,
-                    onSaved: (value) => myform.inspectionDate = value,
-                  )),
-              new Expanded(
-                flex: 1,
-                child: TimeTextField(
-                    labelText: '到達時間',
-                    initialValue: FormHelper.strToTime(myform.arrivedTime),
-                    validator: (value) =>
-                        myform.arrivedTime == null ? "not set" : null,
-                    onChanged: (value) {
-                      myform.arrivedTime = FormHelper.timetoString(value);
-                      myform.leaveTime = myform.arrivedTime;
-                    },
-                    onSaved: (value) => myform.arrivedTime = FormHelper
-                        .timetoString(value) //FormHelper.timetoString(value)),
-                    ),
-              ),
-              new Expanded(
-                flex: 1,
-                child: TimeTextField(
-                    labelText: '離開時間',
-                    initialValue: FormHelper.strToTime(myform.leaveTime),
-                    validator: (value) =>
-                        myform.leaveTime == null ? "not set" : null,
-                    onChanged: (value) =>
-                        myform.leaveTime = FormHelper.timetoString(value),
-                    onSaved: (value) => myform.leaveTime =
-                        FormHelper.timetoString(
-                            value) // FormHelper.timetoString(value))),
-                    ),
-              ),
-            ],
+        new DateTextField(
+          labelText: '日期',
+          initialValue: myform.inspectionDate,
+          validator: (value) =>
+              myform.inspectionDate == null ? 'Date is Empty' : null,
+          onChanged: (value) => myform.inspectionDate = value,
+          onSaved: (value) => myform.inspectionDate = value,
+        ),
+        new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            new Expanded(
+              flex: 1,
+              child: TimeTextField(
+                  labelText: '到達時間',
+                  initialValue: FormHelper.strToTime(myform.arrivedTime),
+                  validator: (value) =>
+                      myform.arrivedTime == null ? "not set" : null,
+                  onChanged: (value) {
+                    myform.arrivedTime = FormHelper.timetoString(value);
+                    myform.leaveTime = myform.arrivedTime;
+                  },
+                  onSaved: (value) => myform.arrivedTime = FormHelper
+                      .timetoString(value) //FormHelper.timetoString(value)),
+                  ),
+            ),
+            new Expanded(
+              flex: 1,
+              child: TimeTextField(
+                  labelText: '離開時間',
+                  initialValue: FormHelper.strToTime(myform.leaveTime),
+                  validator: (value) =>
+                      myform.leaveTime == null ? "not set" : null,
+                  onChanged: (value) =>
+                      myform.leaveTime = FormHelper.timetoString(value),
+                  onSaved: (value) => myform.leaveTime = FormHelper
+                      .timetoString(value) // FormHelper.timetoString(value))),
+                  ),
+            ),
+          ],
+        ),
+        new TextFormField(
+          style: Theme.of(context).textTheme.body2,
+          decoration: InputDecoration(
+            suffixIcon:
+                new IconButton(icon: new Icon(Icons.search), onPressed: _showD),
+            labelText: '大廈名稱',
           ),
-        ]),
+          controller: _bldgNameController,
+          onFieldSubmitted: (value) => _bldgNameController.text = value,
+          validator: (value) => value.isEmpty ? ' can\'t be empty' : null,
+          onSaved: (value) => myform.bldgName = value,
+        ),
+        MyFormTextField(
+          labelText: '員工編號',
+          initialValue: myform.nixonNumber.toString(),
+          controller: _nxNumberController,
+          nullable: true,
+          onSave: (value) => myform.nixonNumber = FormHelper.strToInt(value),
+          keyboardType: TextInputType.number,
+        ),
         MyFormTextField(
             labelText: '員工姓名',
             initialValue: myform.staffName,
             controller: _staffNameController,
+            nullable: false,
             onSave: (value) => myform.staffName = value),
         new Row(
           children: <Widget>[
@@ -218,7 +298,7 @@ class _ViewInfoState extends State<ViewInfo>
             controller: _guestsProportionController,
             onSave: (value) => myform.guestsProportion = value),
         MyFormTextField(
-            labelText: '處境摘要',
+            labelText: '摘要',
             initialValue: myform.situationRemark,
             maxLines: 1,
             controller: _situationRemarkController,
@@ -249,6 +329,15 @@ class _ViewGroomingState extends State<ViewGrooming>
       child: new Container(
         padding: const EdgeInsets.only(bottom: 10.0),
         child: new ExpansionTile(
+          onExpansionChanged: (b) => setState(() {
+                PageStorage
+                    .of(context)
+                    .writeState(context, b, identifier: ValueKey(title));
+              }),
+          initiallyExpanded: PageStorage
+                  .of(context)
+                  .readState(context, identifier: ValueKey(title)) ??
+              false,
           title: title,
           children: children,
         ),
@@ -434,7 +523,7 @@ class _ViewGroomingState extends State<ViewGrooming>
         cardContainer(title: new Text('結束對話'), children: [
           makeSliderWidget(
             initialValue: myform.closure.farewellScore,
-            labelText: '道別',
+            labelText: '��別',
             onChanged: (value) {
               setState(() {
                 myform.closure.farewellScore = value;

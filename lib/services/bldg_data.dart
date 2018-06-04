@@ -3,6 +3,11 @@ part of nixon_app;
 //http://sammobile.azurewebsites.net/api/Staff/bldg/212702/2018-05-28
 //
 
+Future<List> fetchData(String apiUrl) async {
+  http.Response response = await http.get(apiUrl);
+  return (json.decode(response.body))['building'];
+}
+
 class BuildingData {
   String accBuildingCode;
   String buildingName;

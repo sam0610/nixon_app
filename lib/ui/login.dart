@@ -198,6 +198,7 @@ class NxLogo extends StatefulWidget {
   _NxLogoState createState() => new _NxLogoState();
 }
 
+// ignore: mixin_inherits_from_not_object
 class _NxLogoState extends State<NxLogo> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animation<double> _animation;

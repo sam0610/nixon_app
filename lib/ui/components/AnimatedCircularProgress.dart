@@ -7,6 +7,7 @@ class AnimatedCircularProgress extends StatefulWidget {
 }
 
 class _AnimatedCircularProgressState extends State<AnimatedCircularProgress>
+    // ignore: mixin_inherits_from_not_object
     with SingleTickerProviderStateMixin {
   AnimationController _animationController;
   Animation<Color> _colorAnimation;

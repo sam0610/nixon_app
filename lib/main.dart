@@ -25,25 +25,26 @@ class MyApp extends StatelessWidget {
 
 */
   TextTheme buildTextTheme() {
-    final textTheme = new TextTheme(
-        display1: new TextStyle(color: Colors.black),
-        display2: new TextStyle(color: Colors.black),
-        display3: new TextStyle(color: Colors.black),
-        display4: new TextStyle(color: Colors.black),
-        headline: new TextStyle(color: Colors.black),
-        title: new TextStyle(color: Colors.black),
-        subhead: new TextStyle(color: Colors.black),
-        body2: new TextStyle(color: Colors.black),
-        body1: new TextStyle(color: Colors.black),
-        caption: new TextStyle(color: Colors.black),
-        button: new TextStyle(color: Colors.black));
+    final baseTheme = ThemeData.light();
+    final textTheme = baseTheme.textTheme
+        .copyWith(
+            body1: new TextStyle(fontSize: 16.0),
+            body2: new TextStyle(fontSize: 21.0),
+            title: new TextStyle(fontSize: 24.0),
+            subhead: new TextStyle(fontSize: 18.0))
+        .apply(displayColor: kPrimaryColor, bodyColor: Colors.black87);
+    /*subhead: new TextStyle(color: Colors.grey.shade900), //listtile subtitle
+      caption: new TextStyle(color: Colors.grey.shade900), //listtile title
+      body1: new TextStyle(color: Colors.red), //textbox text
+      body2: new TextStyle(color: Colors.blue), //drawer text // */
+
     return textTheme;
   }
 
   ThemeData buildThemeData() {
     final baseTheme = ThemeData.light();
     return baseTheme.copyWith(
-        //textTheme: new TextTheme(),
+        textTheme: buildTextTheme(),
         primaryColor: kPrimaryColor,
         primaryColorDark: kPrimaryDark,
         primaryColorLight: kPrimaryLight,

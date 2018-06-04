@@ -43,7 +43,10 @@ class InspectionBody extends StatelessWidget {
     return new StreamBuilder(
         stream: inspectionCollection.snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) return CircularProgressIndicator();
+          if (!snapshot.hasData)
+            return Container(
+                alignment: Alignment.center,
+                child: new Center(child: new AnimatedCircularProgress()));
           return FirestoreListView(documents: snapshot.data.documents);
         });
   }
@@ -61,7 +64,7 @@ class FirestoreListView extends StatelessWidget {
   }
 
   void _delete(DocumentSnapshot snapshot, BuildContext context) {
-    InspectionRepos().deleteInspectionbySnapshot(snapshot).then((onValue) {
+    InspectionRepos.deleteInspectionbySnapshot(snapshot).then((onValue) {
       FormHelper.showSnackBar(context, "Deleted");
     });
   }
@@ -75,27 +78,33 @@ class FirestoreListView extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         Inspection inspection = new Inspection.fromJson(documents[index].data);
         String inspDate = FormHelper.datetoString(inspection.inspectionDate);
-
-        return new Card(
-          child: new Row(
-            children: <Widget>[
-              new Expanded(
-                child: new ListTile(
-                    title: new Text(inspDate),
-                    subtitle: new Text(inspection.staffName,
-                        style: new TextStyle(fontSize: 20.0))),
-              ),
-              new IconButton(
-                  icon: new Icon(Icons.edit),
-                  onPressed: () => _open(context, inspection)),
-              new IconButton(
-                icon: new Icon(Icons.delete),
-                onPressed: () {
-                  _delete(documents[index], context);
-                },
-              )
-            ],
-          ),
+        TextStyle titleStyle =
+            Theme.of(context).textTheme.title.copyWith(fontSize: 24.0);
+        TextStyle subheadStyle =
+            Theme.of(context).textTheme.subhead.copyWith(fontSize: 18.0);
+        return new Row(
+          children: <Widget>[
+            new Expanded(
+              child: new ListTile(
+                  title: new Text(
+                    inspDate,
+                    style: titleStyle,
+                  ),
+                  subtitle:
+                      new Text(inspection.staffName, style: subheadStyle)),
+            ),
+            new IconButton(
+                icon: new Icon(Icons.edit),
+                color: Theme.of(context).accentColor,
+                onPressed: () => _open(context, inspection)),
+            new IconButton(
+              icon: new Icon(Icons.delete),
+              color: Theme.of(context).accentColor,
+              onPressed: () {
+                _delete(documents[index], context);
+              },
+            )
+          ],
         );
       },
     );
@@ -112,13 +121,13 @@ class DrawerWidget extends StatelessWidget {
     });
   }
 
-  void _navigate(String page) {
+  /*void _navigate(String page) {
     Navigator.of(context).pop();
     Navigator.of(context).push(
           new AnimatedRoute(builder: (_) => null //new InspectionRecord(),
               ),
         );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -127,10 +136,10 @@ class DrawerWidget extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           new Header(),
-          new ListTile(
-            title: new Text('Go To Page 1'),
-            onTap: () => _navigate('/p1'),
-          ),
+          //new ListTile(
+          //  title: new Text('Go To Page 1'),
+          //  onTap: () => _navigate('/p1'),
+          //),
           new Divider(),
           new ListTile(
             title: new Text(

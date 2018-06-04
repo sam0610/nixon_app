@@ -15,40 +15,30 @@ class InspectionRepos {
     return inspectionList;
   }
 
-  Future<void> addInspection(BuildContext context, Inspection item) async {
+  static Future<void> addInspection(Inspection item) async {
     print('creating');
     item.userid = _user.uid;
     Firestore.instance.runTransaction((transaction) async {
       CollectionReference reference = inspectionCollection;
-      await reference
-          .add(item.toJson())
-          .then((docRef) {
-            docRef.documentID;
-            docRef.updateData({"id": docRef.documentID});
-          })
-          .whenComplete(
-              () => FormHelper.showAlertDialog(context, "done", "data saved"))
-          .catchError((e) =>
-              FormHelper.showAlertDialog(context, 'error', e.toString()));
+      await reference.add(item.toJson()).then((docRef) {
+        docRef.documentID;
+        docRef.updateData({"id": docRef.documentID});
+      }).catchError((e) => throw e);
     });
   }
 
-  Future<void> updateInspection(BuildContext context, Inspection item) async {
+  static Future<void> updateInspection(Inspection item) async {
     print('updating' + item.id);
     var oldDoc = await inspectionCollection.document(item.id).get();
-    Firestore.instance
-        .runTransaction((transaction) async {
-          DocumentSnapshot snapshot = await transaction.get(oldDoc.reference);
-          transaction.set(snapshot.reference, item.toJson());
-          await transaction.update(snapshot.reference, item.toJson());
-        })
-        .whenComplete(
-            () => FormHelper.showAlertDialog(context, "done", "data saved"))
-        .catchError(
-            (e) => FormHelper.showAlertDialog(context, 'error', e.toString()));
+    Firestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(oldDoc.reference);
+      transaction.set(snapshot.reference, item.toJson());
+      await transaction.update(snapshot.reference, item.toJson());
+    }).catchError((e) => throw e);
   }
 
-  Future<bool> deleteInspectionbySnapshot(DocumentSnapshot snapshot) async {
+  static Future<bool> deleteInspectionbySnapshot(
+      DocumentSnapshot snapshot) async {
     Firestore.instance.runTransaction((Transaction transaction) async {
       await transaction.delete(snapshot.reference);
     }).then((value) {
@@ -59,7 +49,7 @@ class InspectionRepos {
     return false;
   }
 
-  Future<bool> deleteInspection(String docid) async {
+  static Future<bool> deleteInspection(String docid) async {
     print('deleting');
     Firestore.instance.runTransaction((Transaction transaction) async {
       CollectionReference reference = inspectionCollection;

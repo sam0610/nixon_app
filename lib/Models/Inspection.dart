@@ -60,6 +60,55 @@ class Inspection extends Object with _$InspectionSerializerMixin {
 
   factory Inspection.fromJson(Map<String, dynamic> json) =>
       _$InspectionFromJson(json);
+
+  static translate(String key) {
+    Map<String, String> chineseLabel = <String, String>{
+      'inspectionDate': '巡查日期',
+      'arrivedTime': '到達時間',
+      'leaveTime': '離開時間',
+      'bldgCode': '大廈編號',
+      'bldgName': '大廈名稱',
+      'nixonNumber': '力新編號',
+      'staffName': '員工姓名',
+      'postName': '崗位',
+      'foundLocation': '位置',
+      'guestsProportion': '顧客比例',
+      'situationRemark': '情境',
+      'userid': '使用者ID',
+      'grooming': '儀容',
+      'groomingScore': '儀容',
+      'hairScore': '髮型',
+      'uniformScore': '制服',
+      'decorationScore': '飾物',
+      'maskCleanScore': '口罩清潔',
+      'maskWearScore': '口罩配帶',
+      'behavior': '舉止',
+      'behaviorScore': '行為舉止',
+      'mindScore': '精神狀態',
+      'serveCust': '接待顧客',
+      'smileScore': '笑容',
+      'greetingScore': '招呼',
+      'listenCust': '聆聽客戶',
+      'listenCustScore': '聆聽',
+      'handleCust': '處理顧客需要',
+      'indicateWithPalmScore': '以手掌指示方向',
+      'respondCustNeedScore': '應對客人需要',
+      'unexpectedSituationScore': '突發事件處理',
+      'closure': '結束對話',
+      'farewellScore': '道別',
+      'communicationSkill': '溝通技巧',
+      'soundLevel': '話話聲量',
+      'soundSpeed': '說話速度',
+      'polite': '用詞及神貌',
+      'attitudeScore': '說話態度',
+      'skillScore': '技巧',
+      'warmHeart': '窩心',
+      'warmHeartScore': '窩心',
+      'cleanlinessMall': '清潔-商場',
+      'cleanlinessToile': '清潔-洗手間'
+    };
+    return chineseLabel.forEach((k, v) => k == key ? v : null);
+  }
 }
 
 @JsonSerializable()

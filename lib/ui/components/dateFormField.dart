@@ -40,18 +40,22 @@ class _DateTextFieldState extends State<DateTextField> {
         return new InputDecorator(
             decoration: new InputDecoration(
                 labelText: widget.labelText,
+                labelStyle: Theme.of(context).textTheme.body2,
                 border: InputBorder.none,
                 errorText: field.errorText),
             child: new Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(right: 8.0),
               child: new InkWell(
                 // shape: new RoundedRectangleBorder(
                 //     borderRadius: new BorderRadius.circular(5.0)),
                 // color: Theme.of(context).accentColor,
                 //onPressed:
                 onTap: () => selectDate(context),
-                child: new Text(
-                  FormHelper.datetoString(_defaultValue),
+                child: new Container(
+                  child: new Text(
+                    FormHelper.datetoString(_defaultValue),
+                    style: Theme.of(context).textTheme.body2,
+                  ),
                 ),
               ),
             ));
