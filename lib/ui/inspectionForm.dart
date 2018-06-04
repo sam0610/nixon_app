@@ -101,27 +101,22 @@ class _SaveActionButtonState extends State<SaveActionButton> {
         );
   }
 
-  void NavigatePop() {
+  void navigatePop() {
     Navigator.pop(context);
   }
 
   void _save(BuildContext context) {
     final form = widget.formKey.currentState;
     if (form.validate()) {
-      print('save');
-      print(myform);
-      print(myform.grooming);
       form.save();
       if (myform.id == null) {
         InspectionRepos.addInspection(myform).then((onValue) {
-          showSnackBar('save succesful', bgcolor: Colors.green);
-          NavigatePop();
+          navigatePop();
         }).catchError(
             (onError) => showSnackBar(onError.toString(), bgcolor: Colors.red));
       } else {
         InspectionRepos.updateInspection(myform).then((onValue) {
-          showSnackBar('save succesful', bgcolor: Colors.green);
-          NavigatePop();
+          navigatePop();
         }).catchError(
             (onError) => showSnackBar(onError.toString(), bgcolor: Colors.red));
       }
@@ -167,36 +162,47 @@ class _ViewInfoState extends State<ViewInfo>
       _foundLocationController = new TextEditingController(),
       _postNameController = new TextEditingController(),
       _nxNumberController = new TextEditingController(),
-      _bldgNameController = new TextEditingController();
+      _bldgNameController = new TextEditingController(),
+      _bldgCodeController = new TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _bldgNameController.text = myform.bldgName.toString();
+    _bldgCodeController.text = myform.bldgCode.toString();
+    _nxNumberController.text = myform.nixonNumber.toString();
   }
 
-  void _showD() {
-    List<int> _value = [1, 2, 3, 4, 5];
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return new Scaffold(
-            body: new ListView.builder(
-                itemCount: _value.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return new ListTile(
-                    title: new Text(
-                      _value[index].toString(),
-                      
-                    ),onLongPress: ,
-                  );
-                }),
-          );
-        }).then((value) {
-      if (value != null) {
-        setState(() => print(value));
-      }
-    });
+  void _showD() async {
+    BuildingData building =
+        await Navigator.of(context).push(new MaterialPageRoute<BuildingData>(
+            builder: (BuildContext context) {
+              return new BuildingDialog();
+            },
+            fullscreenDialog: true));
+
+    if (building != null) {
+      setState(() {
+        _bldgNameController.text = building.buildingName;
+        _bldgCodeController.text = building.accBuildingCode;
+      });
+    }
+  }
+
+  void _showD2() async {
+    StaffData staffData =
+        await Navigator.of(context).push(new MaterialPageRoute<StaffData>(
+            builder: (BuildContext context) {
+              return new StaffDialog(bldgCode: _bldgCodeController.text);
+            },
+            fullscreenDialog: true));
+
+    if (staffData != null) {
+      setState(() {
+        _nxNumberController.text = staffData.nixonNumber.toString();
+        _staffNameController.text = staffData.givenName;
+      });
+    }
   }
 
   @override
@@ -251,6 +257,16 @@ class _ViewInfoState extends State<ViewInfo>
           decoration: InputDecoration(
             suffixIcon:
                 new IconButton(icon: new Icon(Icons.search), onPressed: _showD),
+            labelText: '大廈編號',
+          ),
+          controller: _bldgCodeController,
+          onFieldSubmitted: (value) => _bldgCodeController.text = value,
+          validator: (value) => value.isEmpty ? ' can\'t be empty' : null,
+          onSaved: (value) => myform.bldgCode = value,
+        ),
+        new TextFormField(
+          style: Theme.of(context).textTheme.body2,
+          decoration: InputDecoration(
             labelText: '大廈名稱',
           ),
           controller: _bldgNameController,
@@ -258,13 +274,18 @@ class _ViewInfoState extends State<ViewInfo>
           validator: (value) => value.isEmpty ? ' can\'t be empty' : null,
           onSaved: (value) => myform.bldgName = value,
         ),
-        MyFormTextField(
-          labelText: '員工編號',
-          initialValue: myform.nixonNumber.toString(),
-          controller: _nxNumberController,
-          nullable: true,
-          onSave: (value) => myform.nixonNumber = FormHelper.strToInt(value),
+        new TextFormField(
+          style: Theme.of(context).textTheme.body2,
           keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            suffixIcon: new IconButton(
+                icon: new Icon(Icons.search), onPressed: _showD2),
+            labelText: '員工編號',
+          ),
+          controller: _nxNumberController,
+          onFieldSubmitted: (value) => _nxNumberController.text = value,
+          validator: (value) => value.isEmpty ? ' can\'t be empty' : null,
+          onSaved: (value) => myform.nixonNumber = FormHelper.strToInt(value),
         ),
         MyFormTextField(
             labelText: '員工姓名',
@@ -320,27 +341,20 @@ class ViewGrooming extends StatefulWidget {
 class _ViewGroomingState extends State<ViewGrooming>
     with AutomaticKeepAliveClientMixin {
   Widget cardContainer({List<Widget> children, Widget title}) {
-    return new Card(
-      margin: EdgeInsets.all(8.0),
-      elevation: 4.0,
-      shape: new RoundedRectangleBorder(
-        borderRadius: new BorderRadius.circular(5.0),
-      ),
-      child: new Container(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: new ExpansionTile(
-          onExpansionChanged: (b) => setState(() {
-                PageStorage
-                    .of(context)
-                    .writeState(context, b, identifier: ValueKey(title));
-              }),
-          initiallyExpanded: PageStorage
+    return new Container(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: new ExpansionTile(
+        onExpansionChanged: (b) => setState(() {
+              PageStorage
                   .of(context)
-                  .readState(context, identifier: ValueKey(title)) ??
-              false,
-          title: title,
-          children: children,
-        ),
+                  .writeState(context, b, identifier: ValueKey(title));
+            }),
+        initiallyExpanded: PageStorage
+                .of(context)
+                .readState(context, identifier: ValueKey(title)) ??
+            false,
+        title: title,
+        children: children,
       ),
     );
   }
@@ -596,4 +610,183 @@ class _ViewGroomingState extends State<ViewGrooming>
   // TODO: implement wantKeepAlive
   @override
   bool get wantKeepAlive => true;
+}
+
+class BuildingDialog extends StatefulWidget {
+  @override
+  _BuildingDialogState createState() => new _BuildingDialogState();
+}
+
+class _BuildingDialogState extends State<BuildingDialog> {
+  List<BuildingData> buildingList;
+  final GlobalKey<AsyncLoaderState> _asyncLoaderState =
+      new GlobalKey<AsyncLoaderState>();
+
+  getBldg() async {
+    await fetchBldgList(new http.Client())
+        .then((bldg) => buildingList = bldg)
+        .catchError((e) => print(e));
+  }
+
+  Widget body() {
+    return new Container(
+      child: new ListView.builder(
+        itemCount: buildingList.length,
+        itemExtent: 90.0,
+        itemBuilder: (BuildContext ctx, int index) {
+          BuildingData bldg = buildingList[index];
+          return new Container(
+              color: index % 2 == 1
+                  ? Theme.of(context).primaryColor.withAlpha(300)
+                  : Colors.white,
+              child: new Row(children: <Widget>[
+                new Expanded(
+                  child: new ListTile(
+                      onTap: () => Navigator.of(context).pop(bldg),
+                      title: new Text(
+                        bldg.accBuildingCode,
+                      ),
+                      subtitle: new Text(bldg.buildingName)),
+                ),
+              ]));
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var _asyncLoader = new AsyncLoader(
+      key: _asyncLoaderState,
+      initState: () async => await getBldg(),
+      renderLoad: () => new Center(child: new AnimatedCircularProgress()),
+      renderError: ([error]) => new Text('no Data'),
+      renderSuccess: ({data}) => body(),
+    );
+
+    return new Scaffold(
+        appBar: new AppBar(
+          title: const Text('Select a Building'),
+        ),
+        body: _asyncLoader);
+  }
+}
+
+class StaffDialog extends StatefulWidget {
+  StaffDialog({@required this.bldgCode});
+  final String bldgCode;
+
+  @override
+  _StaffDialogState createState() => new _StaffDialogState();
+}
+
+class _StaffDialogState extends State<StaffDialog> {
+  List<StaffData> staffList;
+  List<StaffData> staffListFiltered;
+  TextEditingController _filterController = new TextEditingController();
+  final GlobalKey<AsyncLoaderState> _asyncLoaderState =
+      new GlobalKey<AsyncLoaderState>();
+
+  getStaff() async {
+    await fetchStaffList(new http.Client(), widget.bldgCode).then((staff) {
+      staffList = staff;
+      staffListFiltered = staff;
+    }).catchError((e) => print(e));
+  }
+
+  void _filtering(String text) {
+    List<StaffData> tmp;
+    staffList.forEach((f) {
+      if (f.givenName.contains(_filterController.text.toString())) {
+        tmp.add(f);
+      }
+    });
+    setState(() {
+      staffListFiltered = tmp;
+    });
+  }
+
+  Widget body() {
+    return new Column(
+      children: <Widget>[
+        new Container(
+          child: new Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: new ListTile(
+              leading: new Icon(Icons.search),
+              title: new TextField(
+                onChanged: _filtering,
+                controller: _filterController,
+                decoration: new InputDecoration(
+                    hintText: 'Search', border: InputBorder.none),
+              ),
+            ),
+          ),
+        ),
+        new Expanded(
+          child: staffListFiltered.length != 0 ||
+                  _filterController.text.isNotEmpty
+              ? new ListView.builder(
+                  itemCount: staffListFiltered.length,
+                  itemExtent: 90.0,
+                  itemBuilder: (BuildContext ctx, int index) {
+                    StaffData staff = staffListFiltered[index];
+                    return new Container(
+                        color: index % 2 == 1
+                            ? Theme.of(context).primaryColor.withAlpha(300)
+                            : Colors.white,
+                        child: new Row(children: <Widget>[
+                          new Expanded(
+                            child: new ListTile(
+                                onTap: () => Navigator.of(context).pop(staff),
+                                title: new Text(
+                                  staff.nixonNumber.toString(),
+                                ),
+                                subtitle: new Text(staff.givenName)),
+                          ),
+                        ]));
+                  },
+                )
+              : new ListView.builder(
+                  itemCount: staffList.length,
+                  itemExtent: 90.0,
+                  itemBuilder: (BuildContext ctx, int index) {
+                    StaffData staff = staffList[index];
+                    return new Container(
+                        color: index % 2 == 1
+                            ? Theme.of(context).primaryColor.withAlpha(300)
+                            : Colors.white,
+                        child: new Row(children: <Widget>[
+                          new Expanded(
+                            child: new ListTile(
+                                onTap: () => Navigator.of(context).pop(staff),
+                                title: new Text(
+                                  staff.nixonNumber.toString(),
+                                ),
+                                subtitle: new Text(staff.givenName)),
+                          ),
+                        ]));
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var _asyncLoader = new AsyncLoader(
+      key: _asyncLoaderState,
+      initState: () async => await getStaff(),
+      renderLoad: () => new Center(child: new AnimatedCircularProgress()),
+      renderError: ([error]) => new Text('no Data'),
+      renderSuccess: ({data}) => body(),
+    );
+
+    return new Scaffold(
+        appBar: new AppBar(
+          title: const Text('Select a Staff'),
+        ),
+        body: _asyncLoader);
+  }
 }

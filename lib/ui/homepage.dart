@@ -79,9 +79,9 @@ class FirestoreListView extends StatelessWidget {
         Inspection inspection = new Inspection.fromJson(documents[index].data);
         String inspDate = FormHelper.datetoString(inspection.inspectionDate);
         TextStyle titleStyle =
-            Theme.of(context).textTheme.title.copyWith(fontSize: 24.0);
+            Theme.of(context).textTheme.title.copyWith(fontSize: 20.0);
         TextStyle subheadStyle =
-            Theme.of(context).textTheme.subhead.copyWith(fontSize: 18.0);
+            Theme.of(context).textTheme.subhead.copyWith(fontSize: 16.0);
         return new Row(
           children: <Widget>[
             new Expanded(
