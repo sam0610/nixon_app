@@ -118,4 +118,18 @@ class FormHelper {
       return null;
     }
   }
+
+  static double calculate(Map<String, dynamic> object) {
+    double count = 0.0;
+    double sum = 0.0;
+    object.forEach((k, v) {
+      int value = v is int ? v : 0;
+      if (value > 0) {
+        count += 1.0;
+        sum += v;
+      }
+    });
+    final double total = count == 0.0 ? 0.0 : sum / count;
+    return total;
+  }
 }

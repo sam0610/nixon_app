@@ -73,15 +73,22 @@ class _ViewSummaryState extends State<ViewSummary> {
         ),
       ),
     ]));
-    _row.add(dRow("儀容", calculate(widget.inspection.grooming.toJson())));
-    _row.add(dRow("舉止", calculate(widget.inspection.behavior.toJson())));
-    _row.add(dRow("接待顧客", calculate(widget.inspection.serveCust.toJson())));
-    _row.add(dRow("了解需要", calculate(widget.inspection.listenCust.toJson())));
-    _row.add(dRow("處理顧客要求", calculate(widget.inspection.handleCust.toJson())));
-    _row.add(dRow("結束對話", calculate(widget.inspection.closure.toJson())));
     _row.add(
-        dRow("溝通技巧", calculate(widget.inspection.communicationSkill.toJson())));
-    _row.add(dRow("窩心", calculate(widget.inspection.warmHeart.toJson())));
+        dRow("儀容", FormHelper.calculate(widget.inspection.grooming.toJson())));
+    _row.add(
+        dRow("舉止", FormHelper.calculate(widget.inspection.behavior.toJson())));
+    _row.add(dRow(
+        "接待顧客", FormHelper.calculate(widget.inspection.serveCust.toJson())));
+    _row.add(dRow(
+        "了解需要", FormHelper.calculate(widget.inspection.listenCust.toJson())));
+    _row.add(dRow(
+        "處理顧客要求", FormHelper.calculate(widget.inspection.handleCust.toJson())));
+    _row.add(
+        dRow("結束對話", FormHelper.calculate(widget.inspection.closure.toJson())));
+    _row.add(dRow("溝通技巧",
+        FormHelper.calculate(widget.inspection.communicationSkill.toJson())));
+    _row.add(
+        dRow("窩心", FormHelper.calculate(widget.inspection.warmHeart.toJson())));
 
     return new Card(
       elevation: 4.0,
@@ -94,18 +101,4 @@ class _ViewSummaryState extends State<ViewSummary> {
       ),
     );
   }
-}
-
-double calculate(Map<String, dynamic> object) {
-  double count = 0.0;
-  double sum = 0.0;
-  object.forEach((k, v) {
-    int value = v is int ? v : 0;
-    if (value > 0) {
-      count += 1.0;
-      sum += v;
-    }
-  });
-  final double total = count == 0.0 ? 0.0 : sum / count;
-  return total;
 }

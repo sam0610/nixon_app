@@ -22,7 +22,10 @@ class _InspectionFormState extends State<InspectionForm>
       text: '巡查資料',
     ),
     new Tab(
-      text: '評分',
+      text: '服務評分',
+    ),
+    new Tab(
+      text: '清潔評分',
     ),
     new Tab(
       text: '總表',
@@ -41,6 +44,10 @@ class _InspectionFormState extends State<InspectionForm>
     if (myform.serveCust == null) myform.serveCust = new ServeCust();
     if (myform.handleCust == null) myform.handleCust = new HandleCust();
     if (myform.listenCust == null) myform.listenCust = new ListenCust();
+    if (myform.cleanlinessMall == null)
+      myform.cleanlinessMall = new CleanlinessMall();
+    if (myform.cleanlinessToilet == null)
+      myform.cleanlinessToilet = new CleanlinessToilet();
     if (myform.closure == null) myform.closure = new Closure();
     if (myform.communicationSkill == null)
       myform.communicationSkill = new CommunicationSkill();
@@ -58,7 +65,8 @@ class _InspectionFormState extends State<InspectionForm>
         autovalidate: _autoValidate,
         child: new TabBarView(controller: _tabController, children: <Widget>[
           new ViewInfo(),
-          new ViewGrooming(),
+          new ViewService(),
+          new ViewCleaning(),
           new ViewSummary(myform),
         ]),
       ),
@@ -135,6 +143,50 @@ class _SaveActionButtonState extends State<SaveActionButton> {
   }
 }
 
+class BuildDropdown extends StatefulWidget {
+  BuildDropdown({this.onChanged, this.initialValue});
+  final Function onChanged;
+  final String initialValue;
+
+  @override
+  _BuildDropdownState createState() => new _BuildDropdownState();
+}
+
+class _BuildDropdownState extends State<BuildDropdown> {
+  List<DropdownMenuItem<String>> _items;
+  String _selectedValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _buildItems();
+    _selectedValue = widget.initialValue;
+  }
+
+  _buildItems() {
+    _items = new List();
+    _selectedValue = widget.initialValue;
+
+    _items.add(new DropdownMenuItem(
+      value: '商場',
+      child: new Text('商場'),
+    ));
+
+    _items.add(new DropdownMenuItem(
+      value: '洗手間',
+      child: new Text('洗手間'),
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new DropdownButton(
+        items: _items,
+        value: _selectedValue,
+        onChanged: (value) => widget.onChanged(value));
+  }
+}
+
 class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -173,7 +225,7 @@ class _ViewInfoState extends State<ViewInfo>
     _nxNumberController.text = myform.nixonNumber.toString();
   }
 
-  void _showD() async {
+  void _showBuildingDialog() async {
     BuildingData building =
         await Navigator.of(context).push(new MaterialPageRoute<BuildingData>(
             builder: (BuildContext context) {
@@ -189,7 +241,7 @@ class _ViewInfoState extends State<ViewInfo>
     }
   }
 
-  void _showD2() async {
+  void _showStaffDialog() async {
     StaffData staffData =
         await Navigator.of(context).push(new MaterialPageRoute<StaffData>(
             builder: (BuildContext context) {
@@ -255,8 +307,8 @@ class _ViewInfoState extends State<ViewInfo>
         new TextFormField(
           style: Theme.of(context).textTheme.body2,
           decoration: InputDecoration(
-            suffixIcon:
-                new IconButton(icon: new Icon(Icons.search), onPressed: _showD),
+            suffixIcon: new IconButton(
+                icon: new Icon(Icons.search), onPressed: _showBuildingDialog),
             labelText: '大廈編號',
           ),
           controller: _bldgCodeController,
@@ -279,7 +331,7 @@ class _ViewInfoState extends State<ViewInfo>
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             suffixIcon: new IconButton(
-                icon: new Icon(Icons.search), onPressed: _showD2),
+                icon: new Icon(Icons.search), onPressed: _showStaffDialog),
             labelText: '員工編號',
           ),
           controller: _nxNumberController,
@@ -313,6 +365,9 @@ class _ViewInfoState extends State<ViewInfo>
             ),
           ],
         ),
+        BuildDropdown(
+            initialValue: myform.postName,
+            onChanged: (value) => myform.postName = value),
         MyFormTextField(
             labelText: '顧客比例',
             initialValue: myform.guestsProportion,
@@ -333,27 +388,42 @@ class _ViewInfoState extends State<ViewInfo>
   bool get wantKeepAlive => true;
 }
 
-class ViewGrooming extends StatefulWidget {
+class ViewService extends StatefulWidget {
   @override
-  _ViewGroomingState createState() => new _ViewGroomingState();
+  _ViewServiceState createState() => new _ViewServiceState();
 }
 
-class _ViewGroomingState extends State<ViewGrooming>
+class _ViewServiceState extends State<ViewService>
     with AutomaticKeepAliveClientMixin {
-  Widget cardContainer({List<Widget> children, Widget title}) {
+  Widget expansionContainer({List<Widget> children, String name}) {
+    Widget buildTitle() {
+      return new Row(children: <Widget>[
+        new Container(
+          margin: const EdgeInsets.only(left: 24.0),
+          child: new FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: new Text(
+              name,
+            ),
+          ),
+        ),
+      ]);
+    }
+
     return new Container(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: new ExpansionTile(
         onExpansionChanged: (b) => setState(() {
               PageStorage
                   .of(context)
-                  .writeState(context, b, identifier: ValueKey(title));
+                  .writeState(context, b, identifier: ValueKey(name));
             }),
         initiallyExpanded: PageStorage
                 .of(context)
-                .readState(context, identifier: ValueKey(title)) ??
+                .readState(context, identifier: ValueKey(name)) ??
             false,
-        title: title,
+        title: buildTitle(),
         children: children,
       ),
     );
@@ -364,7 +434,7 @@ class _ViewGroomingState extends State<ViewGrooming>
       @required int initialValue,
       @required ValueChanged<int> onChanged(value)}) {
     return new Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 8.0),
       child: new SliderFormField(
           initialValue: initialValue,
           validator: (value) => value == 0 ? '$labelText Not Set' : null,
@@ -393,7 +463,7 @@ class _ViewGroomingState extends State<ViewGrooming>
   Widget build(BuildContext context) {
     return new ListView(
       children: <Widget>[
-        cardContainer(title: new Text('儀容'),
+        expansionContainer(name: '儀容',
             //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
             children: <Widget>[
               makeSliderWidget(
@@ -451,8 +521,8 @@ class _ViewGroomingState extends State<ViewGrooming>
                 },
               )
             ]),
-        cardContainer(
-          title: new Text('舉止'),
+        expansionContainer(
+          name: '舉止',
           children: <Widget>[
             makeSliderWidget(
               initialValue: myform.behavior.behaviorScore,
@@ -474,7 +544,7 @@ class _ViewGroomingState extends State<ViewGrooming>
             ),
           ],
         ),
-        cardContainer(title: new Text('接待顧客'), children: [
+        expansionContainer(name: '接待顧客', children: [
           makeSliderWidget(
             initialValue: myform.serveCust.smileScore,
             labelText: '向客人展露笑容',
@@ -494,7 +564,7 @@ class _ViewGroomingState extends State<ViewGrooming>
             },
           ),
         ]),
-        cardContainer(title: new Text('了解需要'), children: [
+        expansionContainer(name: '了解需要', children: [
           makeSliderWidget(
             initialValue: myform.listenCust.listenCustScore,
             labelText: '聆聽',
@@ -505,7 +575,7 @@ class _ViewGroomingState extends State<ViewGrooming>
             },
           ),
         ]),
-        cardContainer(title: new Text('處理顧客需要'), children: [
+        expansionContainer(name: '處理顧客需要', children: [
           makeSliderWidget(
             initialValue: myform.handleCust.indicateWithPalmScore,
             labelText: '使用手掌指示方向',
@@ -534,7 +604,7 @@ class _ViewGroomingState extends State<ViewGrooming>
             },
           ),
         ]),
-        cardContainer(title: new Text('結束對話'), children: [
+        expansionContainer(name: '結束對話', children: [
           makeSliderWidget(
             initialValue: myform.closure.farewellScore,
             labelText: '��別',
@@ -545,7 +615,7 @@ class _ViewGroomingState extends State<ViewGrooming>
             },
           ),
         ]),
-        cardContainer(title: new Text('溝通能力'), children: [
+        expansionContainer(name: '溝通能力', children: [
           makeSliderWidget(
             initialValue: myform.communicationSkill.soundLevel,
             labelText: '說話聲量',
@@ -592,7 +662,7 @@ class _ViewGroomingState extends State<ViewGrooming>
             },
           ),
         ]),
-        cardContainer(title: new Text('窩心'), children: [
+        expansionContainer(name: '窩心', children: [
           makeSwitchWidget(
             initialValue: myform.warmHeart.warmHeartScore,
             labelText: '窩心',
@@ -681,94 +751,78 @@ class StaffDialog extends StatefulWidget {
 }
 
 class _StaffDialogState extends State<StaffDialog> {
-  List<StaffData> staffList;
-  List<StaffData> staffListFiltered;
+  List<StaffData> _staffList = [];
+  List<StaffData> _staffListFiltered = [];
   TextEditingController _filterController = new TextEditingController();
   final GlobalKey<AsyncLoaderState> _asyncLoaderState =
       new GlobalKey<AsyncLoaderState>();
 
   getStaff() async {
     await fetchStaffList(new http.Client(), widget.bldgCode).then((staff) {
-      staffList = staff;
-      staffListFiltered = staff;
+      _staffList = staff;
     }).catchError((e) => print(e));
   }
 
-  void _filtering(String text) {
-    List<StaffData> tmp;
-    staffList.forEach((f) {
-      if (f.givenName.contains(_filterController.text.toString())) {
-        tmp.add(f);
+  void _searchTextChanged(String text) {
+    _staffListFiltered = [];
+    _staffList.forEach((f) {
+      if (f.givenName.contains(text)) {
+        _staffListFiltered.add(f);
       }
     });
-    setState(() {
-      staffListFiltered = tmp;
-    });
+    setState(() {});
+  }
+
+  Widget _staffListBuilder(List<StaffData> _list) {
+    return new ListView.builder(
+        itemCount: _list.length,
+        itemExtent: 90.0,
+        itemBuilder: (BuildContext ctx, int index) {
+          StaffData staff = _list[index];
+          return new Container(
+              color: index % 2 == 1
+                  ? Theme.of(context).primaryColor.withAlpha(300)
+                  : Colors.white,
+              child: new Row(children: <Widget>[
+                new Expanded(
+                  child: new ListTile(
+                      onTap: () => Navigator.of(context).pop(staff),
+                      title: new Text(
+                        staff.nixonNumber.toString(),
+                      ),
+                      subtitle: new Text(staff.givenName)),
+                ),
+              ]));
+        });
   }
 
   Widget body() {
     return new Column(
       children: <Widget>[
         new Container(
-          child: new Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: new ListTile(
-              leading: new Icon(Icons.search),
-              title: new TextField(
-                onChanged: _filtering,
-                controller: _filterController,
-                decoration: new InputDecoration(
-                    hintText: 'Search', border: InputBorder.none),
-              ),
+            child: new Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: new ListTile(
+            leading: new Icon(Icons.search),
+            title: new TextField(
+              controller: _filterController,
+              decoration: new InputDecoration(
+                  hintText: 'Search', border: InputBorder.none),
+              onChanged: _searchTextChanged,
             ),
+            trailing: new IconButton(
+                icon: new Icon(Icons.cancel),
+                onPressed: () {
+                  _filterController.clear();
+                  _searchTextChanged('');
+                }),
           ),
-        ),
+        )),
         new Expanded(
-          child: staffListFiltered.length != 0 ||
-                  _filterController.text.isNotEmpty
-              ? new ListView.builder(
-                  itemCount: staffListFiltered.length,
-                  itemExtent: 90.0,
-                  itemBuilder: (BuildContext ctx, int index) {
-                    StaffData staff = staffListFiltered[index];
-                    return new Container(
-                        color: index % 2 == 1
-                            ? Theme.of(context).primaryColor.withAlpha(300)
-                            : Colors.white,
-                        child: new Row(children: <Widget>[
-                          new Expanded(
-                            child: new ListTile(
-                                onTap: () => Navigator.of(context).pop(staff),
-                                title: new Text(
-                                  staff.nixonNumber.toString(),
-                                ),
-                                subtitle: new Text(staff.givenName)),
-                          ),
-                        ]));
-                  },
-                )
-              : new ListView.builder(
-                  itemCount: staffList.length,
-                  itemExtent: 90.0,
-                  itemBuilder: (BuildContext ctx, int index) {
-                    StaffData staff = staffList[index];
-                    return new Container(
-                        color: index % 2 == 1
-                            ? Theme.of(context).primaryColor.withAlpha(300)
-                            : Colors.white,
-                        child: new Row(children: <Widget>[
-                          new Expanded(
-                            child: new ListTile(
-                                onTap: () => Navigator.of(context).pop(staff),
-                                title: new Text(
-                                  staff.nixonNumber.toString(),
-                                ),
-                                subtitle: new Text(staff.givenName)),
-                          ),
-                        ]));
-                  },
-                ),
-        ),
+            child: _staffListFiltered.length != 0 ||
+                    _filterController.text.isNotEmpty
+                ? _staffListBuilder(_staffListFiltered)
+                : _staffListBuilder(_staffList)),
       ],
     );
   }
@@ -788,5 +842,176 @@ class _StaffDialogState extends State<StaffDialog> {
           title: const Text('Select a Staff'),
         ),
         body: _asyncLoader);
+  }
+}
+
+class ViewCleaning extends StatefulWidget {
+  @override
+  _ViewCleaningState createState() => new _ViewCleaningState();
+}
+
+class _ViewCleaningState extends State<ViewCleaning> {
+  Widget expansionContainer({List<Widget> children, String name}) {
+    Widget buildTitle() {
+      return new Row(children: <Widget>[
+        new Container(
+          margin: const EdgeInsets.only(left: 24.0),
+          child: new FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: new Text(
+              name,
+            ),
+          ),
+        ),
+      ]);
+    }
+
+    return new Container(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: new ExpansionTile(
+        onExpansionChanged: (b) => setState(() {
+              PageStorage
+                  .of(context)
+                  .writeState(context, b, identifier: ValueKey(name));
+            }),
+        initiallyExpanded: PageStorage
+                .of(context)
+                .readState(context, identifier: ValueKey(name)) ??
+            false,
+        title: buildTitle(),
+        children: children,
+      ),
+    );
+  }
+
+  Widget makeSwitchWidget(
+      {@required String labelText,
+      @required int initialValue,
+      @required ValueChanged<int> onChanged(value)}) {
+    return new Padding(
+      padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+      child: new CheckBoxFormField(
+          initialValue: initialValue,
+          validator: (value) => value == 0 ? '$labelText Not Set' : null,
+          onSaved: (value) => print(value),
+          labelText: labelText,
+          onChanged: (value) => onChanged(value)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new ListView(
+      children: <Widget>[
+        expansionContainer(
+          name: '洗手間清潔',
+          //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+          children: <Widget>[
+            makeSwitchWidget(
+              initialValue: myform.cleanlinessToilet.toilet_1,
+              labelText: "清潔1",
+              onChanged: (value) {
+                setState(() {
+                  myform.cleanlinessToilet.toilet_1 = value;
+                });
+              },
+            ),
+            makeSwitchWidget(
+              initialValue: myform.cleanlinessToilet.toilet_2,
+              labelText: "清潔2",
+              onChanged: (value) {
+                setState(
+                  () {
+                    myform.cleanlinessToilet.toilet_2 = value;
+                  },
+                );
+              },
+            ),
+            makeSwitchWidget(
+              initialValue: myform.cleanlinessToilet.toilet_3,
+              labelText: "清潔3",
+              onChanged: (value) {
+                setState(
+                  () {
+                    myform.cleanlinessToilet.toilet_3 = value;
+                  },
+                );
+              },
+            ),
+            makeSwitchWidget(
+              initialValue: myform.cleanlinessToilet.toilet_4,
+              labelText: "清潔4",
+              onChanged: (value) {
+                setState(
+                  () {
+                    myform.cleanlinessToilet.toilet_4 = value;
+                  },
+                );
+              },
+            ),
+            makeSwitchWidget(
+              initialValue: myform.cleanlinessToilet.toilet_5,
+              labelText: "清潔5",
+              onChanged: (value) {
+                setState(
+                  () {
+                    myform.cleanlinessToilet.toilet_5 = value;
+                  },
+                );
+              },
+            ),
+            makeSwitchWidget(
+              initialValue: myform.cleanlinessToilet.toilet_6,
+              labelText: "清潔6",
+              onChanged: (value) {
+                setState(
+                  () {
+                    myform.cleanlinessToilet.toilet_6 = value;
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+        expansionContainer(
+          name: '商場',
+          //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+          children: <Widget>[
+            makeSwitchWidget(
+              initialValue: myform.cleanlinessMall.mall_1,
+              labelText: "清潔1",
+              onChanged: (value) {
+                setState(() {
+                  myform.cleanlinessMall.mall_1 = value;
+                });
+              },
+            ),
+            makeSwitchWidget(
+              initialValue: myform.cleanlinessMall.mall_2,
+              labelText: "清潔2",
+              onChanged: (value) {
+                setState(
+                  () {
+                    myform.cleanlinessMall.mall_2 = value;
+                  },
+                );
+              },
+            ),
+            makeSwitchWidget(
+              initialValue: myform.cleanlinessMall.mall_3,
+              labelText: "清潔3",
+              onChanged: (value) {
+                setState(
+                  () {
+                    myform.cleanlinessMall.mall_3 = value;
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

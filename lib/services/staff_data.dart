@@ -27,10 +27,8 @@ Future<List<StaffData>> fetchStaffList(http.Client client, String bldgCode,
   String dateStr = DateFormat("yyyy-MM-dd").format(date);
 
   var urlList =
-      'http://sammobile.azurewebsites.net/api/Staff/bldg/$bldgCode/$dateStr';
-  print(urlList);
+      'http://sammobile.azurewebsites.net/api/Staff/bldg/$bldgCode/$dateStr/l';
   final response = await client.get(urlList);
-  print(response.body.toString());
   return compute(parseStaff, response.body);
 }
 

@@ -24,7 +24,7 @@ class BuildingData {
 Future<List<BuildingData>> fetchBldgList(http.Client client) async {
   var urlList = "http://sammobile.azurewebsites.net/api/BuildingData/r/NK1H";
   final response = await client.get(urlList);
-  print(response.body.toString());
+
   return compute(parseBldgs, response.body);
 }
 
