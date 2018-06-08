@@ -70,7 +70,7 @@ class _SliderFieldState extends State<SliderField> {
   @override
   Widget build(BuildContext context) {
     return new Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(3.0),
       child: new InputDecorator(
         decoration: new InputDecoration(
           labelText: widget.labelText,

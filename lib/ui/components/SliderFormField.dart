@@ -48,7 +48,7 @@ class _SliderFormFieldState extends State<SliderFormField> {
 
   Widget _makeCheckBox(FormFieldState field) {
     return new Padding(
-      padding: const EdgeInsets.only(left: 8.0),
+      padding: const EdgeInsets.only(left: 15.0),
       child: new Row(
         children: <Widget>[
           new Text("NA:"),
@@ -75,7 +75,7 @@ class _SliderFormFieldState extends State<SliderFormField> {
   @override
   Widget build(BuildContext context) {
     return new Padding(
-      padding: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(10.0),
       child: new FormField<int>(
         initialValue: _selected,
         validator: widget.validator,

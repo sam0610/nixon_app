@@ -104,10 +104,29 @@ class Inspection extends Object with _$InspectionSerializerMixin {
       'skillScore': '技巧',
       'warmHeart': '窩心',
       'warmHeartScore': '窩心',
+
       'cleanlinessMall': '清潔-商場',
-      'cleanlinessToile': '清潔-洗手間'
+      'mall_1': '地面清潔', //'地面大致乾爽，地面清潔無明顯垃圾，如有垃圾，能在5分鐘內清理',
+      'mall_2': '適當的警告牌', //'擺放適當的警告牌',
+      'mall_3': '垃圾桶沒有滿瀉',
+
+      'cleanlinessToilet': '清潔-洗手間',
+      'toilet_1': '地面清潔', //'地面清潔無明顯垃圾，地面大致乾爽',
+      'toilet_2': '設備操作正常/有貼上待修標示', //設備操作正常/有貼上待修標示(如自來水，沖廁水，洗手棭機等)',
+      'toilet_3': '消耗品供應充足', //消耗品供應充足( 如擦手紙，廁紙，洗手液及廁格液等)',
+      'toilet_4': '檯面整潔', //檯面整潔( 如沒有垃圾或殘留的洗手液)',
+      'toilet_5': '垃圾桶沒有滿瀉', //'垃圾沒有滿瀉',
+      'toilet_6': '正確使用清潔工具',
     };
-    return chineseLabel.forEach((k, v) => k == key ? v : null);
+
+    var result='not found';
+    chineseLabel.forEach((k, v) {
+      if (k == key) {
+        result = v;
+        return;
+      }
+    });
+    return result;
   }
 }
 

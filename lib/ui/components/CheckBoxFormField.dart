@@ -122,7 +122,11 @@ class _CheckBoxFormFieldState extends State<CheckBoxFormField> {
                     child: new Padding(
                       padding: new EdgeInsets.all(10.0),
                       child: new Text(
-                        field.value == -1 ? 'N/A' : field.value.toString(),
+                        field.value == 0
+                            ? 'not set'
+                            : field.value == -1
+                                ? 'N/A'
+                                : field.value.toString(),
                         style: new TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),

@@ -210,9 +210,7 @@ class _ViewInfoState extends State<ViewInfo>
     with AutomaticKeepAliveClientMixin {
   TextEditingController _staffNameController = new TextEditingController(),
       _situationRemarkController = new TextEditingController(),
-      _guestsProportionController = new TextEditingController(),
       _foundLocationController = new TextEditingController(),
-      _postNameController = new TextEditingController(),
       _nxNumberController = new TextEditingController(),
       _bldgNameController = new TextEditingController(),
       _bldgCodeController = new TextEditingController();
@@ -257,13 +255,31 @@ class _ViewInfoState extends State<ViewInfo>
     }
   }
 
+  Widget makeDropDownWidget(
+      {@required String labelText,
+      @required String initialValue,
+      @required ValueChanged<String> onSave(value),
+      @required ValueChanged<String> onChanged(value)}) {
+    return new Padding(
+      padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 8.0),
+      child: new DropDownFormField(
+        initialValue: initialValue,
+        values: ['商場', '洗手間'],
+        validator: (value) => value == 0 ? '$labelText Not Set' : null,
+        onSave: (value) => print(value),
+        labelText: labelText,
+        onChanged: (value) => onChanged(value),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new ListView(
       padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
       children: <Widget>[
         new DateTextField(
-          labelText: '日期',
+          labelText: Inspection.translate('inspectionDate'),
           initialValue: myform.inspectionDate,
           validator: (value) =>
               myform.inspectionDate == null ? 'Date is Empty' : null,
@@ -277,13 +293,15 @@ class _ViewInfoState extends State<ViewInfo>
             new Expanded(
               flex: 1,
               child: TimeTextField(
-                  labelText: '到達時間',
+                  labelText: Inspection.translate('arrivedTime'),
                   initialValue: FormHelper.strToTime(myform.arrivedTime),
                   validator: (value) =>
                       myform.arrivedTime == null ? "not set" : null,
                   onChanged: (value) {
-                    myform.arrivedTime = FormHelper.timetoString(value);
-                    myform.leaveTime = myform.arrivedTime;
+                    setState(() {
+                      myform.arrivedTime = FormHelper.timetoString(value);
+                      myform.leaveTime = myform.arrivedTime;
+                    });
                   },
                   onSaved: (value) => myform.arrivedTime = FormHelper
                       .timetoString(value) //FormHelper.timetoString(value)),
@@ -292,7 +310,7 @@ class _ViewInfoState extends State<ViewInfo>
             new Expanded(
               flex: 1,
               child: TimeTextField(
-                  labelText: '離開時間',
+                  labelText: Inspection.translate('leaveTime'),
                   initialValue: FormHelper.strToTime(myform.leaveTime),
                   validator: (value) =>
                       myform.leaveTime == null ? "not set" : null,
@@ -309,7 +327,7 @@ class _ViewInfoState extends State<ViewInfo>
           decoration: InputDecoration(
             suffixIcon: new IconButton(
                 icon: new Icon(Icons.search), onPressed: _showBuildingDialog),
-            labelText: '大廈編號',
+            labelText: Inspection.translate('bldgCode'),
           ),
           controller: _bldgCodeController,
           onFieldSubmitted: (value) => _bldgCodeController.text = value,
@@ -319,7 +337,7 @@ class _ViewInfoState extends State<ViewInfo>
         new TextFormField(
           style: Theme.of(context).textTheme.body2,
           decoration: InputDecoration(
-            labelText: '大廈名稱',
+            labelText: Inspection.translate('bldgName'),
           ),
           controller: _bldgNameController,
           onFieldSubmitted: (value) => _bldgNameController.text = value,
@@ -332,7 +350,7 @@ class _ViewInfoState extends State<ViewInfo>
           decoration: InputDecoration(
             suffixIcon: new IconButton(
                 icon: new Icon(Icons.search), onPressed: _showStaffDialog),
-            labelText: '員工編號',
+            labelText: Inspection.translate('nixonNumber'),
           ),
           controller: _nxNumberController,
           onFieldSubmitted: (value) => _nxNumberController.text = value,
@@ -340,7 +358,7 @@ class _ViewInfoState extends State<ViewInfo>
           onSaved: (value) => myform.nixonNumber = FormHelper.strToInt(value),
         ),
         MyFormTextField(
-            labelText: '員工姓名',
+            labelText: Inspection.translate('staffName'),
             initialValue: myform.staffName,
             controller: _staffNameController,
             nullable: false,
@@ -350,31 +368,34 @@ class _ViewInfoState extends State<ViewInfo>
             new Expanded(
               flex: 1,
               child: MyFormTextField(
-                  labelText: '位置',
+                  labelText: Inspection.translate('foundLocation'),
                   initialValue: myform.foundLocation,
                   controller: _foundLocationController,
                   onSave: (value) => myform.foundLocation = value),
             ),
             new Expanded(
               flex: 1,
-              child: MyFormTextField(
-                  labelText: '崗位',
+              child: makeDropDownWidget(
+                  labelText: Inspection.translate('postName'),
                   initialValue: myform.postName,
-                  controller: _postNameController,
-                  onSave: (value) => myform.postName = value),
+                  onSave: (value) => myform.postName = value,
+                  onChanged: (value) => myform.postName = value),
+            ),
+            new Expanded(
+              flex: 1,
+              child: NumberFormField(
+                  labelText: Inspection.translate('guestsProportion'),
+                  validator: (value) => null,
+                  initialValue: int.tryParse(myform.guestsProportion) ?? 0,
+                  onChanged: (value) =>
+                      myform.guestsProportion = value.toString(),
+                  onSaved: (value) =>
+                      myform.guestsProportion = value.toString()),
             ),
           ],
         ),
-        BuildDropdown(
-            initialValue: myform.postName,
-            onChanged: (value) => myform.postName = value),
         MyFormTextField(
-            labelText: '顧客比例',
-            initialValue: myform.guestsProportion,
-            controller: _guestsProportionController,
-            onSave: (value) => myform.guestsProportion = value),
-        MyFormTextField(
-            labelText: '摘要',
+            labelText: Inspection.translate('situationRemark'),
             initialValue: myform.situationRemark,
             maxLines: 1,
             controller: _situationRemarkController,
@@ -463,12 +484,12 @@ class _ViewServiceState extends State<ViewService>
   Widget build(BuildContext context) {
     return new ListView(
       children: <Widget>[
-        expansionContainer(name: '儀容',
+        expansionContainer(name: Inspection.translate('grooming'),
             //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
             children: <Widget>[
               makeSliderWidget(
                 initialValue: myform.grooming.groomingScore,
-                labelText: "儀容",
+                labelText: Inspection.translate('groomingScore'),
                 onChanged: (value) {
                   setState(() {
                     myform.grooming.groomingScore = value;
@@ -477,7 +498,7 @@ class _ViewServiceState extends State<ViewService>
               ),
               makeSliderWidget(
                 initialValue: myform.grooming.hairScore,
-                labelText: "髮型",
+                labelText: Inspection.translate('hairScore'),
                 onChanged: (value) {
                   setState(() {
                     myform.grooming.hairScore = value;
@@ -486,7 +507,7 @@ class _ViewServiceState extends State<ViewService>
               ),
               makeSliderWidget(
                 initialValue: myform.grooming.uniformScore,
-                labelText: "制服",
+                labelText: Inspection.translate('uniformScore'),
                 onChanged: (value) {
                   setState(() {
                     myform.grooming.uniformScore = value;
@@ -495,7 +516,7 @@ class _ViewServiceState extends State<ViewService>
               ),
               makeSliderWidget(
                 initialValue: myform.grooming.decorationScore,
-                labelText: "飾物",
+                labelText: Inspection.translate('decorationScore'),
                 onChanged: (value) {
                   setState(() {
                     myform.grooming.decorationScore = value;
@@ -504,7 +525,7 @@ class _ViewServiceState extends State<ViewService>
               ),
               makeSliderWidget(
                 initialValue: myform.grooming.maskWearScore,
-                labelText: "口罩技巧",
+                labelText: Inspection.translate('maskWearScore'),
                 onChanged: (value) {
                   setState(() {
                     myform.grooming.maskWearScore = value;
@@ -513,7 +534,7 @@ class _ViewServiceState extends State<ViewService>
               ),
               makeSliderWidget(
                 initialValue: myform.grooming.maskCleanScore,
-                labelText: "口罩清潔",
+                labelText: Inspection.translate('maskCleanScore'),
                 onChanged: (value) {
                   setState(() {
                     myform.grooming.maskCleanScore = value;
@@ -522,11 +543,11 @@ class _ViewServiceState extends State<ViewService>
               )
             ]),
         expansionContainer(
-          name: '舉止',
+          name: Inspection.translate('behavior'),
           children: <Widget>[
             makeSliderWidget(
               initialValue: myform.behavior.behaviorScore,
-              labelText: "行為舉止",
+              labelText: Inspection.translate('behaviorScore'),
               onChanged: (value) {
                 setState(() {
                   myform.behavior.behaviorScore = value;
@@ -535,7 +556,7 @@ class _ViewServiceState extends State<ViewService>
             ),
             makeSliderWidget(
               initialValue: myform.behavior.mindScore,
-              labelText: "精神狀態",
+              labelText: Inspection.translate('mindScore'),
               onChanged: (value) {
                 setState(() {
                   myform.behavior.mindScore = value;
@@ -544,30 +565,34 @@ class _ViewServiceState extends State<ViewService>
             ),
           ],
         ),
-        expansionContainer(name: '接待顧客', children: [
-          makeSliderWidget(
-            initialValue: myform.serveCust.smileScore,
-            labelText: '向客人展露笑容',
-            onChanged: (value) {
-              setState(() {
-                myform.serveCust.smileScore = value;
-              });
-            },
-          ),
-          makeSliderWidget(
-            initialValue: myform.serveCust.greetingScore,
-            labelText: '打招呼',
-            onChanged: (value) {
-              setState(() {
-                myform.serveCust.greetingScore = value;
-              });
-            },
-          ),
-        ]),
-        expansionContainer(name: '了解需要', children: [
+        expansionContainer(
+            name: Inspection.translate(
+              'serveCust',
+            ),
+            children: [
+              makeSliderWidget(
+                initialValue: myform.serveCust.smileScore,
+                labelText: Inspection.translate('smileScore'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.serveCust.smileScore = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.serveCust.greetingScore,
+                labelText: Inspection.translate('greetingScore'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.serveCust.greetingScore = value;
+                  });
+                },
+              ),
+            ]),
+        expansionContainer(name: Inspection.translate('listenCust'), children: [
           makeSliderWidget(
             initialValue: myform.listenCust.listenCustScore,
-            labelText: '聆聽',
+            labelText: Inspection.translate('listenCustScore'),
             onChanged: (value) {
               setState(() {
                 myform.listenCust.listenCustScore = value;
@@ -575,10 +600,10 @@ class _ViewServiceState extends State<ViewService>
             },
           ),
         ]),
-        expansionContainer(name: '處理顧客需要', children: [
+        expansionContainer(name: Inspection.translate('handleCust'), children: [
           makeSliderWidget(
             initialValue: myform.handleCust.indicateWithPalmScore,
-            labelText: '使用手掌指示方向',
+            labelText: Inspection.translate('indicateWithPalmScore'),
             onChanged: (value) {
               setState(() {
                 myform.handleCust.indicateWithPalmScore = value;
@@ -587,7 +612,7 @@ class _ViewServiceState extends State<ViewService>
           ),
           makeSliderWidget(
             initialValue: myform.handleCust.respondCustNeedScore,
-            labelText: '回應顧客需要',
+            labelText: Inspection.translate('respondCustNeedScore'),
             onChanged: (value) {
               setState(() {
                 myform.handleCust.respondCustNeedScore = value;
@@ -596,7 +621,7 @@ class _ViewServiceState extends State<ViewService>
           ),
           makeSliderWidget(
             initialValue: myform.handleCust.unexpectedSituationScore,
-            labelText: '處理突發事件技巧和反應',
+            labelText: Inspection.translate('unexpectedSituationScore'),
             onChanged: (value) {
               setState(() {
                 myform.handleCust.unexpectedSituationScore = value;
@@ -604,68 +629,72 @@ class _ViewServiceState extends State<ViewService>
             },
           ),
         ]),
-        expansionContainer(name: '結束對話', children: [
-          makeSliderWidget(
-            initialValue: myform.closure.farewellScore,
-            labelText: '��別',
-            onChanged: (value) {
-              setState(() {
-                myform.closure.farewellScore = value;
-              });
-            },
-          ),
-        ]),
-        expansionContainer(name: '溝通能力', children: [
-          makeSliderWidget(
-            initialValue: myform.communicationSkill.soundLevel,
-            labelText: '說話聲量',
-            onChanged: (value) {
-              setState(() {
-                myform.communicationSkill.soundLevel = value;
-              });
-            },
-          ),
-          makeSliderWidget(
-            initialValue: myform.communicationSkill.soundSpeed,
-            labelText: '說話速度',
-            onChanged: (value) {
-              setState(() {
-                myform.communicationSkill.soundSpeed = value;
-              });
-            },
-          ),
-          makeSliderWidget(
-            initialValue: myform.communicationSkill.polite,
-            labelText: '用詞及禮貌',
-            onChanged: (value) {
-              setState(() {
-                myform.communicationSkill.polite = value;
-              });
-            },
-          ),
-          makeSliderWidget(
-            initialValue: myform.communicationSkill.attitudeScore,
-            labelText: '說話態度',
-            onChanged: (value) {
-              setState(() {
-                myform.communicationSkill.attitudeScore = value;
-              });
-            },
-          ),
-          makeSliderWidget(
-            initialValue: myform.communicationSkill.skillScore,
-            labelText: '溝通技巧',
-            onChanged: (value) {
-              setState(() {
-                myform.communicationSkill.skillScore = value;
-              });
-            },
-          ),
-        ]),
+        expansionContainer(
+            name: Inspection.translate('farewellScore'),
+            children: [
+              makeSliderWidget(
+                initialValue: myform.closure.farewellScore,
+                labelText: Inspection.translate('farewellScore'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.closure.farewellScore = value;
+                  });
+                },
+              ),
+            ]),
+        expansionContainer(
+            name: Inspection.translate('communicationSkill'),
+            children: [
+              makeSliderWidget(
+                initialValue: myform.communicationSkill.soundLevel,
+                labelText: Inspection.translate('soundLevel'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.communicationSkill.soundLevel = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.communicationSkill.soundSpeed,
+                labelText: Inspection.translate('soundSpeed'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.communicationSkill.soundSpeed = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.communicationSkill.polite,
+                labelText: Inspection.translate('polite'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.communicationSkill.polite = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.communicationSkill.attitudeScore,
+                labelText: Inspection.translate('attitudeScore'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.communicationSkill.attitudeScore = value;
+                  });
+                },
+              ),
+              makeSliderWidget(
+                initialValue: myform.communicationSkill.skillScore,
+                labelText: Inspection.translate('skillScore'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.communicationSkill.skillScore = value;
+                  });
+                },
+              ),
+            ]),
         expansionContainer(name: '窩心', children: [
           makeSwitchWidget(
             initialValue: myform.warmHeart.warmHeartScore,
-            labelText: '窩心',
+            labelText: Inspection.translate('warmHeartScore'),
             onChanged: (value) {
               setState(() {
                 myform.warmHeart.warmHeartScore = value;
@@ -851,6 +880,18 @@ class ViewCleaning extends StatefulWidget {
 }
 
 class _ViewCleaningState extends State<ViewCleaning> {
+  int showExpansion;
+  @override
+  void initState() {
+    super.initState();
+    showExpansion = 0;
+    if (myform.postName == '商場') {
+      showExpansion = 1;
+    } else if (myform.postName == "洗手間") {
+      showExpansion = 2;
+    }
+  }
+
   Widget expansionContainer({List<Widget> children, String name}) {
     Widget buildTitle() {
       return new Row(children: <Widget>[
@@ -902,116 +943,129 @@ class _ViewCleaningState extends State<ViewCleaning> {
 
   @override
   Widget build(BuildContext context) {
-    return new ListView(
-      children: <Widget>[
-        expansionContainer(
-          name: '洗手間清潔',
-          //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-          children: <Widget>[
-            makeSwitchWidget(
-              initialValue: myform.cleanlinessToilet.toilet_1,
-              labelText: "清潔1",
-              onChanged: (value) {
-                setState(() {
-                  myform.cleanlinessToilet.toilet_1 = value;
-                });
-              },
-            ),
-            makeSwitchWidget(
-              initialValue: myform.cleanlinessToilet.toilet_2,
-              labelText: "清潔2",
-              onChanged: (value) {
-                setState(
-                  () {
-                    myform.cleanlinessToilet.toilet_2 = value;
-                  },
-                );
-              },
-            ),
-            makeSwitchWidget(
-              initialValue: myform.cleanlinessToilet.toilet_3,
-              labelText: "清潔3",
-              onChanged: (value) {
-                setState(
-                  () {
-                    myform.cleanlinessToilet.toilet_3 = value;
-                  },
-                );
-              },
-            ),
-            makeSwitchWidget(
-              initialValue: myform.cleanlinessToilet.toilet_4,
-              labelText: "清潔4",
-              onChanged: (value) {
-                setState(
-                  () {
-                    myform.cleanlinessToilet.toilet_4 = value;
-                  },
-                );
-              },
-            ),
-            makeSwitchWidget(
-              initialValue: myform.cleanlinessToilet.toilet_5,
-              labelText: "清潔5",
-              onChanged: (value) {
-                setState(
-                  () {
-                    myform.cleanlinessToilet.toilet_5 = value;
-                  },
-                );
-              },
-            ),
-            makeSwitchWidget(
-              initialValue: myform.cleanlinessToilet.toilet_6,
-              labelText: "清潔6",
-              onChanged: (value) {
-                setState(
-                  () {
-                    myform.cleanlinessToilet.toilet_6 = value;
-                  },
-                );
-              },
-            ),
-          ],
-        ),
-        expansionContainer(
-          name: '商場',
-          //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-          children: <Widget>[
-            makeSwitchWidget(
-              initialValue: myform.cleanlinessMall.mall_1,
-              labelText: "清潔1",
-              onChanged: (value) {
-                setState(() {
-                  myform.cleanlinessMall.mall_1 = value;
-                });
-              },
-            ),
-            makeSwitchWidget(
-              initialValue: myform.cleanlinessMall.mall_2,
-              labelText: "清潔2",
-              onChanged: (value) {
-                setState(
-                  () {
-                    myform.cleanlinessMall.mall_2 = value;
-                  },
-                );
-              },
-            ),
-            makeSwitchWidget(
-              initialValue: myform.cleanlinessMall.mall_3,
-              labelText: "清潔3",
-              onChanged: (value) {
-                setState(
-                  () {
-                    myform.cleanlinessMall.mall_3 = value;
-                  },
-                );
-              },
-            ),
-          ],
-        ),
-      ],
-    );
+    if (showExpansion == 2) {
+      return new ListView(
+        children: <Widget>[
+          expansionContainer(
+            name: Inspection.translate('cleanlinessToilet'),
+            //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+            children: <Widget>[
+              makeSwitchWidget(
+                initialValue: myform.cleanlinessToilet.toilet_1,
+                labelText: Inspection.translate('toilet_1'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.cleanlinessToilet.toilet_1 = value;
+                  });
+                },
+              ),
+              makeSwitchWidget(
+                initialValue: myform.cleanlinessToilet.toilet_2,
+                labelText: Inspection.translate('toilet_2'),
+                onChanged: (value) {
+                  setState(
+                    () {
+                      myform.cleanlinessToilet.toilet_2 = value;
+                    },
+                  );
+                },
+              ),
+              makeSwitchWidget(
+                initialValue: myform.cleanlinessToilet.toilet_3,
+                labelText: Inspection.translate('toilet_3'),
+                onChanged: (value) {
+                  setState(
+                    () {
+                      myform.cleanlinessToilet.toilet_3 = value;
+                    },
+                  );
+                },
+              ),
+              makeSwitchWidget(
+                initialValue: myform.cleanlinessToilet.toilet_4,
+                labelText: Inspection.translate('toilet_4'),
+                onChanged: (value) {
+                  setState(
+                    () {
+                      myform.cleanlinessToilet.toilet_4 = value;
+                    },
+                  );
+                },
+              ),
+              makeSwitchWidget(
+                initialValue: myform.cleanlinessToilet.toilet_5,
+                labelText: Inspection.translate('toilet_5'),
+                onChanged: (value) {
+                  setState(
+                    () {
+                      myform.cleanlinessToilet.toilet_5 = value;
+                    },
+                  );
+                },
+              ),
+              makeSwitchWidget(
+                initialValue: myform.cleanlinessToilet.toilet_6,
+                labelText: Inspection.translate('toilet_6'),
+                onChanged: (value) {
+                  setState(
+                    () {
+                      myform.cleanlinessToilet.toilet_6 = value;
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      );
+    } else if (showExpansion == 1) {
+      return new ListView(
+        children: <Widget>[
+          expansionContainer(
+            name: Inspection.translate('cleanlinessMall'),
+            //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+            children: <Widget>[
+              makeSwitchWidget(
+                initialValue: myform.cleanlinessMall.mall_1,
+                labelText: Inspection.translate('mall_1'),
+                onChanged: (value) {
+                  setState(() {
+                    myform.cleanlinessMall.mall_1 = value;
+                  });
+                },
+              ),
+              makeSwitchWidget(
+                initialValue: myform.cleanlinessMall.mall_2,
+                labelText: Inspection.translate('mall_2'),
+                onChanged: (value) {
+                  setState(
+                    () {
+                      myform.cleanlinessMall.mall_2 = value;
+                    },
+                  );
+                },
+              ),
+              makeSwitchWidget(
+                initialValue: myform.cleanlinessMall.mall_3,
+                labelText: Inspection.translate('mall_3'),
+                onChanged: (value) {
+                  setState(
+                    () {
+                      myform.cleanlinessMall.mall_3 = value;
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      );
+    } else {
+      return new ListView(
+        children: <Widget>[
+          new Text('請選擇崗位', style: Theme.of(context).textTheme.body2)
+        ],
+      );
+    }
   }
 }
