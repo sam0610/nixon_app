@@ -59,19 +59,19 @@ class _NumberFormFieldState extends State<NumberFormField> {
                         textAlign: TextAlign.left,
                         style: Theme.of(context).textTheme.body2),
                   )),
-                  new IconButton(
-                    icon: Icon(
+                  new GestureDetector(
+                    child: Icon(
                       Icons.add_circle,
                       color: Colors.blue,
                     ),
-                    onPressed: () => changed(1, field),
+                    onTap: () => changed(1, field),
                   ),
-                  new IconButton(
-                    icon: Icon(
+                  new GestureDetector(
+                    child: Icon(
                       Icons.remove_circle,
                       color: Colors.red,
                     ),
-                    onPressed: () => changed(-1, field),
+                    onTap: () => changed(-1, field),
                   )
                 ]),
           ),

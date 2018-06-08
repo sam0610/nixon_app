@@ -34,7 +34,10 @@ class _MyFormTextFieldState extends State<MyFormTextField> {
   @override
   Widget build(BuildContext context) {
     return new TextFormField(
-      style: Theme.of(context).textTheme.body2,
+      style: new TextStyle(
+        fontSize: 20.0,
+        color: Colors.black,
+      ),
       maxLines: widget.maxLines,
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(

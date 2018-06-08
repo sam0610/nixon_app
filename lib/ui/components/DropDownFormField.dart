@@ -20,17 +20,16 @@ class DropDownFormField extends StatefulWidget {
 }
 
 class _DropDownFormFieldState extends State<DropDownFormField> {
-  String _value = '';
+  String _value;
   List<String> _values = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _values.add('');
     _values.addAll(widget.values);
-    _value = widget.initialValue ?? '';
-    if (!_values.contains(_value)) _values.add(_value);
+    _value = widget.initialValue ?? null;
+    if (!_values.contains(_value)) _value = null;
   }
 
   void _checkChanged(String value, FormFieldState field) {
@@ -60,6 +59,7 @@ class _DropDownFormFieldState extends State<DropDownFormField> {
               child: new DropdownButtonHideUnderline(
                 child: new DropdownButton<String>(
                   value: field.value,
+                  hint: new Text('請選擇'),
                   isDense: true,
                   onChanged: (value) => _checkChanged(value, field),
                   items: _values.map((String value) {
