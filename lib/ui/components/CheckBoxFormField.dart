@@ -2,6 +2,7 @@ part of nixon_app;
 
 class CheckBoxFormField extends StatefulWidget {
   final String labelText;
+  //test
   final int initialValue;
   final ValueChanged<int> onChanged;
   final Function onSaved;
