@@ -32,11 +32,11 @@ class _DropDownFormFieldState extends State<DropDownFormField> {
     if (!_values.contains(_value)) _value = null;
   }
 
-  void _checkChanged(String value, FormFieldState field) {
+  void _checkChanged(String v, FormFieldState field) {
     setState(() {
-      _value = value;
-      field.didChange(value);
-      widget.onChanged(value);
+      _value = v;
+      widget.onChanged(_value);
+      field.didChange(_value);
     });
   }
 
@@ -50,24 +50,22 @@ class _DropDownFormFieldState extends State<DropDownFormField> {
         if (Form.of(field.context).widget.autovalidate) {
           field.validate();
         }
-        return new Container(
-          child: new InputDecorator(
-            decoration: InputDecoration(labelText: widget.labelText),
-            isEmpty: field.value == '',
-            child: new Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: new DropdownButtonHideUnderline(
-                child: new DropdownButton<String>(
-                  value: field.value,
-                  hint: new Text('請選擇'),
-                  isDense: true,
-                  onChanged: (value) => _checkChanged(value, field),
-                  items: _values.map((String value) {
-                    return new DropdownMenuItem(
-                        child: new Text(value), value: value);
-                  }).toList(),
-                ),
-              ),
+        return new InputDecorator(
+          decoration: InputDecoration(
+            labelText: widget.labelText,
+            border: InputBorder.none,
+          ),
+          //isEmpty: field.value == '',
+          child: new DropdownButtonHideUnderline(
+            child: new DropdownButton<String>(
+              value: field.value,
+              hint: new Text('請選擇'),
+              isDense: true,
+              onChanged: (v) => _checkChanged(v, field),
+              items: _values.map((String value) {
+                return new DropdownMenuItem<String>(
+                    child: new Text(value), value: value);
+              }).toList(),
             ),
           ),
         );

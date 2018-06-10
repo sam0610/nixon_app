@@ -44,7 +44,7 @@ class _DateTextFieldState extends State<DateTextField> {
                 border: InputBorder.none,
                 errorText: field.errorText),
             child: new Padding(
-              padding: const EdgeInsets.only(right: 8.0),
+              padding: const EdgeInsets.only(top: 5.0, right: 8.0),
               child: new InkWell(
                 // shape: new RoundedRectangleBorder(
                 //     borderRadius: new BorderRadius.circular(5.0)),

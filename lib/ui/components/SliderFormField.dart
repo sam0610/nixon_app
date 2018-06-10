@@ -75,7 +75,10 @@ class _SliderFormFieldState extends State<SliderFormField> {
   @override
   Widget build(BuildContext context) {
     return new Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10.0,
+        vertical: 3.0,
+      ),
       child: new FormField<int>(
         initialValue: _selected,
         validator: widget.validator,
@@ -89,8 +92,9 @@ class _SliderFormFieldState extends State<SliderFormField> {
               labelText: widget.labelText,
               errorText: field.errorText,
               border: OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(5.0)),
-              contentPadding: new EdgeInsets.all(3.0),
+                borderRadius: new BorderRadius.circular(5.0),
+              ),
+              contentPadding: new EdgeInsets.all(8.0),
             ),
             child: new Row(
                 mainAxisSize: MainAxisSize.min,

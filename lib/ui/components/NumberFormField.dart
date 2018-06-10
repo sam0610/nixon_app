@@ -44,6 +44,7 @@ class _NumberFormFieldState extends State<NumberFormField> {
         }
         return new InputDecorator(
           decoration: new InputDecoration(
+            border: InputBorder.none,
             labelText: widget.labelText,
             errorText: field.errorText,
           ),

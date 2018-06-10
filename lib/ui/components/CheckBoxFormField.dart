@@ -19,7 +19,7 @@ class CheckBoxFormField extends StatefulWidget {
 }
 
 class _CheckBoxFormFieldState extends State<CheckBoxFormField> {
-  int _default = 100; //default is true
+  int _default = 0; //default is true
   int _selected; //0 for not set -1 for na positive for score
   bool _checked = false;
 
