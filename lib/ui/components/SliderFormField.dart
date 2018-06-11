@@ -4,8 +4,8 @@ class SliderFormField extends StatefulWidget {
   final String labelText;
   final int initialValue;
   final ValueChanged<int> onChanged;
-  final Function onSaved;
-  final FormFieldValidator validator;
+  final FormFieldSetter<int> onSaved;
+  final FormFieldValidator<int> validator;
   SliderFormField(
       {@required this.initialValue,
       @required this.labelText,
@@ -69,7 +69,23 @@ class _SliderFormFieldState extends State<SliderFormField> {
             divisions: 10,
             onChanged: (value) => _sliderChanged(value, field))
         // : null;
-        : new Text("NA");
+        : new Text("");
+  }
+
+  Widget _makeText(FormFieldState field) {
+    return new Container(
+      width: 60.0,
+      alignment: AlignmentDirectional.center,
+      child: new Padding(
+        padding: new EdgeInsets.all(10.0),
+        child: new Text(
+          field.value == 0
+              ? 'null'
+              : field.value == -1 ? 'N/A' : field.value.toString(),
+          style: new TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
   }
 
   @override
@@ -101,22 +117,8 @@ class _SliderFormFieldState extends State<SliderFormField> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   _makeCheckBox(field),
-                  new Expanded(child: _makeSlider(field)),
-                  new Container(
-                    width: 50.0,
-                    alignment: AlignmentDirectional.center,
-                    child: new Padding(
-                      padding: new EdgeInsets.all(10.0),
-                      child: new Text(
-                        field.value == 0
-                            ? 'not set'
-                            : field.value == -1
-                                ? 'N/A'
-                                : field.value.toString(),
-                        style: new TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  )
+                  _makeText(field),
+                  new Expanded(child: _makeSlider(field))
                 ]),
           );
         },

@@ -6,7 +6,7 @@ class ViewInfo extends StatefulWidget {
 }
 
 class _ViewInfoState extends State<ViewInfo>
-// with AutomaticKeepAliveClientMixin
+//with AutomaticKeepAliveClientMixin
 {
   TextEditingController _staffNameController = new TextEditingController(),
       _situationRemarkController = new TextEditingController(),
@@ -201,7 +201,6 @@ class _ViewInfoState extends State<ViewInfo>
     );
   }
 
-  // TODO: implement wantKeepAlive
   //@override
   //bool get wantKeepAlive => true;
 }

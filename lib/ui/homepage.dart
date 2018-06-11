@@ -9,6 +9,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool boolEdit = false;
+  bool _loading = false;
 
   @override
   void initState() {
@@ -21,7 +22,14 @@ class _HomePageState extends State<HomePage> {
     if (_user == null) Navigator.pushReplacementNamed(context, "/login");
   }
 
-  bool _loading = false;
+  _addForm() {
+    Inspection newform = new Inspection();
+    Navigator.of(context).push(
+          new AnimatedRoute(
+            builder: (_) => new InspectionForm(form: newform),
+          ),
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +37,10 @@ class _HomePageState extends State<HomePage> {
         appBar: new AppBar(
           title: new Text("Mystery Shopper"),
           centerTitle: true,
+        ),
+        floatingActionButton: new FloatingActionButton(
+          child: new Icon(Icons.add_circle),
+          onPressed: _addForm,
         ),
         drawer: DrawerWidget(
           context: context,

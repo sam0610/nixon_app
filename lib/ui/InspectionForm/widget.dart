@@ -58,7 +58,7 @@ class _ExpansionContainerState extends State<ExpansionContainer> {
   @override
   Widget build(BuildContext context) {
     return new Container(
-      padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
+      padding: const EdgeInsets.only(bottom: 10.0),
       child: new ExpansionTile(
         onExpansionChanged: (b) => setState(() {
               PageStorage

@@ -6,7 +6,7 @@ class ViewService extends StatefulWidget {
 }
 
 class _ViewServiceState extends State<ViewService>
-//ith AutomaticKeepAliveClientMixin
+//with AutomaticKeepAliveClientMixin
 {
   @override
   Widget build(BuildContext context) {

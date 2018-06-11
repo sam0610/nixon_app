@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nixon_app/nixon_app.dart';
 
@@ -6,24 +9,6 @@ void main() => runApp(new MyApp());
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-  /*Future<bool> _checkLogin() async {
-    bool result;
-    await FirebaseAuth.instance
-        .currentUser()
-        .then((user) => user != null ? result = true : result = false);
-    return result;
-  }
-
-  bool _login() {
-    _checkLogin().then((bool result) {
-      return true;
-    }).catchError((onError) {
-      return false;
-    });
-    return false;
-  }
-
-*/
   TextTheme buildTextTheme() {
     final baseTheme = ThemeData.light();
     final textTheme = baseTheme.textTheme

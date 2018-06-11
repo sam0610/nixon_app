@@ -8,12 +8,20 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
-    super.initState();
     _auth.onAuthStateChanged.firstWhere((user) => user != null).then((user) {
       AuthHelper.setCurrentUser(user);
-      Navigator.of(context).pushReplacementNamed("/home");
+      new Future.delayed(new Duration(seconds: 5))
+          .then((_) => Navigator.of(context).pushReplacementNamed("/home"));
     });
 
+    _auth.onAuthStateChanged.firstWhere((user) => user == null).then((user) {
+      new Future.delayed(new Duration(seconds: 5))
+          .then((_) => Navigator.of(context).pushReplacementNamed("/login"));
+    });
+    super.initState();
+  }
+
+  login() {
     new Future.delayed(new Duration(seconds: 5))
         .then((_) => Navigator.of(context).pushReplacementNamed("/login"));
   }
@@ -21,7 +29,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: new Center(child: new AnimatedCircularProgress()),
-    );
+        backgroundColor: Colors.redAccent.shade700,
+        body: new Center(child: new AnimatedCircularProgress()));
   }
 }
