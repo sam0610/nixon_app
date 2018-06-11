@@ -66,6 +66,7 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
 
 abstract class _$InspectionSerializerMixin {
   String get id;
+  String get status;
   DateTime get inspectionDate;
   String get bldgCode;
   String get bldgName;
@@ -92,6 +93,7 @@ abstract class _$InspectionSerializerMixin {
   Map<String, dynamic> toJson() {
     var val = <String, dynamic>{
       'id': id,
+      'status': status,
       'inspectionDate': inspectionDate?.toIso8601String(),
       'bldgCode': bldgCode,
       'bldgName': bldgName,

@@ -122,13 +122,21 @@ class FormHelper {
   static double calculate(Map<String, dynamic> object) {
     double count = 0.0;
     double sum = 0.0;
+    bool incomplete = false;
     object.forEach((k, v) {
-      int value = v is int ? v : 0;
-      if (value > 0) {
-        count += 1.0;
-        sum += v;
+      if (v is int) {
+        int value = v;
+        if (value >= 20 && value <= 100) {
+          count += 1.0;
+          sum += v;
+        } else if (value != -1) {
+          incomplete = true;
+        }
+      } else {
+        incomplete = true;
       }
     });
+    if (incomplete) return -1.0;
     final double total = count == 0.0 ? 0.0 : sum / count;
     return total;
   }

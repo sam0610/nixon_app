@@ -40,11 +40,17 @@ class _ViewSummaryState extends State<ViewSummary> {
         ),
         new Padding(
           padding: const EdgeInsets.all(10.0),
-          child: new Text(
-            score.toInt().toString(),
-            style: style.copyWith(color: Colors.blue),
-            textAlign: TextAlign.center,
-          ),
+          child: score > -1
+              ? new Text(
+                  score.toInt().toString(),
+                  style: style.copyWith(color: Colors.blue),
+                  textAlign: TextAlign.center,
+                )
+              : new Text(
+                  'incomplete',
+                  style: style.copyWith(color: Colors.blue),
+                  textAlign: TextAlign.center,
+                ),
         ),
       ],
     );
@@ -97,10 +103,8 @@ class _ViewSummaryState extends State<ViewSummary> {
       return _row;
     }
 
-    return new Card(
-        elevation: 4.0,
-        shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(5.0)),
+    return new Container(
+        padding: EdgeInsets.all(10.0),
         child: ScopedModelDescendant<InspectionModel>(
           builder: (context, _, model) => new ListView(
                 children: <Widget>[
@@ -110,6 +114,23 @@ class _ViewSummaryState extends State<ViewSummary> {
                     children: _buildRow(model.form),
                     defaultColumnWidth: FlexColumnWidth(15.0),
                   ),
+                  new SizedBox(height: 10.0),
+                  new RaisedButton(
+                    color: Theme.of(context).accentColor,
+                    child: new Container(
+                      child: new Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          new Icon(
+                            Icons.file_upload,
+                          ),
+                          new Text('Confirm'),
+                        ],
+                      ),
+                    ),
+                    onPressed: () => print('he'),
+                  )
                 ],
               ),
         ));

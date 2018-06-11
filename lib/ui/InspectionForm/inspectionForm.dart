@@ -5,6 +5,7 @@ class InspectionModel extends Model {
   Inspection get form => _form;
   set(Inspection myform) {
     if (myform.userid == null) myform.userid = _user.uid;
+    if (myform.status == null) myform.status = 'composing';
     if (myform.inspectionDate == null) myform.inspectionDate = DateTime.now();
     if (myform.arrivedTime == null)
       myform.arrivedTime = FormHelper.timetoString(TimeOfDay.now());
@@ -87,22 +88,18 @@ class _InspectionFormState extends State<InspectionForm>
   }
 
   Widget buildBody() {
-    return new SafeArea(
-      top: true,
-      bottom: true,
-      child: new ScopedModelDescendant<InspectionModel>(
-        builder: (context, _, model) => new Form(
-              key: model._globalKey,
-              autovalidate: model.autoValidate,
-              child:
-                  new TabBarView(controller: _tabController, children: <Widget>[
-                new ViewInfo(),
-                new ViewService(),
-                new ViewCleaning(),
-                new ViewSummary(),
-              ]),
-            ),
-      ),
+    return new ScopedModelDescendant<InspectionModel>(
+      builder: (context, _, model) => new Form(
+            key: model._globalKey,
+            autovalidate: model.autoValidate,
+            child:
+                new TabBarView(controller: _tabController, children: <Widget>[
+              new ViewInfo(),
+              new ViewService(),
+              new ViewCleaning(),
+              new ViewSummary(),
+            ]),
+          ),
     );
   }
 
@@ -110,31 +107,43 @@ class _InspectionFormState extends State<InspectionForm>
   Widget build(BuildContext context) {
     return new ScopedModel<InspectionModel>(
       model: myModel,
-      child: new Scaffold(
-        body: new NestedScrollView(
-          controller: _scrollViewController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              new SliverAppBar(
-                title: new Text("巡查表格"),
-                pinned: true,
-                snap: true,
-                floating: true,
-                forceElevated: innerBoxIsScrolled,
-                bottom: new TabBar(
-                  tabs: myTabs,
-                  controller: _tabController,
+      child: new SafeArea(
+        top: false,
+        bottom: true,
+        child: new Scaffold(
+          body: new NestedScrollView(
+            controller: _scrollViewController,
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                new SliverAppBar(
+                  title: new Text("巡查表格"),
+                  pinned: false,
+                  snap: true,
+                  floating: true,
+                  forceElevated: innerBoxIsScrolled,
+                  bottom: new TabBar(
+                    tabs: myTabs,
+                    controller: _tabController,
+                  ),
+                  actions: <Widget>[
+                    new ScopedModelDescendant<InspectionModel>(
+                      builder: (context, _, model) =>
+                          new SaveActionButton(model._globalKey, model),
+                    ),
+                  ],
                 ),
-              ),
-            ];
-          },
-          body: buildBody(),
+              ];
+            },
+            body: buildBody(),
+          ),
+          /*floatingActionButton: new ScopedModelDescendant<InspectionModel>(
+              builder: (context, _, model) =>
+                  new SaveActionButton(model._globalKey, model)),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: new BottomNavBar(),*/
         ),
-        floatingActionButton: new ScopedModelDescendant<InspectionModel>(
-            builder: (context, _, model) =>
-                new SaveActionButton(model._globalKey, model)),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: new BottomNavBar(),
       ),
     );
   }
@@ -179,8 +188,8 @@ class SaveActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new FloatingActionButton(
-        child: Icon(Icons.save), onPressed: () => _save(context));
+    return new IconButton(
+        icon: new Icon(Icons.save), onPressed: () => _save(context));
   }
 }
 

@@ -60,7 +60,7 @@ class _ViewInfoState extends State<ViewInfo>
   Widget build(BuildContext context) {
     return new ScopedModelDescendant<InspectionModel>(
       builder: (context, _, model) => new ListView(
-            padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 0.0),
+            padding: const EdgeInsets.all(10.0),
             children: <Widget>[
               new DateTextField(
                 labelText: Inspection.translate('inspectionDate'),

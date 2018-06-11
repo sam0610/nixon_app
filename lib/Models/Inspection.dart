@@ -7,6 +7,7 @@ part 'Inspection.g.dart';
 @JsonSerializable()
 class Inspection extends Object with _$InspectionSerializerMixin {
   String id;
+  String status;
   DateTime inspectionDate;
   String arrivedTime;
   String leaveTime;
@@ -32,6 +33,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
 
   Inspection(
       {this.id,
+      this.status,
       this.inspectionDate,
       this.arrivedTime,
       this.leaveTime,
@@ -119,7 +121,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
       'toilet_6': '正確使用清潔工具',
     };
 
-    var result='not found';
+    var result = 'not found';
     chineseLabel.forEach((k, v) {
       if (k == key) {
         result = v;

@@ -18,21 +18,26 @@ class SliderFormField extends StatefulWidget {
 }
 
 class _SliderFormFieldState extends State<SliderFormField> {
-  int _selected = 0; //0 for not set -1 for na positive for score
+  int _selected =
+      10; //10 for not set -1 for na positive for score, 20 is minimum score
   bool _checked = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _selected = widget.initialValue ?? 0;
+
+    _selected = widget.initialValue ?? 10;
     if (_selected == -1) _checked = true;
+    if (_selected != -1 && _selected < 10) {
+      _selected = 10;
+    }
   }
 
   void _checkChanged(bool value, FormFieldState field) {
     setState(() {
       _checked = !_checked;
-      _checked ? _selected = -1 : _selected = 0;
+      _checked ? _selected = -1 : _selected = 10;
       field.didChange(_selected);
       widget.onChanged(_selected);
     });
@@ -64,9 +69,9 @@ class _SliderFormFieldState extends State<SliderFormField> {
     return _checked == false
         ? new Slider(
             value: _selected.toDouble(),
-            min: 0.0,
+            min: 10.0,
             max: 100.0,
-            divisions: 10,
+            divisions: 9,
             onChanged: (value) => _sliderChanged(value, field))
         // : null;
         : new Text("");
@@ -79,7 +84,7 @@ class _SliderFormFieldState extends State<SliderFormField> {
       child: new Padding(
         padding: new EdgeInsets.all(10.0),
         child: new Text(
-          field.value == 0
+          field.value == 10
               ? 'null'
               : field.value == -1 ? 'N/A' : field.value.toString(),
           style: new TextStyle(fontWeight: FontWeight.bold),

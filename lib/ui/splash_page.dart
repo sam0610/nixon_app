@@ -29,7 +29,23 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        backgroundColor: Colors.redAccent.shade700,
-        body: new Center(child: new AnimatedCircularProgress()));
+      backgroundColor: Colors.redAccent.shade700,
+      body: new Container(
+        height: double.infinity,
+        width: double.infinity,
+        child: new Center(
+          child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new NxLogo(
+                color: Colors.white,
+              ),
+              new AnimatedCircularProgress(),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -194,6 +194,8 @@ class _BodyWidgetState extends State<BodyWidget> {
 }
 
 class NxLogo extends StatefulWidget {
+  NxLogo({this.color});
+  final Color color;
   @override
   _NxLogoState createState() => new _NxLogoState();
 }
@@ -230,7 +232,7 @@ class _NxLogoState extends State<NxLogo> with SingleTickerProviderStateMixin {
             'asset/nx_logo.png',
             height: _animation.value,
             width: _animation.value,
-            color: Colors.red.shade800,
+            color: widget.color ?? Colors.red.shade800,
           ),
         ),
         animation: _animation);
