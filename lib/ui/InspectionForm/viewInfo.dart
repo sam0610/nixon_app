@@ -19,8 +19,8 @@ class _ViewInfoState extends State<ViewInfo>
   void initState() {
     super.initState();
     InspectionModel model = ModelFinder<InspectionModel>().of(context);
-    _bldgNameController.text = model.form.bldgName.toString();
-    _bldgCodeController.text = model.form.bldgCode.toString();
+    _bldgNameController.text = model.form.bldgName;
+    _bldgCodeController.text = model.form.bldgCode;
     _nxNumberController.text = model.form.nixonNumber.toString();
   }
 
@@ -65,8 +65,7 @@ class _ViewInfoState extends State<ViewInfo>
               new DateTextField(
                 labelText: Inspection.translate('inspectionDate'),
                 initialValue: model.form.inspectionDate,
-                validator: (value) =>
-                    model.form.inspectionDate == null ? 'Date is Empty' : null,
+                validator: (value) => _validateField(value, model),
                 onChanged: (value) => model.form.inspectionDate = value,
                 onSaved: (value) => model.form.inspectionDate = value,
               ),
@@ -80,8 +79,7 @@ class _ViewInfoState extends State<ViewInfo>
                         labelText: Inspection.translate('arrivedTime'),
                         initialValue:
                             FormHelper.strToTime(model.form.arrivedTime),
-                        validator: (value) =>
-                            model.form.arrivedTime == null ? "not set" : null,
+                        validator: (value) => _validateField(value, model),
                         onChanged: (value) {
                           setState(() {
                             model.form.arrivedTime =
@@ -100,8 +98,7 @@ class _ViewInfoState extends State<ViewInfo>
                         labelText: Inspection.translate('leaveTime'),
                         initialValue:
                             FormHelper.strToTime(model.form.leaveTime),
-                        validator: (value) =>
-                            model.form.leaveTime == null ? "not set" : null,
+                        validator: (value) => _validateField(value, model),
                         onChanged: (value) => model.form.leaveTime =
                             FormHelper.timetoString(value),
                         onSaved: (value) => model.form.leaveTime =
@@ -121,7 +118,7 @@ class _ViewInfoState extends State<ViewInfo>
                 ),
                 controller: _bldgCodeController,
                 onFieldSubmitted: (value) => _bldgCodeController.text = value,
-                validator: (value) => value.isEmpty ? ' can\'t be empty' : null,
+                validator: (value) => _validateField(value, model),
                 onSaved: (value) => model.form.bldgCode = value,
               ),
               new TextFormField(
@@ -131,7 +128,7 @@ class _ViewInfoState extends State<ViewInfo>
                 ),
                 controller: _bldgNameController,
                 onFieldSubmitted: (value) => _bldgNameController.text = value,
-                validator: (value) => value.isEmpty ? ' can\'t be empty' : null,
+                validator: (value) => _validateField(value, model),
                 onSaved: (value) => model.form.bldgName = value,
               ),
               new TextFormField(
@@ -145,7 +142,7 @@ class _ViewInfoState extends State<ViewInfo>
                 ),
                 controller: _nxNumberController,
                 onFieldSubmitted: (value) => _nxNumberController.text = value,
-                validator: (value) => value.isEmpty ? ' can\'t be empty' : null,
+                validator: (value) => _validateField(value, model),
                 onSaved: (value) =>
                     model.form.nixonNumber = FormHelper.strToInt(value),
               ),
@@ -162,6 +159,7 @@ class _ViewInfoState extends State<ViewInfo>
                     child: MyFormTextField(
                         labelText: Inspection.translate('foundLocation'),
                         initialValue: model.form.foundLocation,
+                        nullable: false,
                         controller: _foundLocationController,
                         onSave: (value) => model.form.foundLocation = value),
                   ),
@@ -170,7 +168,7 @@ class _ViewInfoState extends State<ViewInfo>
                     child: new DropDownFormField(
                       initialValue: model.form.postName,
                       values: ['商場', '洗手間'],
-                      validator: (value) => value == 0 ? 'Not Set' : null,
+                      validator: (value) => _validateField(value, model),
                       onSave: (value) => model.form.postName = value,
                       labelText: Inspection.translate('postName'),
                       onChanged: (value) => model.form.postName = value,
@@ -192,6 +190,7 @@ class _ViewInfoState extends State<ViewInfo>
               ),
               MyFormTextField(
                   labelText: Inspection.translate('situationRemark'),
+                  nullable: false,
                   initialValue: model.form.situationRemark,
                   maxLines: 1,
                   controller: _situationRemarkController,

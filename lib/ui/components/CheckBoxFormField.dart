@@ -19,7 +19,7 @@ class CheckBoxFormField extends StatefulWidget {
 }
 
 class _CheckBoxFormFieldState extends State<CheckBoxFormField> {
-  int _default = 0; //default is true
+  int _default = 100; //default is true
   int _selected; //0 for not set -1 for na positive for score
   bool _checked = false;
 
@@ -40,26 +40,54 @@ class _CheckBoxFormFieldState extends State<CheckBoxFormField> {
     });
   }
 
-  Widget _makeCheckBox(FormFieldState field) {
-    return new Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: new Row(
-        children: <Widget>[
-          new Text("NA:"),
-          new Checkbox(
-              value: _checked,
-              onChanged: (value) => _checkChanged(value, field)),
-        ],
-      ),
-    );
-  }
-
   void _switchChanged(int value, FormFieldState field) {
     setState(() {
       _selected = value;
       widget.onChanged(_selected);
       field.didChange(_selected);
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: new FormField<int>(
+        initialValue: _selected,
+        validator: widget.validator,
+        onSaved: (int value) => widget.onSaved(value),
+        builder: (FormFieldState<int> field) {
+          if (Form.of(field.context).widget.autovalidate) {
+            field.validate();
+          }
+          return new InputDecorator(
+            decoration: new InputDecoration(
+              labelText: widget.labelText,
+              errorText: field.errorText,
+              border: OutlineInputBorder(
+                  borderRadius: new BorderRadius.circular(5.0)),
+              contentPadding: new EdgeInsets.all(3.0),
+            ),
+            child: new Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  _makeCheckBox(field),
+                  _makeText(field),
+                  new Expanded(child: _makeSwitch(field)),
+                ]),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _makeCheckBox(FormFieldState field) {
+    return new Padding(
+      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
+      child: new Checkbox(
+          value: _checked, onChanged: (value) => _checkChanged(value, field)),
+    );
   }
 
   Widget _makeSwitch(FormFieldState field) {
@@ -88,53 +116,21 @@ class _CheckBoxFormFieldState extends State<CheckBoxFormField> {
               )
             ],
           )
-        : new Text("NA");
+        : new Text('');
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return new Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: new FormField<int>(
-        initialValue: _selected,
-        validator: widget.validator,
-        onSaved: (int value) => widget.onSaved(value),
-        builder: (FormFieldState<int> field) {
-          if (Form.of(field.context).widget.autovalidate) {
-            field.validate();
-          }
-          return new InputDecorator(
-            decoration: new InputDecoration(
-              labelText: widget.labelText,
-              errorText: field.errorText,
-              border: OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(5.0)),
-              contentPadding: new EdgeInsets.all(3.0),
-            ),
-            child: new Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  _makeCheckBox(field),
-                  new Expanded(child: _makeSwitch(field)),
-                  new Container(
-                    alignment: AlignmentDirectional.center,
-                    width: 50.0,
-                    child: new Padding(
-                      padding: new EdgeInsets.all(10.0),
-                      child: new Text(
-                        field.value == 0
-                            ? 'not set'
-                            : field.value == -1
-                                ? 'N/A'
-                                : field.value.toString(),
-                        style: new TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  )
-                ]),
-          );
-        },
+  Container _makeText(FormFieldState<int> field) {
+    return new Container(
+      alignment: AlignmentDirectional.center,
+      width: 50.0,
+      child: new Padding(
+        padding: new EdgeInsets.all(10.0),
+        child: new Text(
+          field.value == 0
+              ? 'not set'
+              : field.value == -1 ? 'N/A' : field.value.toString(),
+          style: new TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

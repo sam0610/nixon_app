@@ -18,8 +18,10 @@ class SliderFormField extends StatefulWidget {
 }
 
 class _SliderFormFieldState extends State<SliderFormField> {
-  int _selected =
-      10; //10 for not set -1 for na positive for score, 20 is minimum score
+  final int _defaultMin = 20;
+  final int _defaultMax = 100;
+
+  int _selected; //10 for not set -1 for na positive for score, 20 is minimum score
   bool _checked = false;
 
   @override
@@ -27,17 +29,18 @@ class _SliderFormFieldState extends State<SliderFormField> {
     // TODO: implement initState
     super.initState();
 
-    _selected = widget.initialValue ?? 10;
-    if (_selected == -1) _checked = true;
-    if (_selected != -1 && _selected < 10) {
-      _selected = 10;
+    _selected = widget.initialValue ?? _defaultMin;
+    if (_selected == -1) {
+      _checked = true;
+    } else if (_selected < _defaultMin) {
+      _selected = _defaultMin;
     }
   }
 
   void _checkChanged(bool value, FormFieldState field) {
     setState(() {
       _checked = !_checked;
-      _checked ? _selected = -1 : _selected = 10;
+      _checked ? _selected = -1 : _selected = _defaultMax;
       field.didChange(_selected);
       widget.onChanged(_selected);
     });
@@ -53,15 +56,9 @@ class _SliderFormFieldState extends State<SliderFormField> {
 
   Widget _makeCheckBox(FormFieldState field) {
     return new Padding(
-      padding: const EdgeInsets.only(left: 15.0),
-      child: new Row(
-        children: <Widget>[
-          new Text("NA:"),
-          new Checkbox(
-              value: _checked,
-              onChanged: (value) => _checkChanged(value, field)),
-        ],
-      ),
+      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
+      child: new Checkbox(
+          value: _checked, onChanged: (value) => _checkChanged(value, field)),
     );
   }
 
@@ -69,9 +66,9 @@ class _SliderFormFieldState extends State<SliderFormField> {
     return _checked == false
         ? new Slider(
             value: _selected.toDouble(),
-            min: 10.0,
+            min: 20.0,
             max: 100.0,
-            divisions: 9,
+            divisions: 8,
             onChanged: (value) => _sliderChanged(value, field))
         // : null;
         : new Text("");
@@ -79,14 +76,12 @@ class _SliderFormFieldState extends State<SliderFormField> {
 
   Widget _makeText(FormFieldState field) {
     return new Container(
-      width: 60.0,
+      width: 40.0,
       alignment: AlignmentDirectional.center,
       child: new Padding(
-        padding: new EdgeInsets.all(10.0),
+        padding: new EdgeInsets.all(5.0),
         child: new Text(
-          field.value == 10
-              ? 'null'
-              : field.value == -1 ? 'N/A' : field.value.toString(),
+          field.value == -1 ? 'N/A' : field.value.toString(),
           style: new TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
@@ -115,7 +110,7 @@ class _SliderFormFieldState extends State<SliderFormField> {
               border: OutlineInputBorder(
                 borderRadius: new BorderRadius.circular(5.0),
               ),
-              contentPadding: new EdgeInsets.all(8.0),
+              contentPadding: new EdgeInsets.all(3.0),
             ),
             child: new Row(
                 mainAxisSize: MainAxisSize.min,

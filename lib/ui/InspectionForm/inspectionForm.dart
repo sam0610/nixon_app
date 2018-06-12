@@ -1,30 +1,21 @@
 part of nixon_app;
 
 class InspectionModel extends Model {
-  Inspection _form = new Inspection();
-  Inspection get form => _form;
+  Inspection _form;
+  Inspection get form {
+    _formWasEdited = true;
+    return _form;
+  }
+
   set(Inspection myform) {
     if (myform.userid == null) myform.userid = _user.uid;
-    if (myform.status == null) myform.status = 'composing';
+    if (myform.status == null)
+      myform.status = InspectionStatus.composing.toString();
     if (myform.inspectionDate == null) myform.inspectionDate = DateTime.now();
     if (myform.arrivedTime == null)
       myform.arrivedTime = FormHelper.timetoString(TimeOfDay.now());
     if (myform.leaveTime == null)
       myform.leaveTime = FormHelper.timetoString(TimeOfDay.now());
-    if (myform.guestsProportion == null) myform.guestsProportion = "0";
-    if (myform.grooming == null) myform.grooming = new Grooming();
-    if (myform.behavior == null) myform.behavior = new Behavior();
-    if (myform.warmHeart == null) myform.warmHeart = new WarmHeart();
-    if (myform.serveCust == null) myform.serveCust = new ServeCust();
-    if (myform.handleCust == null) myform.handleCust = new HandleCust();
-    if (myform.listenCust == null) myform.listenCust = new ListenCust();
-    if (myform.cleanlinessMall == null)
-      myform.cleanlinessMall = new CleanlinessMall();
-    if (myform.cleanlinessToilet == null)
-      myform.cleanlinessToilet = new CleanlinessToilet();
-    if (myform.closure == null) myform.closure = new Closure();
-    if (myform.communicationSkill == null)
-      myform.communicationSkill = new CommunicationSkill();
 
     _form = myform;
   }
@@ -37,6 +28,7 @@ class InspectionModel extends Model {
   }
 
   GlobalKey<FormState> _globalKey = new GlobalKey<FormState>();
+  bool _formWasEdited = false;
 }
 
 class InspectionForm extends StatefulWidget {
@@ -92,6 +84,7 @@ class _InspectionFormState extends State<InspectionForm>
       builder: (context, _, model) => new Form(
             key: model._globalKey,
             autovalidate: model.autoValidate,
+            onWillPop: _warnUserAboutInvalidData,
             child:
                 new TabBarView(controller: _tabController, children: <Widget>[
               new ViewInfo(),
@@ -118,7 +111,7 @@ class _InspectionFormState extends State<InspectionForm>
               return <Widget>[
                 new SliverAppBar(
                   title: new Text("巡查表格"),
-                  pinned: false,
+                  pinned: true,
                   snap: true,
                   floating: true,
                   forceElevated: innerBoxIsScrolled,
@@ -147,6 +140,35 @@ class _InspectionFormState extends State<InspectionForm>
       ),
     );
   }
+
+  Future<bool> _warnUserAboutInvalidData() async {
+    if (!myModel._formWasEdited) return true;
+
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return new AlertDialog(
+              title: const Text('This form has errors'),
+              content: const Text('Really leave this form?'),
+              actions: <Widget>[
+                new FlatButton(
+                  child: const Text('YES'),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+                new FlatButton(
+                  child: const Text('NO'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
 }
 
 class SaveActionButton extends StatelessWidget {
@@ -168,20 +190,21 @@ class SaveActionButton extends StatelessWidget {
     final form = formKey.currentState;
     if (form.validate()) {
       form.save();
-      if (model.form.id == null) {
-        InspectionRepos.addInspection(model.form).then((onValue) {
-          Navigator.pop(context);
-        }).catchError((onError) =>
-            showSnackBar(context, onError.toString(), bgcolor: Colors.red));
-      } else {
-        InspectionRepos.updateInspection(model.form).then((onValue) {
-          Navigator.pop(context);
-        }).catchError((onError) =>
-            showSnackBar(context, onError.toString(), bgcolor: Colors.red));
+      if (model.form.check()) {
+        if (model.form.id == null) {
+          InspectionRepos.addInspection(model.form).then((onValue) {
+            Navigator.pop(context);
+          }).catchError((onError) =>
+              showSnackBar(context, onError.toString(), bgcolor: Colors.red));
+        } else {
+          InspectionRepos.updateInspection(model.form).then((onValue) {
+            Navigator.pop(context);
+          }).catchError((onError) =>
+              showSnackBar(context, onError.toString(), bgcolor: Colors.red));
+        }
       }
     } else {
       showSnackBar(context, 'Please fill in blank field', bgcolor: Colors.red);
-      InspectionModel model = ModelFinder().of(context);
       model.setAutoValidate(true);
     }
   }

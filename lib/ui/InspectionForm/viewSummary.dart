@@ -120,16 +120,26 @@ class _ViewSummaryState extends State<ViewSummary> {
                     child: new Container(
                       child: new Row(
                         mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          new Icon(
-                            Icons.file_upload,
+                          new Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: new Row(
+                              children: <Widget>[
+                                new Icon(
+                                  Icons.file_upload,
+                                ),
+                                new Text('Complete'),
+                              ],
+                            ),
                           ),
-                          new Text('Confirm'),
                         ],
                       ),
                     ),
-                    onPressed: () => print('he'),
+                    onPressed: () {
+                      model.form.status = InspectionStatus.complete.toString();
+                      SaveActionButton(model._globalKey, model)._save(context);
+                    },
                   )
                 ],
               ),

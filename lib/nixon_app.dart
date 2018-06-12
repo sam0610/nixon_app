@@ -37,6 +37,7 @@ part 'ui/components/DateFormField.dart';
 part 'ui/components/DropDownFormField.dart';
 part 'ui/components/FormTextField.dart';
 part 'ui/components/NumberFormField.dart';
+part 'ui/components/Validator.dart';
 part 'ui/components/SliderFormField.dart';
 part 'ui/components/TimeFormField.dart';
 part 'ui/homepage.dart';

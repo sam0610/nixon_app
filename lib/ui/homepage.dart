@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _addForm() {
-    Inspection newform = new Inspection();
+    Inspection newform = new Inspection.withDefault();
     Navigator.of(context).push(
           new AnimatedRoute(
             builder: (_) => new InspectionForm(form: newform),

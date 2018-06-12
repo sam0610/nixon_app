@@ -1,5 +1,7 @@
 part of nixon_app;
 
+enum InspectionStatus { composing, complete }
+
 class FormHelper {
   static String datetoString(DateTime date) {
     try {

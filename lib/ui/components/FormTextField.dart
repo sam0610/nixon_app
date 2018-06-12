@@ -33,6 +33,7 @@ class _MyFormTextFieldState extends State<MyFormTextField> {
 
   @override
   Widget build(BuildContext context) {
+    InspectionModel model = ModelFinder<InspectionModel>().of(context);
     return new TextFormField(
       style: new TextStyle(
         fontSize: 20.0,
@@ -45,9 +46,8 @@ class _MyFormTextFieldState extends State<MyFormTextField> {
       ),
       controller: widget.controller,
       onFieldSubmitted: (value) => widget.controller.text = value,
-      validator: (value) => widget.nullable == false && value.isEmpty
-          ? '${widget.labelText} can\'t be empty'
-          : null,
+      validator: (value) =>
+          widget.nullable == false ? _validateField(value, model) : null,
       onSaved: widget.onSave,
     );
   }

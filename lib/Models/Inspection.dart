@@ -4,6 +4,9 @@ import 'package:json_annotation/json_annotation.dart';
 part 'Inspection.g.dart';
 
 //run code => flutter packages pub run build_runner build
+
+const int _default = 100;
+
 @JsonSerializable()
 class Inspection extends Object with _$InspectionSerializerMixin {
   String id;
@@ -57,16 +60,64 @@ class Inspection extends Object with _$InspectionSerializerMixin {
       this.cleanlinessMall,
       this.cleanlinessToilet});
 
+  Inspection.withDefault({
+    this.id,
+    this.status,
+    this.inspectionDate,
+    this.arrivedTime,
+    this.leaveTime,
+    this.bldgCode,
+    this.bldgName,
+    this.nixonNumber,
+    this.staffName,
+    this.postName,
+    this.foundLocation,
+    this.guestsProportion = "1",
+    this.situationRemark,
+    this.userid,
+  })  : grooming = new Grooming(),
+        behavior = new Behavior(),
+        serveCust = new ServeCust(),
+        listenCust = new ListenCust(),
+        handleCust = new HandleCust(),
+        closure = new Closure(),
+        communicationSkill = new CommunicationSkill(),
+        warmHeart = new WarmHeart(),
+        cleanlinessMall = new CleanlinessMall(),
+        cleanlinessToilet = new CleanlinessToilet();
+
   static Inspection fromDocument(DocumentSnapshot document) =>
       new Inspection.fromJson(document.data);
 
   factory Inspection.fromJson(Map<String, dynamic> json) =>
       _$InspectionFromJson(json);
 
+  bool check() {
+    if (_pass(inspectionDate) &&
+        _pass(arrivedTime) &&
+        _pass(leaveTime) &&
+        _pass(bldgName) &&
+        _pass(staffName) &&
+        _pass(foundLocation) &&
+        _pass(postName) &&
+        _pass(guestsProportion) &&
+        _pass(situationRemark) &&
+        _pass(userid)) return true;
+    return false;
+  }
+
+  bool _pass(dynamic field) {
+    bool result = true;
+    if (field == null) result = false;
+    if (field is String && field.isEmpty) return false;
+    if (result == false) throw (field.toString() + 'is Empty');
+    return result;
+  }
+
   static translate(String key) {
     Map<String, String> chineseLabel = <String, String>{
       'inspectionDate': '巡查日期',
-      'status':'表格狀態',
+      'status': '表格狀態',
       'arrivedTime': '到達時間',
       'leaveTime': '離開時間',
       'bldgCode': '大廈編號',
@@ -143,12 +194,12 @@ class Grooming extends Object with _$GroomingSerializerMixin {
   int maskCleanScore;
 
   Grooming(
-      {this.groomingScore = 0,
-      this.hairScore = 0,
-      this.uniformScore = 0,
-      this.decorationScore = 0,
-      this.maskCleanScore = 0,
-      this.maskWearScore = 0});
+      {this.groomingScore = _default,
+      this.hairScore = _default,
+      this.uniformScore = _default,
+      this.decorationScore = _default,
+      this.maskCleanScore = _default,
+      this.maskWearScore = _default});
 
   factory Grooming.fromJson(Map<String, dynamic> json) =>
       _$GroomingFromJson(json);
@@ -157,7 +208,7 @@ class Grooming extends Object with _$GroomingSerializerMixin {
 class Behavior extends Object with _$BehaviorSerializerMixin {
   int behaviorScore;
   int mindScore;
-  Behavior({this.behaviorScore, this.mindScore});
+  Behavior({this.behaviorScore = _default, this.mindScore = _default});
   factory Behavior.fromJson(Map<String, dynamic> json) =>
       _$BehaviorFromJson(json);
 }
@@ -166,7 +217,7 @@ class Behavior extends Object with _$BehaviorSerializerMixin {
 class ServeCust extends Object with _$ServeCustSerializerMixin {
   int smileScore;
   int greetingScore;
-  ServeCust({this.smileScore, this.greetingScore});
+  ServeCust({this.smileScore = _default, this.greetingScore = _default});
   factory ServeCust.fromJson(Map<String, dynamic> json) =>
       _$ServeCustFromJson(json);
 }
@@ -174,7 +225,7 @@ class ServeCust extends Object with _$ServeCustSerializerMixin {
 @JsonSerializable()
 class ListenCust extends Object with _$ListenCustSerializerMixin {
   int listenCustScore;
-  ListenCust({this.listenCustScore});
+  ListenCust({this.listenCustScore = _default});
 
   factory ListenCust.fromJson(Map<String, dynamic> json) =>
       _$ListenCustFromJson(json);
@@ -186,9 +237,9 @@ class HandleCust extends Object with _$HandleCustSerializerMixin {
   int respondCustNeedScore;
   int unexpectedSituationScore;
   HandleCust(
-      {this.indicateWithPalmScore,
-      this.respondCustNeedScore,
-      this.unexpectedSituationScore});
+      {this.indicateWithPalmScore = _default,
+      this.respondCustNeedScore = _default,
+      this.unexpectedSituationScore = _default});
   factory HandleCust.fromJson(Map<String, dynamic> json) =>
       _$HandleCustFromJson(json);
 }
@@ -197,7 +248,7 @@ class HandleCust extends Object with _$HandleCustSerializerMixin {
 class Closure extends Object with _$ClosureSerializerMixin {
   int farewellScore;
 
-  Closure({this.farewellScore});
+  Closure({this.farewellScore = _default});
 
   factory Closure.fromJson(Map<String, dynamic> json) =>
       _$ClosureFromJson(json);
@@ -214,11 +265,11 @@ class CommunicationSkill extends Object
   int skillScore;
 
   CommunicationSkill(
-      {this.soundLevel,
-      this.soundSpeed,
-      this.polite,
-      this.attitudeScore,
-      this.skillScore});
+      {this.soundLevel = _default,
+      this.soundSpeed = _default,
+      this.polite = _default,
+      this.attitudeScore = _default,
+      this.skillScore = _default});
   factory CommunicationSkill.fromJson(Map<String, dynamic> json) =>
       _$CommunicationSkillFromJson(json);
 }
@@ -227,7 +278,7 @@ class CommunicationSkill extends Object
 class WarmHeart extends Object with _$WarmHeartSerializerMixin {
   int warmHeartScore;
 
-  WarmHeart({this.warmHeartScore});
+  WarmHeart({this.warmHeartScore = _default});
 
   factory WarmHeart.fromJson(Map<String, dynamic> json) =>
       _$WarmHeartFromJson(json);
@@ -240,7 +291,8 @@ class CleanlinessMall extends Object with _$CleanlinessMallSerializerMixin {
 
   int mall_3;
 
-  CleanlinessMall({this.mall_1, this.mall_2, this.mall_3});
+  CleanlinessMall(
+      {this.mall_1 = _default, this.mall_2 = _default, this.mall_3 = _default});
 
   factory CleanlinessMall.fromJson(Map<String, dynamic> json) =>
       _$CleanlinessMallFromJson(json);
@@ -256,12 +308,12 @@ class CleanlinessToilet extends Object with _$CleanlinessToiletSerializerMixin {
   int toilet_6;
 
   CleanlinessToilet(
-      {this.toilet_1,
-      this.toilet_2,
-      this.toilet_3,
-      this.toilet_4,
-      this.toilet_5,
-      this.toilet_6});
+      {this.toilet_1 = _default,
+      this.toilet_2 = _default,
+      this.toilet_3 = _default,
+      this.toilet_4 = _default,
+      this.toilet_5 = _default,
+      this.toilet_6 = _default});
 
   factory CleanlinessToilet.fromJson(Map<String, dynamic> json) =>
       _$CleanlinessToiletFromJson(json);
