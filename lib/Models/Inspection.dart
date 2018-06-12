@@ -66,6 +66,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
   static translate(String key) {
     Map<String, String> chineseLabel = <String, String>{
       'inspectionDate': '巡查日期',
+      'status':'表格狀態',
       'arrivedTime': '到達時間',
       'leaveTime': '離開時間',
       'bldgCode': '大廈編號',
