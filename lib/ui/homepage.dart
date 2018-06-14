@@ -18,8 +18,11 @@ class _HomePageState extends State<HomePage> {
     _assureLogin();
   }
 
-  _assureLogin() async {
-    if (_user == null) Navigator.pushReplacementNamed(context, "/login");
+  _assureLogin() {
+    _auth.onAuthStateChanged.firstWhere((user) => user == null).then((user) {
+      AuthHelper.setCurrentUser(null);
+      Navigator.of(context).pushReplacementNamed("/login");
+    });
   }
 
   _addForm() {

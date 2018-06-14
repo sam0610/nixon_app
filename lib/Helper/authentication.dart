@@ -6,7 +6,7 @@ FirebaseUser _user;
 class AuthHelper {
   static Future<void> setCurrentUser(FirebaseUser user) async {
     _user = user;
-    if (user.displayName == null) {
+    if (user != null && user.displayName == null) {
       await updateProfileName("not set").then((_) => updateUserProfile());
     }
   }

@@ -1,7 +1,9 @@
 part of nixon_app;
 
-String _validateField(dynamic value, InspectionModel model) {
-
+String _validateField(dynamic oldvalue, dynamic value, InspectionModel model) {
+  if (value != oldvalue) {
+    model._formWasEdited = true;
+  }
   if (value is String) {
     if (value == null || value.isEmpty) return 'can\'t be empty';
   }

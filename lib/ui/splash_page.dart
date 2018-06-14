@@ -8,22 +8,18 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
-    _auth.onAuthStateChanged.firstWhere((user) => user != null).then((user) {
-      AuthHelper.setCurrentUser(user);
-      new Future.delayed(new Duration(seconds: 5))
-          .then((_) => Navigator.of(context).pushReplacementNamed("/home"));
+    _auth.currentUser().then((FirebaseUser user) {
+      if (user != null) {
+        AuthHelper.setCurrentUser(user);
+        new Future.delayed(new Duration(seconds: 5))
+            .then((_) => Navigator.of(context).pushReplacementNamed("/home"));
+      } else {
+        new Future.delayed(new Duration(seconds: 5))
+            .then((_) => Navigator.of(context).pushReplacementNamed("/login"));
+      }
     });
-
-    _auth.onAuthStateChanged.firstWhere((user) => user == null).then((user) {
-      new Future.delayed(new Duration(seconds: 5))
-          .then((_) => Navigator.of(context).pushReplacementNamed("/login"));
-    });
+    print('splash init');
     super.initState();
-  }
-
-  login() {
-    new Future.delayed(new Duration(seconds: 5))
-        .then((_) => Navigator.of(context).pushReplacementNamed("/login"));
   }
 
   @override
@@ -40,6 +36,9 @@ class _SplashPageState extends State<SplashPage> {
             children: <Widget>[
               new NxLogo(
                 color: Colors.white,
+              ),
+              new SizedBox(
+                height: 20.0,
               ),
               new AnimatedCircularProgress(),
             ],

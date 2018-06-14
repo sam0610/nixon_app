@@ -10,6 +10,7 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
       inspectionDate: json['inspectionDate'] == null
           ? null
           : DateTime.parse(json['inspectionDate'] as String),
+      status: json['status'] == null ? null : json['status'] as String,
       bldgCode: json['bldgCode'] == null ? null : json['bldgCode'] as String,
       bldgName: json['bldgName'] == null ? null : json['bldgName'] as String,
       nixonNumber:

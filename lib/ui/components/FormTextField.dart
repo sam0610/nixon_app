@@ -2,20 +2,25 @@ part of nixon_app;
 
 class MyFormTextField extends StatefulWidget {
   MyFormTextField(
-      {this.labelText,
-      this.initialValue,
+      {@required this.labelText,
+      @required this.initialValue,
       this.onSave,
-      @required this.controller,
+      @required this.onFieldSubmitted,
+      //this.controller,
       this.maxLines = 1,
       this.nullable = true,
-      this.keyboardType = TextInputType.text});
+      this.keyboardType = TextInputType.text,
+      this.focusNode});
+
   final String labelText;
-  final TextEditingController controller;
+  //final TextEditingController controller;
   final Function onSave;
+  final ValueChanged<String> onFieldSubmitted;
   final String initialValue;
   final int maxLines;
   final bool nullable;
   final TextInputType keyboardType;
+  final FocusNode focusNode;
 
   @override
   _MyFormTextFieldState createState() => new _MyFormTextFieldState();
@@ -25,10 +30,10 @@ class _MyFormTextFieldState extends State<MyFormTextField> {
   @override
   void initState() {
     super.initState();
-    if (widget.controller != null)
-      widget.controller.text.isEmpty
-          ? widget.controller.text = widget.initialValue
-          : '';
+    // if (widget.controller != null)
+    //   widget.controller.text.isEmpty
+    //       ? widget.controller.text = widget.initialValue
+    //       : '';
   }
 
   @override
@@ -41,13 +46,16 @@ class _MyFormTextFieldState extends State<MyFormTextField> {
       ),
       maxLines: widget.maxLines,
       keyboardType: widget.keyboardType,
+      focusNode: widget.focusNode,
       decoration: InputDecoration(
         labelText: widget.labelText,
       ),
-      controller: widget.controller,
-      onFieldSubmitted: (value) => widget.controller.text = value,
-      validator: (value) =>
-          widget.nullable == false ? _validateField(value, model) : null,
+      //controller: widget.controller,
+      initialValue: widget.initialValue,
+      onFieldSubmitted: widget.onFieldSubmitted,
+      validator: (value) => widget.nullable == false
+          ? _validateField(widget.initialValue, value, model)
+          : null,
       onSaved: widget.onSave,
     );
   }

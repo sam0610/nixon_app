@@ -229,7 +229,7 @@ class _NxLogoState extends State<NxLogo> with SingleTickerProviderStateMixin {
     return new GrowTransition(
         child: new Container(
           child: new Image.asset(
-            'asset/nx_logo.png',
+            'assets/nx_logo.png',
             height: _animation.value,
             width: _animation.value,
             color: widget.color ?? Colors.red.shade800,

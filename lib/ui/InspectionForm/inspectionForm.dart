@@ -2,10 +2,7 @@ part of nixon_app;
 
 class InspectionModel extends Model {
   Inspection _form;
-  Inspection get form {
-    _formWasEdited = true;
-    return _form;
-  }
+  Inspection get form => _form;
 
   set(Inspection myform) {
     if (myform.userid == null) myform.userid = _user.uid;
@@ -27,8 +24,14 @@ class InspectionModel extends Model {
     notifyListeners();
   }
 
+  void setState() {
+    notifyListeners();
+  }
+
   GlobalKey<FormState> _globalKey = new GlobalKey<FormState>();
   bool _formWasEdited = false;
+  bool get isFormCompleted =>
+      _form.status == InspectionStatus.complete.toString();
 }
 
 class InspectionForm extends StatefulWidget {
@@ -85,15 +88,30 @@ class _InspectionFormState extends State<InspectionForm>
             key: model._globalKey,
             autovalidate: model.autoValidate,
             onWillPop: _warnUserAboutInvalidData,
-            child:
-                new TabBarView(controller: _tabController, children: <Widget>[
-              new ViewInfo(),
-              new ViewService(),
-              new ViewCleaning(),
-              new ViewSummary(),
-            ]),
+            child: model.isFormCompleted
+                ? completedBanner(buildTabBarView())
+                : buildTabBarView(),
           ),
     );
+  }
+
+  TabBarView buildTabBarView() {
+    return new TabBarView(controller: _tabController, children: <Widget>[
+      new ViewInfo(),
+      new ViewService(),
+      new ViewCleaning(),
+      new ViewSummary(),
+    ]);
+  }
+
+  Widget completedBanner(TabBarView child) {
+    return new Stack(overflow: Overflow.clip, children: <Widget>[
+      new Banner(
+        message: "Completed",
+        location: BannerLocation.topStart,
+      ),
+      child,
+    ]);
   }
 
   @override
@@ -122,7 +140,7 @@ class _InspectionFormState extends State<InspectionForm>
                   actions: <Widget>[
                     new ScopedModelDescendant<InspectionModel>(
                       builder: (context, _, model) =>
-                          new SaveActionButton(model._globalKey, model),
+                          new SaveActionButton(model),
                     ),
                   ],
                 ),
@@ -130,37 +148,55 @@ class _InspectionFormState extends State<InspectionForm>
             },
             body: buildBody(),
           ),
-          /*floatingActionButton: new ScopedModelDescendant<InspectionModel>(
-              builder: (context, _, model) =>
-                  new SaveActionButton(model._globalKey, model)),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: new BottomNavBar(),*/
         ),
       ),
     );
   }
 
   Future<bool> _warnUserAboutInvalidData() async {
+    myModel._globalKey.currentState.validate();
     if (!myModel._formWasEdited) return true;
 
     return await showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
             return new AlertDialog(
-              title: const Text('This form has errors'),
-              content: const Text('Really leave this form?'),
+              title: new Text(
+                '有未儲存修改!!!',
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .body2
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              content: const Text('確認離開?'),
               actions: <Widget>[
                 new FlatButton(
-                  child: const Text('YES'),
+                  color: Colors.redAccent,
+                  child: Text(
+                    '否',
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Colors.white),
+                  ),
                   onPressed: () {
-                    Navigator.of(context).pop(true);
+                    Navigator.of(context).pop(false);
                   },
                 ),
                 new FlatButton(
-                  child: const Text('NO'),
+                  color: Colors.blueAccent,
+                  child: Text(
+                    '是',
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Colors.white),
+                  ),
                   onPressed: () {
-                    Navigator.of(context).pop(false);
+                    Navigator.of(context).pop(true);
                   },
                 ),
               ],
@@ -172,8 +208,7 @@ class _InspectionFormState extends State<InspectionForm>
 }
 
 class SaveActionButton extends StatelessWidget {
-  SaveActionButton(this.formKey, this.model);
-  final GlobalKey<FormState> formKey;
+  SaveActionButton(this.model);
   final InspectionModel model;
 
   void showSnackBar(BuildContext context, String msg,
@@ -186,8 +221,8 @@ class SaveActionButton extends StatelessWidget {
         );
   }
 
-  void _save(BuildContext context) {
-    final form = formKey.currentState;
+  _save(BuildContext context) {
+    final form = model._globalKey.currentState;
     if (form.validate()) {
       form.save();
       if (model.form.check()) {
@@ -212,7 +247,9 @@ class SaveActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new IconButton(
-        icon: new Icon(Icons.save), onPressed: () => _save(context));
+      icon: new Icon(Icons.save),
+      onPressed: model.isFormCompleted ? null : () => _save(context),
+    );
   }
 }
 

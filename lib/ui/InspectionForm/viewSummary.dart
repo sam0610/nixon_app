@@ -6,6 +6,11 @@ class ViewSummary extends StatefulWidget {
 }
 
 class _ViewSummaryState extends State<ViewSummary> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   Widget text(String title, double score) {
     TextStyle style =
         new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
@@ -103,6 +108,40 @@ class _ViewSummaryState extends State<ViewSummary> {
       return _row;
     }
 
+    _saveToComplete(InspectionModel model) {
+      model.form.status = InspectionStatus.complete.toString();
+      SaveActionButton(
+        model,
+      )._save(context);
+    }
+
+    RaisedButton buildRaisedButton(
+        BuildContext context, InspectionModel model) {
+      return new RaisedButton(
+        color: Theme.of(context).accentColor,
+        child: new Container(
+          child: new Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: new Row(
+                  children: <Widget>[
+                    new Icon(
+                      Icons.file_upload,
+                    ),
+                    new Text('Complete'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        onPressed: () => _saveToComplete(model),
+      );
+    }
+
     return new Container(
         padding: EdgeInsets.all(10.0),
         child: ScopedModelDescendant<InspectionModel>(
@@ -115,32 +154,11 @@ class _ViewSummaryState extends State<ViewSummary> {
                     defaultColumnWidth: FlexColumnWidth(15.0),
                   ),
                   new SizedBox(height: 10.0),
-                  new RaisedButton(
-                    color: Theme.of(context).accentColor,
-                    child: new Container(
-                      child: new Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          new Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: new Row(
-                              children: <Widget>[
-                                new Icon(
-                                  Icons.file_upload,
-                                ),
-                                new Text('Complete'),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    onPressed: () {
-                      model.form.status = InspectionStatus.complete.toString();
-                      SaveActionButton(model._globalKey, model)._save(context);
-                    },
-                  )
+                  model.isFormCompleted
+                      ? new SizedBox(
+                          height: 0.0,
+                        )
+                      : buildRaisedButton(context, model)
                 ],
               ),
         ));

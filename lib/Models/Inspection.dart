@@ -98,10 +98,10 @@ class Inspection extends Object with _$InspectionSerializerMixin {
         _pass(leaveTime) &&
         _pass(bldgName) &&
         _pass(staffName) &&
-        _pass(foundLocation) &&
+        //_pass(foundLocation) &&
         _pass(postName) &&
         _pass(guestsProportion) &&
-        _pass(situationRemark) &&
+        //_pass(situationRemark) &&
         _pass(userid)) return true;
     return false;
   }
