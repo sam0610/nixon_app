@@ -225,14 +225,14 @@ class SaveActionButton extends StatelessWidget {
     final form = model._globalKey.currentState;
     if (form.validate()) {
       form.save();
-      if (model.form.check()) {
+      if (model.form.checkForSave()) {
         if (model.form.id == null) {
-          InspectionRepos.addInspection(model.form).then((onValue) {
+          InspectionRepos.addInspection(model.form).whenComplete(() {
             Navigator.pop(context);
           }).catchError((onError) =>
               showSnackBar(context, onError.toString(), bgcolor: Colors.red));
         } else {
-          InspectionRepos.updateInspection(model.form).then((onValue) {
+          InspectionRepos.updateInspection(model.form).whenComplete(() {
             Navigator.pop(context);
           }).catchError((onError) =>
               showSnackBar(context, onError.toString(), bgcolor: Colors.red));

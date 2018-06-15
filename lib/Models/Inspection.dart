@@ -92,7 +92,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
   factory Inspection.fromJson(Map<String, dynamic> json) =>
       _$InspectionFromJson(json);
 
-  bool check() {
+  bool checkForSave() {
     if (_pass(inspectionDate) &&
         _pass(arrivedTime) &&
         _pass(leaveTime) &&
@@ -102,6 +102,20 @@ class Inspection extends Object with _$InspectionSerializerMixin {
         _pass(postName) &&
         _pass(guestsProportion) &&
         //_pass(situationRemark) &&
+        _pass(userid)) return true;
+    return false;
+  }
+
+  bool checkForComplete() {
+    if (_pass(inspectionDate) &&
+        _pass(arrivedTime) &&
+        _pass(leaveTime) &&
+        _pass(bldgName) &&
+        _pass(staffName) &&
+        _pass(foundLocation) &&
+        _pass(postName) &&
+        _pass(guestsProportion) &&
+        _pass(situationRemark) &&
         _pass(userid)) return true;
     return false;
   }

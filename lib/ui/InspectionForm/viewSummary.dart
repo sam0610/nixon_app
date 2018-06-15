@@ -108,11 +108,63 @@ class _ViewSummaryState extends State<ViewSummary> {
       return _row;
     }
 
+    Future<bool> _confirmSave() async => await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text(
+              '請確認無誤',
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .body2
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            content: const Text('一經確認記錄將無法修改?'),
+            actions: <Widget>[
+              new FlatButton(
+                color: Colors.redAccent,
+                child: Text(
+                  '否',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .body1
+                      .copyWith(color: Colors.white),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              new FlatButton(
+                color: Colors.blueAccent,
+                child: Text(
+                  '是',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .body1
+                      .copyWith(color: Colors.white),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        });
+
     _saveToComplete(InspectionModel model) {
-      model.form.status = InspectionStatus.complete.toString();
-      SaveActionButton(
-        model,
-      )._save(context);
+      _confirmSave().then((res) {
+        if (model.form.checkForComplete() && res == true) {
+          if (model.form.postName == "洗手間") model.form.cleanlinessMall = null;
+          if (model.form.postName == "商場") model.form.cleanlinessToilet = null;
+          model.form.status = InspectionStatus.complete.toString();
+          SaveActionButton(
+            model,
+          )._save(context);
+        }
+      });
     }
 
     RaisedButton buildRaisedButton(
@@ -131,7 +183,7 @@ class _ViewSummaryState extends State<ViewSummary> {
                     new Icon(
                       Icons.file_upload,
                     ),
-                    new Text('Complete'),
+                    new Text('確認表格'),
                   ],
                 ),
               ),

@@ -1,6 +1,6 @@
 part of nixon_app;
 
-enum InspectionStatus { composing, complete }
+enum InspectionStatus { composing, complete, archived }
 
 class FormHelper {
   static String datetoString(DateTime date) {
@@ -142,4 +142,56 @@ class FormHelper {
     final double total = count == 0.0 ? 0.0 : sum / count;
     return total;
   }
+
+  Future<bool> _confirmDialog(
+          {@required BuildContext context,
+          @required String title,
+          @required String msg,
+          String trueText = "是",
+          String falseText = "否"}) async =>
+      await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return new AlertDialog(
+              title: new Text(
+                title,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .body2
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              content: new Text(msg),
+              actions: <Widget>[
+                new FlatButton(
+                  color: Colors.redAccent,
+                  child: Text(
+                    falseText,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                new FlatButton(
+                  color: Colors.blueAccent,
+                  child: Text(
+                    trueText,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          });
 }
