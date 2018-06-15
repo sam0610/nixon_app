@@ -56,6 +56,9 @@ class _InspectionFormState extends State<InspectionForm>
       text: '巡查資料',
     ),
     new Tab(
+      text: '錄音',
+    ),
+    new Tab(
       text: '服務評分',
     ),
     new Tab(
@@ -98,6 +101,7 @@ class _InspectionFormState extends State<InspectionForm>
   TabBarView buildTabBarView() {
     return new TabBarView(controller: _tabController, children: <Widget>[
       new ViewInfo(),
+      new ViewRecorder(),
       new ViewService(),
       new ViewCleaning(),
       new ViewSummary(),
