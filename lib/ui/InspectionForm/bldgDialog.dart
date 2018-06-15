@@ -55,6 +55,12 @@ class _BuildingDialogState extends State<BuildingDialog> {
     return new Scaffold(
         appBar: new AppBar(
           title: const Text('Select a Building'),
+          actions: <Widget>[
+            new IconButton(
+              icon: new Icon(Icons.refresh),
+              onPressed: () => _asyncLoaderState.currentState.reloadState(),
+            )
+          ],
         ),
         body: _asyncLoader);
   }

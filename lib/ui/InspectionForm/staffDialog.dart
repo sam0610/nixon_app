@@ -54,28 +54,32 @@ class _StaffDialogState extends State<StaffDialog> {
         });
   }
 
+  Widget searchBox() {
+    return new Container(
+        child: new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new ListTile(
+        leading: new Icon(Icons.search),
+        title: new TextField(
+          controller: _filterController,
+          decoration:
+              new InputDecoration(hintText: 'Search', border: InputBorder.none),
+          onChanged: _searchTextChanged,
+        ),
+        trailing: new IconButton(
+            icon: new Icon(Icons.cancel),
+            onPressed: () {
+              _filterController.clear();
+              _searchTextChanged('');
+            }),
+      ),
+    ));
+  }
+
   Widget body() {
     return new Column(
       children: <Widget>[
-        new Container(
-            child: new Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: new ListTile(
-            leading: new Icon(Icons.search),
-            title: new TextField(
-              controller: _filterController,
-              decoration: new InputDecoration(
-                  hintText: 'Search', border: InputBorder.none),
-              onChanged: _searchTextChanged,
-            ),
-            trailing: new IconButton(
-                icon: new Icon(Icons.cancel),
-                onPressed: () {
-                  _filterController.clear();
-                  _searchTextChanged('');
-                }),
-          ),
-        )),
+        searchBox(),
         new Expanded(
             child: _staffListFiltered.length != 0 ||
                     _filterController.text.isNotEmpty
@@ -98,6 +102,11 @@ class _StaffDialogState extends State<StaffDialog> {
     return new Scaffold(
         appBar: new AppBar(
           title: const Text('Select a Staff'),
+          actions: <Widget>[
+            new IconButton(
+                icon: new Icon(Icons.refresh),
+                onPressed: () => _asyncLoaderState.currentState.reloadState()),
+          ],
         ),
         body: _asyncLoader);
   }
