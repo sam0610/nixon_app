@@ -79,4 +79,21 @@ class InspectionRepos {
     });
     return false;
   }
+
+  static Future<String> uploadAudios(File file, String name) async {
+    StorageReference ref =
+        FirebaseStorage.instance.ref().child(_user.uid).child(name);
+    StorageMetadata metadata =
+        new StorageMetadata(contentType: 'Audio', contentEncoding: 'aac');
+    StorageUploadTask uploadTask = ref.putFile(file, metadata);
+
+    Uri downloadUrl = (await uploadTask.future).downloadUrl;
+    return downloadUrl.toString();
+  }
+
+  static Future<void> deletesAudio(String name) async {
+    StorageReference ref =
+        FirebaseStorage.instance.ref().child(_user.uid).child(name);
+    await ref.delete();
+  }
 }

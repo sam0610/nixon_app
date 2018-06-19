@@ -22,6 +22,9 @@ class Inspection extends Object with _$InspectionSerializerMixin {
   String foundLocation;
   String guestsProportion;
   String situationRemark;
+  String audioLocalPath;
+  String audioCloudPath;
+  List<String> audios;
   String userid;
   Grooming grooming;
   Behavior behavior;
@@ -48,6 +51,9 @@ class Inspection extends Object with _$InspectionSerializerMixin {
       this.foundLocation,
       this.guestsProportion,
       this.situationRemark,
+      this.audioLocalPath,
+      this.audioCloudPath,
+      this.audios,
       this.userid,
       this.grooming,
       this.behavior,
@@ -75,7 +81,8 @@ class Inspection extends Object with _$InspectionSerializerMixin {
     this.guestsProportion = "1",
     this.situationRemark,
     this.userid,
-  })  : grooming = new Grooming(),
+  })  : audios = <String>[],
+        grooming = new Grooming(),
         behavior = new Behavior(),
         serveCust = new ServeCust(),
         listenCust = new ListenCust(),

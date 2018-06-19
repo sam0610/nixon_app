@@ -1,4 +1,8 @@
 PODS:
+  - audio_recorder (0.0.1):
+    - Flutter
+  - audioplayer (0.0.1):
+    - Flutter
   - BoringSSL (10.0.3):
     - BoringSSL/Implementation (= 10.0.3)
     - BoringSSL/Interface (= 10.0.3)
@@ -88,13 +92,18 @@ PODS:
     - nanopb/encode (= 0.3.8)
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
+  - path_provider (0.0.1):
+    - Flutter
   - Protobuf (3.5.0)
 
 DEPENDENCIES:
+  - audio_recorder (from `.symlinks/plugins/audio_recorder/ios`)
+  - audioplayer (from `.symlinks/plugins/audioplayer/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - Flutter (from `.symlinks/flutter/ios`)
+  - path_provider (from `.symlinks/plugins/path_provider/ios`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -117,6 +126,10 @@ SPEC REPOS:
     - Protobuf
 
 EXTERNAL SOURCES:
+  audio_recorder:
+    :path: ".symlinks/plugins/audio_recorder/ios"
+  audioplayer:
+    :path: ".symlinks/plugins/audioplayer/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   firebase_auth:
@@ -125,8 +138,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_core/ios"
   Flutter:
     :path: ".symlinks/flutter/ios"
+  path_provider:
+    :path: ".symlinks/plugins/path_provider/ios"
 
 SPEC CHECKSUMS:
+  audio_recorder: 964d124e1109fc012c47a98c3f5d843771a75db7
+  audioplayer: 3cc64e4f5f3e231c715c8923a9bc26a19dc5da3b
   BoringSSL: c46efb47593135382bc0934196f16d2f726f5f36
   cloud_firestore: a2d49d9c7219fce31033eb1a2ee953d7733c91d6
   Firebase: e08fb0795f35707aeb1d8a715c731c45bdf6fd56
@@ -147,6 +164,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 5fa5b80fd20e439ef5f545fb2cb3ca6c6714caa2
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
+  path_provider: 09407919825bfe3c2deae39453b7a5b44f467873
   Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
 
 PODFILE CHECKSUM: 7765ea4305eaab0b3dfd384c7de11902aa3195fd

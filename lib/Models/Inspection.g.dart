@@ -28,6 +28,19 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
       situationRemark: json['situationRemark'] == null
           ? null
           : json['situationRemark'] as String,
+//
+      audioLocalPath: json['audioLocalPath'] == null
+          ? null
+          : json['audioLocalPath'] as String,
+//
+      audioCloudPath: json['audioCloudPath'] == null
+          ? null
+          : json['audioCloudPath'] as String,
+//
+      audios:
+          json['audios'] == null ? null : new List<String>.from(json['audios']),
+
+//
       userid: json['userid'] as String,
       id: json['id'] as String,
       grooming: json['grooming'] == null
@@ -79,6 +92,9 @@ abstract class _$InspectionSerializerMixin {
   String get foundLocation;
   String get guestsProportion;
   String get situationRemark;
+  String get audioLocalPath;
+  String get audioCloudPath;
+  List<String> get audios;
   String get userid;
   Grooming get grooming;
   Behavior get behavior;
@@ -106,6 +122,8 @@ abstract class _$InspectionSerializerMixin {
       'foundLocation': foundLocation,
       'guestsProportion': guestsProportion,
       'situationRemark': situationRemark,
+      'audioLocalPath': audioLocalPath,
+      'audioCloudPath': audioCloudPath,
       'userid': userid,
     };
     void writeNotNull(String key, dynamic value) {
@@ -114,6 +132,7 @@ abstract class _$InspectionSerializerMixin {
       }
     }
 
+    writeNotNull('audios', audios);
     writeNotNull('grooming', grooming?.toJson());
     writeNotNull('behavior', behavior?.toJson());
     writeNotNull('serveCust', serveCust?.toJson());
