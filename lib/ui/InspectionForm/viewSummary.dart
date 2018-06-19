@@ -11,6 +11,16 @@ class _ViewSummaryState extends State<ViewSummary> {
     super.initState();
   }
 
+  void showSnackBar(BuildContext context, String msg,
+      {Color bgcolor = Colors.blue}) {
+    Scaffold.of(context).showSnackBar(
+          new SnackBar(
+              duration: new Duration(seconds: 10),
+              content: new Text(msg),
+              backgroundColor: bgcolor),
+        );
+  }
+
   Widget text(String title, double score) {
     TextStyle style =
         new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
@@ -163,6 +173,8 @@ class _ViewSummaryState extends State<ViewSummary> {
           SaveActionButton(
             model,
           )._save(context);
+        } else {
+          showSnackBar(context, 'form incompleted');
         }
       });
     }

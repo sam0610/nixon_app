@@ -110,30 +110,30 @@ class _PlayerUiWidgetState extends State<_PlayerUiWidget> {
     setState(() => playerState = PlayerState.stopped);
   }
 
-  Future<Uint8List> _loadFileBytes(String url, {OnError onError}) async {
-    Uint8List bytes;
-    try {
-      bytes = await readBytes(url);
-    } on ClientException {
-      rethrow;
-    }
-    return bytes;
-  }
+  // Future<Uint8List> _loadFileBytes(String url, {OnError onError}) async {
+  //   Uint8List bytes;
+  //   try {
+  //     bytes = await readBytes(url);
+  //   } on ClientException {
+  //     rethrow;
+  //   }
+  //   return bytes;
+  // }
 
-  Future _loadFile() async {
-    final bytes = await _loadFileBytes(filePath,
-        onError: (Exception exception) =>
-            print('_loadFile => exception $exception'));
+  // Future _loadFile() async {
+  //   final bytes = await _loadFileBytes(filePath,
+  //       onError: (Exception exception) =>
+  //           print('_loadFile => exception $exception'));
 
-    final dir = await getApplicationDocumentsDirectory();
-    final file = new File('${dir.path}/audio.mp3');
+  //   final dir = await getApplicationDocumentsDirectory();
+  //   final file = new File('${dir.path}/audio.mp3');
 
-    await file.writeAsBytes(bytes);
-    if (await file.exists())
-      setState(() {
-        filePath = file.path;
-      });
-  }
+  //   await file.writeAsBytes(bytes);
+  //   if (await file.exists())
+  //     setState(() {
+  //       filePath = file.path;
+  //     });
+  // }
 
   @override
   Widget build(BuildContext context) {

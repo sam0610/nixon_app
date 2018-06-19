@@ -3,6 +3,9 @@ part of nixon_app;
 final CollectionReference inspectionCollection =
     Firestore.instance.collection('Inspection');
 
+final StorageReference audioStorageRef =
+    FirebaseStorage.instance.ref().child('audios').child(_user.uid);
+
 final Query inspectionByUser =
     inspectionCollection.where('userid', isEqualTo: _user.uid);
 
@@ -81,19 +84,17 @@ class InspectionRepos {
   }
 
   static Future<String> uploadAudios(File file, String name) async {
-    StorageReference ref =
-        FirebaseStorage.instance.ref().child(_user.uid).child(name);
+    StorageReference ref = audioStorageRef.child(name);
     StorageMetadata metadata =
         new StorageMetadata(contentType: 'Audio', contentEncoding: 'aac');
     StorageUploadTask uploadTask = ref.putFile(file, metadata);
-
     Uri downloadUrl = (await uploadTask.future).downloadUrl;
+
     return downloadUrl.toString();
   }
 
-  static Future<void> deletesAudio(String name) async {
-    StorageReference ref =
-        FirebaseStorage.instance.ref().child(_user.uid).child(name);
+  static Future<void> deleteAudio(String name) async {
+    StorageReference ref = audioStorageRef.child(name);
     await ref.delete();
   }
 }

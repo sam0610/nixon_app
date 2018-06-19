@@ -20,6 +20,7 @@ class _ViewInfoState extends State<ViewInfo>
   TextEditingController _bldgCodeController;
   TextEditingController _nxNumberController;
   TextEditingController _staffNameController;
+  TextEditingController _locationController;
 
   @override
   void initState() {
@@ -27,6 +28,8 @@ class _ViewInfoState extends State<ViewInfo>
     model = ModelFinder<InspectionModel>().of(context);
     _bldgNameController = new TextEditingController(text: model.form.bldgName);
     _bldgCodeController = new TextEditingController(text: model.form.bldgCode);
+    _locationController =
+        new TextEditingController(text: model.form.foundLocation);
     model.form.nixonNumber == null
         ? _nxNumberController = new TextEditingController()
         : _nxNumberController =
@@ -91,8 +94,9 @@ class _ViewInfoState extends State<ViewInfo>
         new DateTextField(
           labelText: Inspection.translate('inspectionDate'),
           initialValue: model.form.inspectionDate,
-          validator: (value) =>
-              _validateField(model.form.inspectionDate, value, model),
+          validator: (value) => _validateField(
+              model.form.inspectionDate, value, model,
+              nullable: false),
           onChanged: (value) => model.form.inspectionDate = value,
           onSaved: (value) => model.form.inspectionDate = value,
         ),
@@ -106,7 +110,7 @@ class _ViewInfoState extends State<ViewInfo>
                   labelText: Inspection.translate('arrivedTime'),
                   initialValue: FormHelper.strToTime(model.form.arrivedTime),
                   validator: (value) => _validateField(model.form.arrivedTime,
-                      FormHelper.timetoString(value), model),
+                      FormHelper.timetoString(value), model, nullable: false),
                   onChanged: (value) {
                     setState(() {
                       model.form.arrivedTime = FormHelper.timetoString(value);
@@ -123,7 +127,7 @@ class _ViewInfoState extends State<ViewInfo>
                   labelText: Inspection.translate('leaveTime'),
                   initialValue: FormHelper.strToTime(model.form.leaveTime),
                   validator: (value) => _validateField(model.form.leaveTime,
-                      FormHelper.timetoString(value), model),
+                      FormHelper.timetoString(value), model, nullable: false),
                   onChanged: (value) =>
                       model.form.leaveTime = FormHelper.timetoString(value),
                   onSaved: (value) => model.form.leaveTime = FormHelper
@@ -192,6 +196,8 @@ class _ViewInfoState extends State<ViewInfo>
                   InputDecoration(labelText: Inspection.translate('staffName')),
               controller: _staffNameController,
               focusNode: _focusNode4,
+              validator: (value) =>
+                  _validateField(model.form.staffName, value, model),
               onFieldSubmitted: (value) => model.form.staffName = value,
               onSaved: (value) => model.form.staffName = value),
         ),
@@ -201,14 +207,19 @@ class _ViewInfoState extends State<ViewInfo>
               flex: 1,
               child: new EnsureVisibleWhenFocused(
                 focusNode: _focusNode5,
-                child: MyFormTextField(
+                child: new TextFormField(
+                  style: Theme.of(context).textTheme.body2,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
                     labelText: Inspection.translate('foundLocation'),
-                    initialValue: model.form.foundLocation,
-                    nullable: false,
-                    focusNode: _focusNode5,
-                    onFieldSubmitted: (value) =>
-                        model.form.foundLocation = value,
-                    onSave: (value) => model.form.foundLocation = value),
+                  ),
+                  controller: _locationController,
+                  focusNode: _focusNode5,
+                  onFieldSubmitted: (value) => model.form.foundLocation = value,
+                  validator: (value) =>
+                      _validateField(model.form.foundLocation, value, model),
+                  onSaved: (value) => model.form.foundLocation = value,
+                ),
               ),
             ),
             new Expanded(

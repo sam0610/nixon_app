@@ -53,10 +53,10 @@ class _InspectionFormState extends State<InspectionForm>
   ScrollController _scrollViewController;
   final List<Tab> myTabs = <Tab>[
     new Tab(
-      text: '巡查資料',
+      text: '錄音',
     ),
     new Tab(
-      text: '錄音',
+      text: '巡查資料',
     ),
     new Tab(
       text: '服務評分',
@@ -100,8 +100,8 @@ class _InspectionFormState extends State<InspectionForm>
 
   TabBarView buildTabBarView() {
     return new TabBarView(controller: _tabController, children: <Widget>[
-      new ViewInfo(),
       new ViewRecorder(),
+      new ViewInfo(),
       new ViewService(),
       new ViewCleaning(),
       new ViewSummary(),
@@ -229,7 +229,7 @@ class SaveActionButton extends StatelessWidget {
     final form = model._globalKey.currentState;
     if (form.validate()) {
       form.save();
-      if (model.form.checkForSave()) {
+      if (model.form.files != null) {
         if (model.form.id == null) {
           InspectionRepos.addInspection(model.form).whenComplete(() {
             Navigator.pop(context);

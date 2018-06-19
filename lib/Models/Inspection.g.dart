@@ -29,16 +29,13 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
           ? null
           : json['situationRemark'] as String,
 //
-      audioLocalPath: json['audioLocalPath'] == null
-          ? null
-          : json['audioLocalPath'] as String,
-//
-      audioCloudPath: json['audioCloudPath'] == null
-          ? null
-          : json['audioCloudPath'] as String,
-//
-      audios:
-          json['audios'] == null ? null : new List<String>.from(json['audios']),
+      files: (json['files'] as List)
+          ?.map((f) =>
+              f == null ? null : new UFiles.fromJson(f.cast<String, dynamic>()))
+          ?.toList(),
+
+      // audios:
+      // json['audios'] == null ? null : new List<String>.from(json['audios']),
 
 //
       userid: json['userid'] as String,
@@ -92,9 +89,8 @@ abstract class _$InspectionSerializerMixin {
   String get foundLocation;
   String get guestsProportion;
   String get situationRemark;
-  String get audioLocalPath;
-  String get audioCloudPath;
-  List<String> get audios;
+  //List<String> get audios;
+  List<UFiles> get files;
   String get userid;
   Grooming get grooming;
   Behavior get behavior;
@@ -122,8 +118,6 @@ abstract class _$InspectionSerializerMixin {
       'foundLocation': foundLocation,
       'guestsProportion': guestsProportion,
       'situationRemark': situationRemark,
-      'audioLocalPath': audioLocalPath,
-      'audioCloudPath': audioCloudPath,
       'userid': userid,
     };
     void writeNotNull(String key, dynamic value) {
@@ -132,7 +126,9 @@ abstract class _$InspectionSerializerMixin {
       }
     }
 
-    writeNotNull('audios', audios);
+    var s = files.map((i) => i.toJson()).toList();
+    writeNotNull('files', s);
+    //writeNotNull('audios', audios);
     writeNotNull('grooming', grooming?.toJson());
     writeNotNull('behavior', behavior?.toJson());
     writeNotNull('serveCust', serveCust?.toJson());

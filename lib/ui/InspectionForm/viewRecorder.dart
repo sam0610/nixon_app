@@ -7,9 +7,9 @@ class ViewRecorder extends StatefulWidget {
 
 class _ViewRecorderState extends State<ViewRecorder> {
   InspectionModel model;
-  Recording _recording;
+  //Recording _recording;
   bool _isRecording = false;
-  String _path;
+  //String _path;
 
   void showSnackBar(BuildContext context, String msg,
       {Color bgcolor = Colors.blue}) {
@@ -25,8 +25,9 @@ class _ViewRecorderState extends State<ViewRecorder> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     model = ModelFinder<InspectionModel>().of(context);
-    model.form.audios ??= [];
+    model.form.files ??= [];
   }
 
   @override
@@ -38,72 +39,78 @@ class _ViewRecorderState extends State<ViewRecorder> {
   Widget build(BuildContext context) {
     return new Column(
       children: <Widget>[
-        _recorderWidget(),
         _buildListView(),
+        _recorderWidget(),
+        new SizedBox(
+          height: 40.0,
+        )
       ],
     );
-//   }
-// new Center(
-//       child: new Padding(
-//         padding: new EdgeInsets.all(8.0),
-//         child: new Column(
-//             mainAxisAlignment: MainAxisAlignment.spaceAround,
-//             children: <Widget>[
-//
-//               new Text("1: $_path"),
-//               new Text("File path of the record: ${_recording.path}"),
-//               new Text(
-//                   "Audio recording duration : ${_recording.duration.toString()}")
-//             ]),
-//       ),
   }
 
   _recorderWidget() {
-    return new Container(
-        padding: new EdgeInsets.all(24.0),
-        decoration: new BoxDecoration(
-            borderRadius: new BorderRadius.circular(5.0), color: Colors.white),
-        child: new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            new RaisedButton(
+    return new Center(
+      child: !_isRecording
+          ? new RaisedButton(
+              elevation: 4.0,
+              padding: EdgeInsets.all(15.0),
+              color: Theme.of(context).primaryColor,
               shape: new CircleBorder(),
-              child: new Icon(Icons.mic, color: Colors.red, size: 60.0),
+              child: new Icon(Icons.mic, color: Colors.white, size: 40.0),
               onPressed: _isRecording ? null : _start,
-              color: Colors.white,
-            ),
-            new RaisedButton(
-              shape: new CircleBorder(),
-              child: new Icon(Icons.stop, color: Colors.black, size: 60.0),
+            )
+          : new RaisedButton(
+              elevation: 4.0,
+              padding: EdgeInsets.all(15.0),
+              color: Theme.of(context).primaryColor,
+              shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(10.0)),
+              child: new Icon(Icons.stop, color: Colors.white, size: 40.0),
               onPressed: _isRecording ? _stop : null,
-              color: Colors.white,
             ),
-          ],
-        ));
+    );
   }
 
   _buildListView() {
     return new Expanded(
       child: new ListView.builder(
         padding: EdgeInsets.all(10.0),
-        itemCount: model.form.audios.length,
-        itemExtent: 100.0,
+        itemCount: model.form.files.length,
+        //itemExtent: 130.0,
         itemBuilder: (context, index) {
-          String path = model.form.audios[index];
-          String fileName = path;
+          UFiles f = model.form.files[index];
+          // String fileName = path;
           return new Card(
-              elevation: 5.0,
-              shape: new RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(5.0)),
-              child: new ListTile(
-                subtitle: new Container(
-                    child: new _PlayerUiWidget(url: path, isLocal: false)),
+            elevation: 4.0,
+            child: new ExpansionTile(
+                title: new Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new CircleAvatar(child: new Icon(Icons.audiotrack)),
+                    new SizedBox(
+                      width: 20.0,
+                    ),
+                    Text(f.name,
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .body2
+                            .copyWith(fontWeight: FontWeight.bold)),
+                  ],
+                ),
                 trailing: new IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () => setState(() {
-                          model.form.audios.remove(path);
+                          model.form.files.remove(f);
+                          InspectionRepos.deleteAudio(f.name);
                         })),
-              ));
+                children: <Widget>[
+                  new Container(
+                    child:
+                        new _PlayerUiWidget(url: f.downloalUrl, isLocal: false),
+                  ),
+                ]),
+          );
         },
       ),
     );
@@ -120,7 +127,7 @@ class _ViewRecorderState extends State<ViewRecorder> {
         await AudioRecorder.start(path: path);
         bool isRecording = await AudioRecorder.isRecording;
         setState(() {
-          _recording = new Recording(duration: new Duration(), path: "");
+          //_recording = new Recording(duration: new Duration(), path: "");
           _isRecording = isRecording;
         });
       } else {
@@ -136,15 +143,17 @@ class _ViewRecorderState extends State<ViewRecorder> {
     print("Stop recording: ${recording.path}");
     bool isRecording = await AudioRecorder.isRecording;
     File file = new File(recording.path);
+    UFiles tmp = new UFiles();
     InspectionRepos.uploadAudios(file, '$date.aac').then((link) {
-      _path = link;
-      setState() {
-        model.form.audios.add(_path);
-      }
+      tmp.downloalUrl = link;
+      tmp.name = '$date.aac';
+      setState(() {
+        model.form.files.add(tmp);
+      });
     });
     print("  File length: ${await file.length()}");
     setState(() {
-      _recording = recording;
+      //_recording = recording;
       _isRecording = isRecording;
     });
   }

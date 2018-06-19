@@ -22,9 +22,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
   String foundLocation;
   String guestsProportion;
   String situationRemark;
-  String audioLocalPath;
-  String audioCloudPath;
-  List<String> audios;
+  List<UFiles> files;
   String userid;
   Grooming grooming;
   Behavior behavior;
@@ -51,9 +49,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
       this.foundLocation,
       this.guestsProportion,
       this.situationRemark,
-      this.audioLocalPath,
-      this.audioCloudPath,
-      this.audios,
+      this.files,
       this.userid,
       this.grooming,
       this.behavior,
@@ -81,7 +77,8 @@ class Inspection extends Object with _$InspectionSerializerMixin {
     this.guestsProportion = "1",
     this.situationRemark,
     this.userid,
-  })  : audios = <String>[],
+  })  : files = <UFiles>[],
+        //audios = <String>[],
         grooming = new Grooming(),
         behavior = new Behavior(),
         serveCust = new ServeCust(),
@@ -123,15 +120,17 @@ class Inspection extends Object with _$InspectionSerializerMixin {
         _pass(postName) &&
         _pass(guestsProportion) &&
         _pass(situationRemark) &&
+        _pass(files) &&
         _pass(userid)) return true;
     return false;
   }
 
   bool _pass(dynamic field) {
     bool result = true;
-    if (field == null) result = false;
+    if (field == null) return false;
     if (field is String && field.isEmpty) return false;
-    if (result == false) throw (field.toString() + 'is Empty');
+    if (field is List && field.length < 1) return false;
+    if (result == false) return false;
     return result;
   }
 
@@ -203,6 +202,24 @@ class Inspection extends Object with _$InspectionSerializerMixin {
     });
     return result;
   }
+}
+
+class UFiles extends Object with _$UFilesSerializerMixin {
+  String name;
+  String downloalUrl;
+
+  UFiles({this.name, this.downloalUrl});
+
+  factory UFiles.fromJson(Map<String, dynamic> json) => new UFiles(
+      name: json['name'] as String, downloalUrl: json['downloalUrl'] as String);
+}
+
+abstract class _$UFilesSerializerMixin {
+  String get name;
+  String get downloalUrl;
+
+  Map<String, dynamic> toJson() =>
+      <String, dynamic>{'name': name, 'downloalUrl': downloalUrl};
 }
 
 @JsonSerializable()

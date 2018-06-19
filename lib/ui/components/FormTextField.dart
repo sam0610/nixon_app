@@ -52,10 +52,9 @@ class _MyFormTextFieldState extends State<MyFormTextField> {
       ),
       //controller: widget.controller,
       initialValue: widget.initialValue,
+      validator: (value) => _validateField(widget.initialValue, value, model,
+          nullable: widget.nullable),
       onFieldSubmitted: widget.onFieldSubmitted,
-      validator: (value) => widget.nullable == false
-          ? _validateField(widget.initialValue, value, model)
-          : null,
       onSaved: widget.onSave,
     );
   }

@@ -17,8 +17,8 @@ import 'package:meta/meta.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:audioplayer/audioplayer.dart';
 import 'Models/Inspection.dart';
-import 'dart:typed_data';
-import 'package:http/http.dart';
+// import 'dart:typed_data';
+// import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
