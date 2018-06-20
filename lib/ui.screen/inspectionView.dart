@@ -19,7 +19,6 @@ class _InspectionViewState extends State<InspectionView>
   InspectionViewModel _model;
   TabController _tabController;
   ScrollController _scrollViewController;
-  TextTheme _textTheme;
   final List<Tab> _myTabs = <Tab>[
     new Tab(
       text: '巡查資料',
@@ -30,9 +29,9 @@ class _InspectionViewState extends State<InspectionView>
     new Tab(
       text: '清潔評分',
     ),
-    //new Tab(
-    //  text: '總表',
-    //)
+    new Tab(
+      text: '總表',
+    )
   ];
 
   @override
@@ -54,7 +53,6 @@ class _InspectionViewState extends State<InspectionView>
 
   @override
   Widget build(BuildContext context) {
-    _textTheme = Theme.of(context).textTheme;
     return new ScopedModel<InspectionViewModel>(
       model: _model,
       child: new SafeArea(
@@ -98,6 +96,7 @@ class _InspectionViewState extends State<InspectionView>
       new Info_view(_model),
       new Service_view(_model),
       new Cleaning_view(_model),
+      new Summary_view(_model),
     ]);
   }
 }
@@ -185,7 +184,7 @@ class Service_view extends StatelessWidget {
       );
     }
 
-    Widget bi(Map<String, dynamic> v) {
+    Widget buildRow(Map<String, dynamic> v) {
       List<TableRow> widget = [];
       v.forEach((key, value) {
         widget.add(new TableRow(children: [
@@ -208,35 +207,35 @@ class Service_view extends StatelessWidget {
       children: <Widget>[
         buildScoreTile(
           'grooming',
-          bi(model.form.grooming.toJson()),
+          buildRow(model.form.grooming.toJson()),
         ),
         buildScoreTile(
           'behavior',
-          bi(model.form.behavior.toJson()),
+          buildRow(model.form.behavior.toJson()),
         ),
         buildScoreTile(
           'serveCust',
-          bi(model.form.serveCust.toJson()),
+          buildRow(model.form.serveCust.toJson()),
         ),
         buildScoreTile(
           'listenCust',
-          bi(model.form.listenCust.toJson()),
+          buildRow(model.form.listenCust.toJson()),
         ),
         buildScoreTile(
           'handleCust',
-          bi(model.form.handleCust.toJson()),
+          buildRow(model.form.handleCust.toJson()),
         ),
         buildScoreTile(
           'closure',
-          bi(model.form.closure.toJson()),
+          buildRow(model.form.closure.toJson()),
         ),
         buildScoreTile(
           'communicationSkill',
-          bi(model.form.communicationSkill.toJson()),
+          buildRow(model.form.communicationSkill.toJson()),
         ),
         buildScoreTile(
           'warmHeart',
-          bi(model.form.warmHeart.toJson()),
+          buildRow(model.form.warmHeart.toJson()),
         ),
       ],
     );
@@ -264,7 +263,7 @@ class Cleaning_view extends StatelessWidget {
       );
     }
 
-    Widget bi(Map<String, dynamic> v) {
+    Widget buildRow(Map<String, dynamic> v) {
       List<TableRow> widget = [];
       v.forEach((key, value) {
         widget.add(new TableRow(children: [
@@ -287,13 +286,123 @@ class Cleaning_view extends StatelessWidget {
       children: <Widget>[
         buildScoreTile(
           'cleanlinessMall',
-          bi(model.form.cleanlinessMall.toJson()),
+          buildRow(model.form.cleanlinessMall.toJson()),
         ),
         buildScoreTile(
           'cleanlinessToilet',
-          bi(model.form.cleanlinessToilet.toJson()),
+          buildRow(model.form.cleanlinessToilet.toJson()),
         ),
       ],
     );
+  }
+}
+
+class Summary_view extends StatelessWidget {
+  Summary_view(this.model);
+  final InspectionViewModel model;
+
+  @override
+  Widget build(BuildContext context) {
+    String post = model.form.postName;
+
+    TextStyle _boldStyle = Theme
+        .of(context)
+        .textTheme
+        .body2
+        .copyWith(fontWeight: FontWeight.bold, fontSize: 12.0);
+
+    List<DataRow> buildRow() {
+      Map<String, dynamic> rowData = {
+        'grooming': model.form.grooming.toJson(),
+        'behavior': model.form.behavior.toJson(),
+        'serveCust': model.form.serveCust.toJson(),
+        'listenCust': model.form.listenCust.toJson(),
+        'handleCust': model.form.handleCust.toJson(),
+        'closure': model.form.closure.toJson(),
+        'communicationSkill': model.form.communicationSkill.toJson(),
+        'warmHeart': model.form.warmHeart.toJson(),
+        'cleanlinessMall': model.form.cleanlinessMall.toJson(),
+        'cleanlinessToilet': model.form.cleanlinessToilet.toJson(),
+      };
+
+      if (post == '洗手間') rowData.removeWhere((k, v) => k == 'cleanlinessMall');
+      if (post == '商場') rowData.removeWhere((k, v) => k == 'cleanlinessToilet');
+
+      List<DataRow> row = [];
+      double totalScore = 0.0;
+      rowData.forEach((title, object) {
+        double score = FormHelper.calculate(object);
+        double factor = getFactor(title);
+        double subtotal = (score * factor) / 100;
+        totalScore += subtotal;
+        row.add(new DataRow(cells: <DataCell>[
+          new DataCell(new Text(Inspection.translate(title)), onTap: null),
+          new DataCell(new Text(score.toString()), onTap: null),
+          new DataCell(new Text(factor.toInt().toString() + '%'), onTap: null),
+          new DataCell(new Text(subtotal.toString()), onTap: null),
+        ]));
+      });
+      row.add(new DataRow(onSelectChanged: null, cells: <DataCell>[
+        new DataCell(
+            new Text(
+              Inspection.translate('Total'),
+              style: _boldStyle,
+            ),
+            onTap: null),
+        new DataCell(new Text(''), onTap: null),
+        new DataCell(new Text(''), onTap: null),
+        new DataCell(new Text(totalScore.toString(), style: _boldStyle),
+            onTap: null),
+      ]));
+
+      return row;
+    }
+
+    List<DataColumn> col = [
+      new DataColumn(
+          label: new Text(Inspection.translate('SummaryViewTitle'),
+              style: _boldStyle)),
+      new DataColumn(
+          label: new Text(Inspection.translate('Score'), style: _boldStyle)),
+      new DataColumn(
+          label: new Text(Inspection.translate('Factor'), style: _boldStyle)),
+      new DataColumn(
+          label: new Text(Inspection.translate('Total'), style: _boldStyle))
+    ];
+    return ListView(
+      children: <Widget>[
+        new DataTable(
+          columns: col,
+          rows: buildRow(),
+        ),
+      ],
+    );
+  }
+
+  double getFactor(String field) {
+    double res = scoreFactorTemplate[field];
+    return res;
+  }
+
+  final Map<String, double> scoreFactorTemplate = {
+    'grooming': 20.0,
+    'behavior': 10.0,
+    'serveCust': 20.0,
+    'listenCust': 10.0,
+    'handleCust': 10.0,
+    'closure': 10.0,
+    'communicationSkill': 5.0,
+    'warmHeart': 5.0,
+    'cleanlinessMall': 10.0,
+    'cleanlinessToilet': 10.0,
+  };
+
+  void addtoFirebase() {
+    Firestore.instance
+        .collection('setting')
+        .document('ScoreFactor')
+        .collection(model.form.bldgCode)
+        .add(scoreFactorTemplate)
+        .then((_) => print('done'));
   }
 }

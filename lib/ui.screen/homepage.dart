@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage>
       ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.add_circle),
-        onPressed: _addForm,
+        onPressed: () => _addForm,
       ),
       drawer: DrawerWidget(
         context: context,
