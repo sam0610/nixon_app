@@ -165,8 +165,10 @@ class _ViewSummaryState extends State<ViewSummary> {
         });
 
     _saveToComplete(InspectionModel model) {
-      _confirmSave().then((res) {
-        if (model.form.checkForComplete() && res == true) {
+      if (!model.form.checkForComplete()) {
+        showSnackBar(context, 'form incompleted');
+      } else {
+        if ((_confirmSave) == true) {
           if (model.form.postName == "洗手間") model.form.cleanlinessMall = null;
           if (model.form.postName == "商場") model.form.cleanlinessToilet = null;
           model.form.status = InspectionStatus.complete.toString();
@@ -174,9 +176,9 @@ class _ViewSummaryState extends State<ViewSummary> {
             model,
           )._save(context);
         } else {
-          showSnackBar(context, 'form incompleted');
+          showSnackBar(context, 'canceled by user');
         }
-      });
+      }
     }
 
     RaisedButton buildRaisedButton(

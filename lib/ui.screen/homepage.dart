@@ -108,9 +108,13 @@ class FirestoreListView extends StatelessWidget {
   final List<DocumentSnapshot> documents;
 
   void _open(BuildContext context, Inspection inspection) {
+    bool isComplete = inspection.status == InspectionStatus.complete.toString();
+
     Navigator.of(context).push(
           new AnimatedRoute(
-            builder: (_) => new InspectionForm(form: inspection),
+            builder: (_) => isComplete
+                ? new InspectionView(form: inspection)
+                : new InspectionForm(form: inspection),
           ),
         );
   }

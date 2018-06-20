@@ -90,12 +90,19 @@ class _ViewRecorderState extends State<ViewRecorder> {
                     new SizedBox(
                       width: 20.0,
                     ),
-                    Text(f.name,
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .body2
-                            .copyWith(fontWeight: FontWeight.bold)),
+                    new Flexible(
+                      fit: FlexFit.tight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: new Text(f.name,
+                            softWrap: false,
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .body2
+                                .copyWith(fontWeight: FontWeight.bold)),
+                      ),
+                    ),
                   ],
                 ),
                 trailing: new IconButton(

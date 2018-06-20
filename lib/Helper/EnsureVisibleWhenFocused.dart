@@ -130,6 +130,8 @@ class _EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused>
     ScrollPosition position = scrollableState.position;
     double alignment;
 
+    viewport.getOffsetToReveal(object, 0.0);
+
     if (position.pixels > viewport.getOffsetToReveal(object, 0.0)) {
       // Move down to the top of the viewport
       alignment = 0.0;
