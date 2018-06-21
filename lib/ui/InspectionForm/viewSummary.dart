@@ -92,27 +92,27 @@ class _ViewSummaryState extends State<ViewSummary> {
           ),
         ),
       ]));
-      _row.add(dRow(Inspection.translate('grooming'),
+      _row.add(dRow(TranslateHelper.translate('grooming'),
           FormHelper.calculate(form.grooming.toJson())));
-      _row.add(dRow(Inspection.translate('behavior'),
+      _row.add(dRow(TranslateHelper.translate('behavior'),
           FormHelper.calculate(form.behavior.toJson())));
-      _row.add(dRow(Inspection.translate('serveCust'),
+      _row.add(dRow(TranslateHelper.translate('serveCust'),
           FormHelper.calculate(form.serveCust.toJson())));
-      _row.add(dRow(Inspection.translate('listenCust'),
+      _row.add(dRow(TranslateHelper.translate('listenCust'),
           FormHelper.calculate(form.listenCust.toJson())));
-      _row.add(dRow(Inspection.translate('handleCust'),
+      _row.add(dRow(TranslateHelper.translate('handleCust'),
           FormHelper.calculate(form.handleCust.toJson())));
-      _row.add(dRow(Inspection.translate('closure'),
+      _row.add(dRow(TranslateHelper.translate('closure'),
           FormHelper.calculate(form.closure.toJson())));
-      _row.add(dRow(Inspection.translate('communicationSkill'),
+      _row.add(dRow(TranslateHelper.translate('communicationSkill'),
           FormHelper.calculate(form.communicationSkill.toJson())));
-      _row.add(dRow(Inspection.translate('warmHeart'),
+      _row.add(dRow(TranslateHelper.translate('warmHeart'),
           FormHelper.calculate(form.warmHeart.toJson())));
       if (form.postName == "商場") {
-        _row.add(dRow(Inspection.translate('cleanlinessMall'),
+        _row.add(dRow(TranslateHelper.translate('cleanlinessMall'),
             FormHelper.calculate(form.cleanlinessMall.toJson())));
       } else if (form.postName == "洗手間") {
-        _row.add(dRow(Inspection.translate('cleanlinessToilet'),
+        _row.add(dRow(TranslateHelper.translate('cleanlinessToilet'),
             FormHelper.calculate(form.cleanlinessToilet.toJson())));
       }
       return _row;
@@ -171,7 +171,7 @@ class _ViewSummaryState extends State<ViewSummary> {
         if ((_confirmSave) == true) {
           if (model.form.postName == "洗手間") model.form.cleanlinessMall = null;
           if (model.form.postName == "商場") model.form.cleanlinessToilet = null;
-          model.form.status = InspectionStatus.complete.toString();
+          model.form.status = InspectionStatus.complete;
           SaveActionButton(
             model,
           )._save(context);

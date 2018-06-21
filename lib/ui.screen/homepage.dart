@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage>
       ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.add_circle),
-        onPressed: () => _addForm,
+        onPressed: () => _addForm(),
       ),
       drawer: DrawerWidget(
         context: context,
@@ -108,11 +108,9 @@ class FirestoreListView extends StatelessWidget {
   final List<DocumentSnapshot> documents;
 
   void _open(BuildContext context, Inspection inspection) {
-    bool isComplete = inspection.status == InspectionStatus.complete.toString();
-
     Navigator.of(context).push(
           new AnimatedRoute(
-            builder: (_) => isComplete
+            builder: (_) => inspection.status != InspectionStatus.composing
                 ? new InspectionView(form: inspection)
                 : new InspectionForm(form: inspection),
           ),
@@ -130,9 +128,10 @@ class FirestoreListView extends StatelessWidget {
     });
   }
 
-  void _archive(Inspection item, bool archive, BuildContext context) {
-    InspectionRepos.archiveInspection(item, archive).then((onValue) {
-      FormHelper.showSnackBar(context, "Archived");
+  void _archive(
+      Inspection item, InspectionStatus status, BuildContext context) {
+    InspectionRepos.changeInspectionStatus(item, status).whenComplete(() {
+      FormHelper.showSnackBar(context, 'changed to $status');
     });
   }
 
@@ -144,11 +143,9 @@ class FirestoreListView extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         Inspection inspection = new Inspection.fromJson(documents[index].data);
 
-        bool showDeleteBtn =
-            inspection.status == InspectionStatus.composing.toString();
+        bool showDeleteBtn = inspection.status == InspectionStatus.composing;
 
-        bool showArchiveBtn =
-            inspection.status == InspectionStatus.complete.toString();
+        bool showArchiveBtn = inspection.status == InspectionStatus.complete;
 
         String inspDate = FormHelper.datetoString(inspection.inspectionDate);
         TextStyle subheadStyle = Theme
@@ -175,13 +172,15 @@ class FirestoreListView extends StatelessWidget {
                                 icon: new Icon(Icons.archive),
                                 color: Theme.of(context).accentColor,
                                 onPressed: () {
-                                  _archive(inspection, true, context);
+                                  _archive(inspection,
+                                      InspectionStatus.archived, context);
                                 })
                             : new IconButton(
                                 icon: new Icon(Icons.unarchive),
                                 color: Theme.of(context).accentColor,
                                 onPressed: () {
-                                  _archive(inspection, false, context);
+                                  _archive(inspection,
+                                      InspectionStatus.complete, context);
                                 }),
                     title: new Text(
                       inspDate,

@@ -6,8 +6,7 @@ class InspectionModel extends Model {
 
   set(Inspection myform) {
     if (myform.userid == null) myform.userid = _user.uid;
-    if (myform.status == null)
-      myform.status = InspectionStatus.composing.toString();
+    if (myform.status == null) myform.status = InspectionStatus.composing;
     if (myform.inspectionDate == null) myform.inspectionDate = DateTime.now();
     if (myform.arrivedTime == null)
       myform.arrivedTime = FormHelper.timetoString(TimeOfDay.now());
@@ -30,8 +29,7 @@ class InspectionModel extends Model {
 
   GlobalKey<FormState> _globalKey = new GlobalKey<FormState>();
   bool _formWasEdited = false;
-  bool get isFormCompleted =>
-      _form.status == InspectionStatus.complete.toString();
+  bool get isFormCompleted => _form.status == InspectionStatus.complete;
 }
 
 class InspectionForm extends StatefulWidget {

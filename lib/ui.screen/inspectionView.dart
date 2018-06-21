@@ -119,7 +119,7 @@ class Info_view extends StatelessWidget {
         child: new InputDecorator(
           decoration: new InputDecoration(
             border: UnderlineInputBorder(),
-            labelText: Inspection.translate(fieldlabel),
+            labelText: TranslateHelper.translate(fieldlabel),
           ),
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0, right: 8.0),
@@ -175,7 +175,7 @@ class Service_view extends StatelessWidget {
         child: new InputDecorator(
           decoration: new InputDecoration(
               border: OutlineInputBorder(),
-              labelText: Inspection.translate(fieldlabel),
+              labelText: TranslateHelper.translate(fieldlabel),
               labelStyle: Theme.of(context).textTheme.body2),
           child: Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
@@ -190,7 +190,7 @@ class Service_view extends StatelessWidget {
         widget.add(new TableRow(children: [
           new Padding(
               padding: EdgeInsets.all(10.0),
-              child: new Text(Inspection.translate(key))),
+              child: new Text(TranslateHelper.translate(key))),
           new Padding(
               padding: EdgeInsets.all(10.0),
               child: new Text(
@@ -254,7 +254,7 @@ class Cleaning_view extends StatelessWidget {
         child: new InputDecorator(
           decoration: new InputDecoration(
               border: OutlineInputBorder(),
-              labelText: Inspection.translate(fieldlabel),
+              labelText: TranslateHelper.translate(fieldlabel),
               labelStyle: Theme.of(context).textTheme.body2),
           child: Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
@@ -269,7 +269,7 @@ class Cleaning_view extends StatelessWidget {
         widget.add(new TableRow(children: [
           new Padding(
               padding: EdgeInsets.all(10.0),
-              child: new Text(Inspection.translate(key))),
+              child: new Text(TranslateHelper.translate(key))),
           new Padding(
               padding: EdgeInsets.all(10.0),
               child: new Text(
@@ -336,7 +336,7 @@ class Summary_view extends StatelessWidget {
         double subtotal = (score * factor) / 100;
         totalScore += subtotal;
         row.add(new DataRow(cells: <DataCell>[
-          new DataCell(new Text(Inspection.translate(title)), onTap: null),
+          new DataCell(new Text(TranslateHelper.translate(title)), onTap: null),
           new DataCell(new Text(score.toString()), onTap: null),
           new DataCell(new Text(factor.toInt().toString() + '%'), onTap: null),
           new DataCell(new Text(subtotal.toString()), onTap: null),
@@ -345,7 +345,7 @@ class Summary_view extends StatelessWidget {
       row.add(new DataRow(onSelectChanged: null, cells: <DataCell>[
         new DataCell(
             new Text(
-              Inspection.translate('Total'),
+              TranslateHelper.translate('Total'),
               style: _boldStyle,
             ),
             onTap: null),
@@ -360,14 +360,17 @@ class Summary_view extends StatelessWidget {
 
     List<DataColumn> col = [
       new DataColumn(
-          label: new Text(Inspection.translate('SummaryViewTitle'),
+          label: new Text(TranslateHelper.translate('SummaryViewTitle'),
               style: _boldStyle)),
       new DataColumn(
-          label: new Text(Inspection.translate('Score'), style: _boldStyle)),
+          label:
+              new Text(TranslateHelper.translate('Score'), style: _boldStyle)),
       new DataColumn(
-          label: new Text(Inspection.translate('Factor'), style: _boldStyle)),
+          label:
+              new Text(TranslateHelper.translate('Factor'), style: _boldStyle)),
       new DataColumn(
-          label: new Text(Inspection.translate('Total'), style: _boldStyle))
+          label:
+              new Text(TranslateHelper.translate('Total'), style: _boldStyle))
     ];
     return ListView(
       children: <Widget>[

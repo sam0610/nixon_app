@@ -28,44 +28,44 @@ class _ViewCleaningState extends State<ViewCleaning> {
               new Container(
                 padding: EdgeInsets.all(20.0),
                 child: new Text(
-                  Inspection.translate('cleanlinessToilet'),
+                  TranslateHelper.translate('cleanlinessToilet'),
                   style: Theme.of(context).textTheme.title,
                 ),
               ),
               //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),)
               makeSwitchWidget(
                 initialValue: model.form.cleanlinessToilet.toilet_1,
-                labelText: Inspection.translate('toilet_1'),
+                labelText: TranslateHelper.translate('toilet_1'),
                 onChanged: (value) =>
                     model.form.cleanlinessToilet.toilet_1 = value,
               ),
               makeSwitchWidget(
                 initialValue: model.form.cleanlinessToilet.toilet_2,
-                labelText: Inspection.translate('toilet_2'),
+                labelText: TranslateHelper.translate('toilet_2'),
                 onChanged: (value) =>
                     model.form.cleanlinessToilet.toilet_2 = value,
               ),
               makeSwitchWidget(
                 initialValue: model.form.cleanlinessToilet.toilet_3,
-                labelText: Inspection.translate('toilet_3'),
+                labelText: TranslateHelper.translate('toilet_3'),
                 onChanged: (value) =>
                     model.form.cleanlinessToilet.toilet_3 = value,
               ),
               makeSwitchWidget(
                 initialValue: model.form.cleanlinessToilet.toilet_4,
-                labelText: Inspection.translate('toilet_4'),
+                labelText: TranslateHelper.translate('toilet_4'),
                 onChanged: (value) =>
                     model.form.cleanlinessToilet.toilet_4 = value,
               ),
               makeSwitchWidget(
                 initialValue: model.form.cleanlinessToilet.toilet_5,
-                labelText: Inspection.translate('toilet_5'),
+                labelText: TranslateHelper.translate('toilet_5'),
                 onChanged: (value) =>
                     model.form.cleanlinessToilet.toilet_5 = value,
               ),
               makeSwitchWidget(
                 initialValue: model.form.cleanlinessToilet.toilet_6,
-                labelText: Inspection.translate('toilet_6'),
+                labelText: TranslateHelper.translate('toilet_6'),
                 onChanged: (value) =>
                     model.form.cleanlinessToilet.toilet_6 = value,
               ),
@@ -81,23 +81,23 @@ class _ViewCleaningState extends State<ViewCleaning> {
               new Container(
                 padding: EdgeInsets.all(20.0),
                 child: new Text(
-                  Inspection.translate('cleanlinessMall'),
+                  TranslateHelper.translate('cleanlinessMall'),
                   style: Theme.of(context).textTheme.title,
                 ),
               ),
               makeSwitchWidget(
                 initialValue: model.form.cleanlinessMall.mall_1,
-                labelText: Inspection.translate('mall_1'),
+                labelText: TranslateHelper.translate('mall_1'),
                 onChanged: (value) => model.form.cleanlinessMall.mall_1 = value,
               ),
               makeSwitchWidget(
                 initialValue: model.form.cleanlinessMall.mall_2,
-                labelText: Inspection.translate('mall_2'),
+                labelText: TranslateHelper.translate('mall_2'),
                 onChanged: (value) => model.form.cleanlinessMall.mall_2 = value,
               ),
               makeSwitchWidget(
                 initialValue: model.form.cleanlinessMall.mall_3,
-                labelText: Inspection.translate('mall_3'),
+                labelText: TranslateHelper.translate('mall_3'),
                 onChanged: (value) => model.form.cleanlinessMall.mall_3 = value,
               ),
             ],

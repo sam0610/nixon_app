@@ -92,7 +92,7 @@ class _ViewInfoState extends State<ViewInfo>
       padding: const EdgeInsets.all(10.0),
       children: <Widget>[
         new DateTextField(
-          labelText: Inspection.translate('inspectionDate'),
+          labelText: TranslateHelper.translate('inspectionDate'),
           initialValue: model.form.inspectionDate,
           validator: (value) => _validateField(
               model.form.inspectionDate, value, model,
@@ -107,7 +107,7 @@ class _ViewInfoState extends State<ViewInfo>
             new Expanded(
               flex: 1,
               child: TimeTextField(
-                  labelText: Inspection.translate('arrivedTime'),
+                  labelText: TranslateHelper.translate('arrivedTime'),
                   initialValue: FormHelper.strToTime(model.form.arrivedTime),
                   validator: (value) => _validateField(model.form.arrivedTime,
                       FormHelper.timetoString(value), model, nullable: false),
@@ -124,7 +124,7 @@ class _ViewInfoState extends State<ViewInfo>
             new Expanded(
               flex: 1,
               child: TimeTextField(
-                  labelText: Inspection.translate('leaveTime'),
+                  labelText: TranslateHelper.translate('leaveTime'),
                   initialValue: FormHelper.strToTime(model.form.leaveTime),
                   validator: (value) => _validateField(model.form.leaveTime,
                       FormHelper.timetoString(value), model, nullable: false),
@@ -144,7 +144,7 @@ class _ViewInfoState extends State<ViewInfo>
             decoration: InputDecoration(
               suffixIcon: new IconButton(
                   icon: new Icon(Icons.search), onPressed: _showBuildingDialog),
-              labelText: Inspection.translate('bldgCode'),
+              labelText: TranslateHelper.translate('bldgCode'),
             ),
             controller: _bldgCodeController,
             onFieldSubmitted: (value) => model.form.bldgCode = value,
@@ -158,7 +158,7 @@ class _ViewInfoState extends State<ViewInfo>
           child: new TextFormField(
             style: Theme.of(context).textTheme.body2,
             decoration: InputDecoration(
-              labelText: Inspection.translate('bldgName'),
+              labelText: TranslateHelper.translate('bldgName'),
             ),
             controller: _bldgNameController,
             focusNode: _focusNode2,
@@ -176,7 +176,7 @@ class _ViewInfoState extends State<ViewInfo>
             decoration: InputDecoration(
               suffixIcon: new IconButton(
                   icon: new Icon(Icons.search), onPressed: _showStaffDialog),
-              labelText: Inspection.translate('nixonNumber'),
+              labelText: TranslateHelper.translate('nixonNumber'),
             ),
             controller: _nxNumberController,
             focusNode: _focusNode3,
@@ -192,8 +192,8 @@ class _ViewInfoState extends State<ViewInfo>
           focusNode: _focusNode4,
           child: new TextFormField(
               style: Theme.of(context).textTheme.body2,
-              decoration:
-                  InputDecoration(labelText: Inspection.translate('staffName')),
+              decoration: InputDecoration(
+                  labelText: TranslateHelper.translate('staffName')),
               controller: _staffNameController,
               focusNode: _focusNode4,
               validator: (value) =>
@@ -211,7 +211,7 @@ class _ViewInfoState extends State<ViewInfo>
                   style: Theme.of(context).textTheme.body2,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: Inspection.translate('foundLocation'),
+                    labelText: TranslateHelper.translate('foundLocation'),
                   ),
                   controller: _locationController,
                   focusNode: _focusNode5,
@@ -226,18 +226,18 @@ class _ViewInfoState extends State<ViewInfo>
               flex: 1,
               child: new DropDownFormField(
                 initialValue: model.form.postName,
-                values: ['商場', '洗手間'],
+                values: postList,
                 validator: (value) =>
                     _validateField(model.form.postName, value, model),
                 onSave: (value) => model.form.postName = value,
-                labelText: Inspection.translate('postName'),
+                labelText: TranslateHelper.translate('postName'),
                 onChanged: (value) => model.form.postName = value,
               ),
             ),
             new Expanded(
               flex: 1,
               child: NumberFormField(
-                  labelText: Inspection.translate('guestsProportion'),
+                  labelText: TranslateHelper.translate('guestsProportion'),
                   validator: (value) => null,
                   initialValue: int.tryParse(model.form.guestsProportion) ?? 0,
                   onChanged: (value) =>
@@ -250,7 +250,7 @@ class _ViewInfoState extends State<ViewInfo>
         new EnsureVisibleWhenFocused(
           focusNode: _focusNode6,
           child: MyFormTextField(
-              labelText: Inspection.translate('situationRemark'),
+              labelText: TranslateHelper.translate('situationRemark'),
               nullable: false,
               initialValue: model.form.situationRemark,
               maxLines: 1,

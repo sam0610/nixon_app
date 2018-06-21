@@ -8,6 +8,7 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
+    TranslateHelper()._load();
     _auth.currentUser().then((FirebaseUser user) {
       if (user != null) {
         AuthHelper.setCurrentUser(user);

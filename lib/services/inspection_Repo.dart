@@ -33,15 +33,13 @@ class InspectionRepos {
     });
   }
 
-  static Future<void> archiveInspection(Inspection item, bool archive) async {
-    print('archive' + item.id);
-    if (item.status == InspectionStatus.composing.toString()) {
-      throw "composing item cannot be archive ";
+  static Future<void> changeInspectionStatus(
+      Inspection item, InspectionStatus desiredStatus) async {
+    print('change: ${item.id} to $desiredStatus');
+    if (item.status == InspectionStatus.composing) {
+      return;
     }
-
-    item.status = archive
-        ? InspectionStatus.archived.toString()
-        : InspectionStatus.complete.toString();
+    item.status = desiredStatus;
     var oldDoc = await inspectionCollection.document(item.id).get();
     Firestore.instance.runTransaction((transaction) async {
       DocumentSnapshot snapshot = await transaction.get(oldDoc.reference);

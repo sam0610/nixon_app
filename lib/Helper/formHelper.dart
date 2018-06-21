@@ -1,6 +1,50 @@
 part of nixon_app;
 
-enum InspectionStatus { composing, complete, archived }
+class TranslateHelper {
+  static final TranslateHelper _translate = new TranslateHelper._internal();
+
+  static Map<String, dynamic> fieldTitle = <String, dynamic>{};
+
+  TranslateHelper._internal() {}
+
+  _load() {
+    fieldTitle.clear();
+    loadFieldsTitle();
+    loadOtherTitle();
+  }
+
+  loadFieldsTitle() {
+    Firestore.instance
+        .collection('setting')
+        .document('FieldsTitle')
+        .get()
+        .then((f) {
+      fieldTitle.clear();
+      print('loadTitle');
+      fieldTitle.addAll(f.data);
+    });
+  }
+
+  loadOtherTitle() {
+    Firestore.instance
+        .collection('setting')
+        .document('OtherTitle')
+        .get()
+        .then((f) {
+      print('loadOtherTitle');
+      fieldTitle.addAll(f.data);
+    });
+  }
+
+  static translate(String key) {
+    if (fieldTitle.length < 1) new TranslateHelper()._load();
+    return fieldTitle[key] ?? key;
+  }
+
+  factory TranslateHelper() {
+    return _translate;
+  }
+}
 
 class FormHelper {
   static String datetoString(DateTime date) {

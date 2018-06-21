@@ -6,11 +6,23 @@ part 'Inspection.g.dart';
 //run code => flutter packages pub run build_runner build
 
 const int _default = 100;
+enum InspectionStatus { composing, complete, archived }
+List<String> postList = ['商場', '洗手間'];
+
+InspectionStatus StatusCast(String v) {
+  if (v == InspectionStatus.composing.toString())
+    return InspectionStatus.composing;
+  if (v == InspectionStatus.complete.toString())
+    return InspectionStatus.complete;
+  if (v == InspectionStatus.archived.toString())
+    return InspectionStatus.archived;
+  return InspectionStatus.composing;
+}
 
 @JsonSerializable()
 class Inspection extends Object with _$InspectionSerializerMixin {
   String id;
-  String status;
+  InspectionStatus status;
   DateTime inspectionDate;
   String arrivedTime;
   String leaveTime;
@@ -131,38 +143,6 @@ class Inspection extends Object with _$InspectionSerializerMixin {
     if (field is String && field.isEmpty) return false;
     if (field is List && field.length < 1) return false;
     if (result == false) return false;
-    return result;
-  }
-
-  static Map<String, dynamic> fieldTitle = <String, dynamic>{};
-
-  static loadFieldsTitle() {
-    Firestore.instance
-        .collection('setting')
-        .document('FieldsTitle')
-        .get()
-        .then((f) {
-      fieldTitle.clear();
-      print('loadTitle');
-      fieldTitle.addAll(f.data);
-      loadOtherTitle();
-    });
-  }
-
-  static loadOtherTitle() {
-    Firestore.instance
-        .collection('setting')
-        .document('OtherTitle')
-        .get()
-        .then((f) {
-      print('loadOtherTitle');
-      fieldTitle.addAll(f.data);
-    });
-  }
-
-  static translate(String key) {
-    if (fieldTitle.length < 1) loadFieldsTitle();
-    String result = fieldTitle[key] ?? key;
     return result;
   }
 }

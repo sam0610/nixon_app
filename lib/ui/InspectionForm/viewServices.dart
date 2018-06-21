@@ -13,12 +13,12 @@ class _ViewServiceState extends State<ViewService>
     return ScopedModelDescendant<InspectionModel>(
       builder: (context, _, model) => new ListView(
             children: <Widget>[
-              new ExpansionContainer(name: Inspection.translate('grooming'),
-                  //padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+              new ExpansionContainer(
+                  name: TranslateHelper.translate('grooming'),
                   children: <Widget>[
                     makeSliderWidget(
                       initialValue: model.form.grooming.groomingScore,
-                      labelText: Inspection.translate('groomingScore'),
+                      labelText: TranslateHelper.translate('groomingScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.grooming.groomingScore = value;
@@ -27,7 +27,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.grooming.hairScore,
-                      labelText: Inspection.translate('hairScore'),
+                      labelText: TranslateHelper.translate('hairScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.grooming.hairScore = value;
@@ -36,7 +36,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.grooming.uniformScore,
-                      labelText: Inspection.translate('uniformScore'),
+                      labelText: TranslateHelper.translate('uniformScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.grooming.uniformScore = value;
@@ -45,7 +45,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.grooming.decorationScore,
-                      labelText: Inspection.translate('decorationScore'),
+                      labelText: TranslateHelper.translate('decorationScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.grooming.decorationScore = value;
@@ -54,7 +54,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.grooming.maskWearScore,
-                      labelText: Inspection.translate('maskWearScore'),
+                      labelText: TranslateHelper.translate('maskWearScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.grooming.maskWearScore = value;
@@ -63,7 +63,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.grooming.maskCleanScore,
-                      labelText: Inspection.translate('maskCleanScore'),
+                      labelText: TranslateHelper.translate('maskCleanScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.grooming.maskCleanScore = value;
@@ -72,11 +72,11 @@ class _ViewServiceState extends State<ViewService>
                     )
                   ]),
               new ExpansionContainer(
-                name: Inspection.translate('behavior'),
+                name: TranslateHelper.translate('behavior'),
                 children: <Widget>[
                   makeSliderWidget(
                     initialValue: model.form.behavior.behaviorScore,
-                    labelText: Inspection.translate('behaviorScore'),
+                    labelText: TranslateHelper.translate('behaviorScore'),
                     onChanged: (value) {
                       setState(() {
                         model.form.behavior.behaviorScore = value;
@@ -85,7 +85,7 @@ class _ViewServiceState extends State<ViewService>
                   ),
                   makeSliderWidget(
                     initialValue: model.form.behavior.mindScore,
-                    labelText: Inspection.translate('mindScore'),
+                    labelText: TranslateHelper.translate('mindScore'),
                     onChanged: (value) {
                       setState(() {
                         model.form.behavior.mindScore = value;
@@ -95,13 +95,13 @@ class _ViewServiceState extends State<ViewService>
                 ],
               ),
               new ExpansionContainer(
-                  name: Inspection.translate(
+                  name: TranslateHelper.translate(
                     'serveCust',
                   ),
                   children: [
                     makeSliderWidget(
                       initialValue: model.form.serveCust.smileScore,
-                      labelText: Inspection.translate('smileScore'),
+                      labelText: TranslateHelper.translate('smileScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.serveCust.smileScore = value;
@@ -110,7 +110,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.serveCust.greetingScore,
-                      labelText: Inspection.translate('greetingScore'),
+                      labelText: TranslateHelper.translate('greetingScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.serveCust.greetingScore = value;
@@ -119,11 +119,11 @@ class _ViewServiceState extends State<ViewService>
                     ),
                   ]),
               new ExpansionContainer(
-                  name: Inspection.translate('listenCust'),
+                  name: TranslateHelper.translate('listenCust'),
                   children: [
                     makeSliderWidget(
                       initialValue: model.form.listenCust.listenCustScore,
-                      labelText: Inspection.translate('listenCustScore'),
+                      labelText: TranslateHelper.translate('listenCustScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.listenCust.listenCustScore = value;
@@ -132,11 +132,12 @@ class _ViewServiceState extends State<ViewService>
                     ),
                   ]),
               new ExpansionContainer(
-                  name: Inspection.translate('handleCust'),
+                  name: TranslateHelper.translate('handleCust'),
                   children: [
                     makeSliderWidget(
                       initialValue: model.form.handleCust.indicateWithPalmScore,
-                      labelText: Inspection.translate('indicateWithPalmScore'),
+                      labelText:
+                          TranslateHelper.translate('indicateWithPalmScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.handleCust.indicateWithPalmScore = value;
@@ -145,7 +146,8 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.handleCust.respondCustNeedScore,
-                      labelText: Inspection.translate('respondCustNeedScore'),
+                      labelText:
+                          TranslateHelper.translate('respondCustNeedScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.handleCust.respondCustNeedScore = value;
@@ -156,7 +158,7 @@ class _ViewServiceState extends State<ViewService>
                       initialValue:
                           model.form.handleCust.unexpectedSituationScore,
                       labelText:
-                          Inspection.translate('unexpectedSituationScore'),
+                          TranslateHelper.translate('unexpectedSituationScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.handleCust.unexpectedSituationScore =
@@ -166,11 +168,11 @@ class _ViewServiceState extends State<ViewService>
                     ),
                   ]),
               new ExpansionContainer(
-                  name: Inspection.translate('farewellScore'),
+                  name: TranslateHelper.translate('farewellScore'),
                   children: [
                     makeSliderWidget(
                       initialValue: model.form.closure.farewellScore,
-                      labelText: Inspection.translate('farewellScore'),
+                      labelText: TranslateHelper.translate('farewellScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.closure.farewellScore = value;
@@ -179,11 +181,11 @@ class _ViewServiceState extends State<ViewService>
                     ),
                   ]),
               new ExpansionContainer(
-                  name: Inspection.translate('communicationSkill'),
+                  name: TranslateHelper.translate('communicationSkill'),
                   children: [
                     makeSliderWidget(
                       initialValue: model.form.communicationSkill.soundLevel,
-                      labelText: Inspection.translate('soundLevel'),
+                      labelText: TranslateHelper.translate('soundLevel'),
                       onChanged: (value) {
                         setState(() {
                           model.form.communicationSkill.soundLevel = value;
@@ -192,7 +194,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.communicationSkill.soundSpeed,
-                      labelText: Inspection.translate('soundSpeed'),
+                      labelText: TranslateHelper.translate('soundSpeed'),
                       onChanged: (value) {
                         setState(() {
                           model.form.communicationSkill.soundSpeed = value;
@@ -201,7 +203,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.communicationSkill.polite,
-                      labelText: Inspection.translate('polite'),
+                      labelText: TranslateHelper.translate('polite'),
                       onChanged: (value) {
                         setState(() {
                           model.form.communicationSkill.polite = value;
@@ -210,7 +212,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.communicationSkill.attitudeScore,
-                      labelText: Inspection.translate('attitudeScore'),
+                      labelText: TranslateHelper.translate('attitudeScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.communicationSkill.attitudeScore = value;
@@ -219,7 +221,7 @@ class _ViewServiceState extends State<ViewService>
                     ),
                     makeSliderWidget(
                       initialValue: model.form.communicationSkill.skillScore,
-                      labelText: Inspection.translate('skillScore'),
+                      labelText: TranslateHelper.translate('skillScore'),
                       onChanged: (value) {
                         setState(() {
                           model.form.communicationSkill.skillScore = value;
@@ -230,7 +232,7 @@ class _ViewServiceState extends State<ViewService>
               new ExpansionContainer(name: '窩心', children: [
                 makeSwitchWidget(
                   initialValue: model.form.warmHeart.warmHeartScore,
-                  labelText: Inspection.translate('warmHeartScore'),
+                  labelText: TranslateHelper.translate('warmHeartScore'),
                   onChanged: (value) {
                     setState(() {
                       model.form.warmHeart.warmHeartScore = value;

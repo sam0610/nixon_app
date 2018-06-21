@@ -10,7 +10,8 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
       inspectionDate: json['inspectionDate'] == null
           ? null
           : DateTime.parse(json['inspectionDate'] as String),
-      status: json['status'] == null ? null : json['status'] as String,
+      status:
+          json['status'] == null ? null : StatusCast(json['status'] as String),
       bldgCode: json['bldgCode'] == null ? null : json['bldgCode'] as String,
       bldgName: json['bldgName'] == null ? null : json['bldgName'] as String,
       nixonNumber:
@@ -77,7 +78,7 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
 
 abstract class _$InspectionSerializerMixin {
   String get id;
-  String get status;
+  InspectionStatus get status;
   DateTime get inspectionDate;
   String get bldgCode;
   String get bldgName;
@@ -106,7 +107,7 @@ abstract class _$InspectionSerializerMixin {
   Map<String, dynamic> toJson() {
     var val = <String, dynamic>{
       'id': id,
-      'status': status,
+      'status': status.toString(),
       'inspectionDate': inspectionDate?.toIso8601String(),
       'bldgCode': bldgCode,
       'bldgName': bldgName,
