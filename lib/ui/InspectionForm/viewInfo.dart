@@ -114,7 +114,7 @@ class _ViewInfoState extends State<ViewInfo>
                   onChanged: (value) {
                     setState(() {
                       model.form.arrivedTime = FormHelper.timetoString(value);
-                      model.form.leaveTime = model.form.arrivedTime;
+                      model.form.leaveTime = FormHelper.timetoString(value);
                     });
                   },
                   onSaved: (value) => model.form.arrivedTime = FormHelper
@@ -155,17 +155,20 @@ class _ViewInfoState extends State<ViewInfo>
         ),
         new EnsureVisibleWhenFocused(
           focusNode: _focusNode2,
-          child: new TextFormField(
-            style: Theme.of(context).textTheme.body2,
-            decoration: InputDecoration(
-              labelText: TranslateHelper.translate('bldgName'),
+          child: new Hero(
+            tag: 'bldgName',
+            child: new TextFormField(
+              style: Theme.of(context).textTheme.body2,
+              decoration: InputDecoration(
+                labelText: TranslateHelper.translate('bldgName'),
+              ),
+              controller: _bldgNameController,
+              focusNode: _focusNode2,
+              onFieldSubmitted: (value) => model._form.bldgName = value,
+              validator: (value) =>
+                  _validateField(model.form.bldgName, value, model),
+              onSaved: (value) => model.form.bldgName = value,
             ),
-            controller: _bldgNameController,
-            focusNode: _focusNode2,
-            onFieldSubmitted: (value) => model._form.bldgName = value,
-            validator: (value) =>
-                _validateField(model.form.bldgName, value, model),
-            onSaved: (value) => model.form.bldgName = value,
           ),
         ),
         new EnsureVisibleWhenFocused(

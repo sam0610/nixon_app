@@ -109,6 +109,7 @@ abstract class _$InspectionSerializerMixin {
       'id': id,
       'status': status.toString(),
       'inspectionDate': inspectionDate?.toIso8601String(),
+      'yyyymm': new DateFormat("yyyy.MM").format(inspectionDate),
       'bldgCode': bldgCode,
       'bldgName': bldgName,
       'nixonNumber': nixonNumber,

@@ -21,7 +21,11 @@ class DrawerWidget extends StatelessWidget {
           new ListTile(
             title: new Text(
               'Logout',
-              style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .button
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
             trailing: new Icon(Icons.exit_to_app),
             onTap: _signOut,
@@ -83,8 +87,11 @@ class _HeaderState extends State<Header> {
                   flex: 1,
                   child: new Text(
                     _user?.displayName ?? 'N/A',
-                    style: new TextStyle(
-                        fontSize: 24.0, fontWeight: FontWeight.bold),
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .body2
+                        .copyWith(fontWeight: FontWeight.bold),
                   )),
               new FlatButton(
                 child: new Icon(
@@ -101,9 +108,12 @@ class _HeaderState extends State<Header> {
               new Expanded(
                 flex: 1,
                 child: new TextField(
-                  controller: _displayNameController,
-                  style: new TextStyle(fontSize: 24.0, color: Colors.black),
-                ),
+                    controller: _displayNameController,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .button
+                        .copyWith(color: Colors.black54)),
               ),
               new FlatButton(
                 child: _saveIcon(),
@@ -124,7 +134,11 @@ class _HeaderState extends State<Header> {
             userNameField(),
             new Text(
               _user.email ?? "N/A",
-              style: new TextStyle(fontSize: 20.0),
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .button
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),

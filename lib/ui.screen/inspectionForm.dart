@@ -228,6 +228,7 @@ class SaveActionButton extends StatelessWidget {
     if (form.validate()) {
       form.save();
       if (model.form.files != null) {
+        print(FormHelper.datetoString(model.form.inspectionDate));
         if (model.form.id == null) {
           InspectionRepos.addInspection(model.form).whenComplete(() {
             Navigator.pop(context);

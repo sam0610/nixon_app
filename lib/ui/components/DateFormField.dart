@@ -50,7 +50,7 @@ class _DateTextFieldState extends State<DateTextField> {
                 //     borderRadius: new BorderRadius.circular(5.0)),
                 // color: Theme.of(context).accentColor,
                 //onPressed:
-                onTap: () => selectDate(context),
+                onTap: () => selectDate(context, field),
                 child: new Container(
                   child: new Text(
                     FormHelper.datetoString(_defaultValue),
@@ -63,12 +63,13 @@ class _DateTextFieldState extends State<DateTextField> {
     );
   }
 
-  selectDate(BuildContext context) async {
+  selectDate(BuildContext context, FormFieldState<DateTime> field) async {
     final DateTime picked = await FormHelper.selectDateDialog(ctx: context);
     if (picked != null) {
       setState(
         () {
           _defaultValue = picked;
+          field.didChange(picked);
           widget.onChanged(picked);
         },
       );

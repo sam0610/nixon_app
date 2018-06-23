@@ -1,8 +1,16 @@
 part of nixon_app;
 
 class NxLogo extends StatefulWidget {
-  NxLogo({this.color});
+  NxLogo(
+      {@required this.color,
+      this.beginSize = 0.0,
+      this.endSize = 120.0,
+      this.repeat: false});
+  final double beginSize;
+  final double endSize;
   final Color color;
+  final bool repeat;
+
   @override
   _NxLogoState createState() => new _NxLogoState();
 }
@@ -11,16 +19,28 @@ class NxLogo extends StatefulWidget {
 class _NxLogoState extends State<NxLogo> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animation<double> _animation;
+  bool isLoading = true;
 
-  @override
-  void initState() {
+  initState() {
     // TODO: implement initState
     super.initState();
     _controller = new AnimationController(
-        duration: const Duration(milliseconds: 2000), vsync: this);
-    final CurvedAnimation curve =
+        duration: const Duration(milliseconds: 1000), vsync: this);
+    final CurvedAnimation _curve =
         new CurvedAnimation(parent: _controller, curve: Curves.bounceInOut);
-    _animation = new Tween(begin: 0.0, end: 120.0).animate(curve);
+    _animation =
+        new Tween(begin: widget.beginSize, end: widget.endSize).animate(_curve);
+
+    if (widget.repeat) {
+      _controller.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _controller.reverse();
+          _controller.addListener(() {
+            if (isLoading && _controller.value < 0.6) _controller.forward();
+          });
+        }
+      });
+    }
     _controller.forward();
   }
 
@@ -37,8 +57,6 @@ class _NxLogoState extends State<NxLogo> with SingleTickerProviderStateMixin {
         child: new Container(
           child: new Image.asset(
             'assets/nx_logo.png',
-            height: _animation.value,
-            width: _animation.value,
             color: widget.color ?? Colors.red.shade800,
           ),
         ),
@@ -57,7 +75,7 @@ class GrowTransition extends StatelessWidget {
       child: new AnimatedBuilder(
           animation: animation,
           builder: (BuildContext context, Widget child) {
-            return new Container(
+            return new SizedBox(
               height: animation.value,
               width: animation.value,
               child: new Opacity(

@@ -188,15 +188,20 @@ class Service_view extends StatelessWidget {
       List<TableRow> widget = [];
       v.forEach((key, value) {
         widget.add(new TableRow(children: [
-          new Padding(
-              padding: EdgeInsets.all(10.0),
-              child: new Text(TranslateHelper.translate(key))),
-          new Padding(
-              padding: EdgeInsets.all(10.0),
-              child: new Text(
-                value.toString(),
-                style: Theme.of(context).textTheme.body2,
-              )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              new Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: new Text(TranslateHelper.translate(key))),
+              new Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: new Text(
+                    value.toString(),
+                    style: Theme.of(context).textTheme.body2,
+                  )),
+            ],
+          ),
         ]));
       });
       return new Table(children: widget);
@@ -267,15 +272,20 @@ class Cleaning_view extends StatelessWidget {
       List<TableRow> widget = [];
       v.forEach((key, value) {
         widget.add(new TableRow(children: [
-          new Padding(
-              padding: EdgeInsets.all(10.0),
-              child: new Text(TranslateHelper.translate(key))),
-          new Padding(
-              padding: EdgeInsets.all(10.0),
-              child: new Text(
-                value.toString(),
-                style: Theme.of(context).textTheme.body2,
-              )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              new Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: new Text(TranslateHelper.translate(key))),
+              new Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: new Text(
+                    value.toString(),
+                    style: Theme.of(context).textTheme.body2,
+                  )),
+            ],
+          ),
         ]));
       });
       return new Table(children: widget);
@@ -284,14 +294,18 @@ class Cleaning_view extends StatelessWidget {
     return new ListView(
       padding: EdgeInsets.all(10.0),
       children: <Widget>[
-        buildScoreTile(
-          'cleanlinessMall',
-          buildRow(model.form.cleanlinessMall.toJson()),
-        ),
-        buildScoreTile(
-          'cleanlinessToilet',
-          buildRow(model.form.cleanlinessToilet.toJson()),
-        ),
+        model.form.cleanlinessMall == null || model.form.postName == "洗手間"
+            ? new Container()
+            : buildScoreTile(
+                'cleanlinessMall',
+                buildRow(model.form.cleanlinessMall.toJson()),
+              ),
+        model.form.cleanlinessToilet == null || model.form.postName == "商場"
+            ? new Container()
+            : buildScoreTile(
+                'cleanlinessToilet',
+                buildRow(model.form.cleanlinessToilet.toJson()),
+              ),
       ],
     );
   }
@@ -305,11 +319,9 @@ class Summary_view extends StatelessWidget {
   Widget build(BuildContext context) {
     String post = model.form.postName;
 
-    TextStyle _boldStyle = Theme
-        .of(context)
-        .textTheme
-        .body2
-        .copyWith(fontWeight: FontWeight.bold, fontSize: 12.0);
+    TextStyle _boldStyle = Theme.of(context).textTheme.body2.copyWith(
+          fontWeight: FontWeight.bold,
+        );
 
     List<DataRow> buildRow() {
       Map<String, dynamic> rowData = {
@@ -321,8 +333,12 @@ class Summary_view extends StatelessWidget {
         'closure': model.form.closure.toJson(),
         'communicationSkill': model.form.communicationSkill.toJson(),
         'warmHeart': model.form.warmHeart.toJson(),
-        'cleanlinessMall': model.form.cleanlinessMall.toJson(),
-        'cleanlinessToilet': model.form.cleanlinessToilet.toJson(),
+        'cleanlinessMall': model.form.cleanlinessMall == null
+            ? null
+            : model.form.cleanlinessMall.toJson(),
+        'cleanlinessToilet': model.form.cleanlinessToilet == null
+            ? null
+            : model.form.cleanlinessToilet.toJson(),
       };
 
       if (post == '洗手間') rowData.removeWhere((k, v) => k == 'cleanlinessMall');
@@ -335,11 +351,11 @@ class Summary_view extends StatelessWidget {
         double factor = getFactor(title);
         double subtotal = (score * factor) / 100;
         totalScore += subtotal;
-        row.add(new DataRow(cells: <DataCell>[
-          new DataCell(new Text(TranslateHelper.translate(title)), onTap: null),
-          new DataCell(new Text(score.toString()), onTap: null),
-          new DataCell(new Text(factor.toInt().toString() + '%'), onTap: null),
-          new DataCell(new Text(subtotal.toString()), onTap: null),
+        row.add(new DataRow(onSelectChanged: null, cells: <DataCell>[
+          new DataCell(new Text(TranslateHelper.translate(title))),
+          new DataCell(new Text(score.toString())),
+          new DataCell(new Text(factor.toInt().toString() + '%')),
+          new DataCell(new Text(subtotal.toString())),
         ]));
       });
       row.add(new DataRow(onSelectChanged: null, cells: <DataCell>[
@@ -360,8 +376,9 @@ class Summary_view extends StatelessWidget {
 
     List<DataColumn> col = [
       new DataColumn(
-          label: new Text(TranslateHelper.translate('SummaryViewTitle'),
-              style: _boldStyle)),
+        label: new Text(TranslateHelper.translate('SummaryViewTitle'),
+            style: _boldStyle),
+      ),
       new DataColumn(
           label:
               new Text(TranslateHelper.translate('Score'), style: _boldStyle)),
@@ -372,13 +389,12 @@ class Summary_view extends StatelessWidget {
           label:
               new Text(TranslateHelper.translate('Total'), style: _boldStyle))
     ];
-    return ListView(
-      children: <Widget>[
-        new DataTable(
-          columns: col,
-          rows: buildRow(),
-        ),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: new DataTable(
+        columns: col,
+        rows: buildRow(),
+      ),
     );
   }
 

@@ -21,6 +21,11 @@ class _StaffDialogState extends State<StaffDialog> {
     }).catchError((e) => print(e));
   }
 
+  // getInspectionRecord() {
+  //   CollectionReference reference = inspectionCollection;
+  //   Query query = reference.where('inspectionDate', isEqualTo: '2018.06');
+  // }
+
   void _searchTextChanged(String text) {
     _staffListFiltered = [];
     _staffList.forEach((f) {

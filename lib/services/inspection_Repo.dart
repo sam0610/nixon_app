@@ -34,18 +34,18 @@ class InspectionRepos {
   }
 
   static Future<void> changeInspectionStatus(
-      Inspection item, InspectionStatus desiredStatus) async {
-    print('change: ${item.id} to $desiredStatus');
-    if (item.status == InspectionStatus.composing) {
+    DocumentSnapshot snapshot,
+    InspectionStatus desiredStatus,
+  ) async {
+    print('change: ${snapshot.data['id']} to $desiredStatus');
+    if (snapshot.data['status'] == InspectionStatus.composing.toString())
       return;
-    }
-    item.status = desiredStatus;
-    var oldDoc = await inspectionCollection.document(item.id).get();
-    Firestore.instance.runTransaction((transaction) async {
-      DocumentSnapshot snapshot = await transaction.get(oldDoc.reference);
-      transaction.set(snapshot.reference, item.toJson());
-      await transaction.update(snapshot.reference, item.toJson());
-    }).catchError((e) => throw e);
+
+    //var oldDoc = await inspectionCollection.document(item.id).get();
+    Firestore.instance.runTransaction((Transaction transaction) async {
+      await transaction.update(snapshot.reference,
+          {'status': desiredStatus.toString()}).catchError((e) => throw e);
+    });
   }
 
   static Future<void> updateInspection(Inspection item) async {
@@ -53,8 +53,10 @@ class InspectionRepos {
     var oldDoc = await inspectionCollection.document(item.id).get();
     Firestore.instance.runTransaction((transaction) async {
       DocumentSnapshot snapshot = await transaction.get(oldDoc.reference);
-      transaction.set(snapshot.reference, item.toJson());
-      await transaction.update(snapshot.reference, item.toJson());
+      if (snapshot.exists) {
+        await transaction.set(snapshot.reference, item.toJson());
+        //await transaction.update(snapshot.reference, item.toJson());
+      }
     }).catchError((e) => throw e);
   }
 

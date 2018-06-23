@@ -176,7 +176,13 @@ class _BodyWidgetState extends State<BodyWidget> {
         shrinkWrap: true,
         padding: EdgeInsets.only(left: 20.0, right: 20.0),
         children: <Widget>[
-          new NxLogo(),
+          new NxLogo(
+            color: Colors.red,
+            repeat: false,
+          ),
+          new SizedBox(
+            height: 30.0,
+          ),
           _emailTextField(),
           _passwordTextField(),
           _buttonBar(),

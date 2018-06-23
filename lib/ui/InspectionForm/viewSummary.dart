@@ -6,42 +6,22 @@ class ViewSummary extends StatefulWidget {
 }
 
 class _ViewSummaryState extends State<ViewSummary> {
+  InspectionModel model;
   @override
   void initState() {
     super.initState();
+    model = ModelFinder<InspectionModel>().of(context);
   }
 
   void showSnackBar(BuildContext context, String msg,
       {Color bgcolor = Colors.blue}) {
     Scaffold.of(context).showSnackBar(
           new SnackBar(
-              duration: new Duration(seconds: 10),
+              duration: new Duration(seconds: 1),
               content: new Text(msg),
               backgroundColor: bgcolor),
         );
   }
-
-  Widget text(String title, double score) {
-    TextStyle style =
-        new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Row(
-        children: <Widget>[
-          new Text(
-            title + " : ",
-            style: style,
-          ),
-          new Text(
-            score.toInt().toString(),
-            style: style.copyWith(color: Colors.blue),
-          ),
-        ],
-      ),
-    );
-  }
-
-  TextStyle style = new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
 
   TableRow dRow(String title, double score) {
     return new TableRow(
@@ -50,7 +30,7 @@ class _ViewSummaryState extends State<ViewSummary> {
           padding: const EdgeInsets.all(10.0),
           child: new Text(
             title + " : ",
-            style: style,
+            style: Theme.of(context).textTheme.body2,
           ),
         ),
         new Padding(
@@ -58,12 +38,20 @@ class _ViewSummaryState extends State<ViewSummary> {
           child: score > -1
               ? new Text(
                   score.toInt().toString(),
-                  style: style.copyWith(color: Colors.blue),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .body2
+                      .copyWith(color: Colors.blue),
                   textAlign: TextAlign.center,
                 )
               : new Text(
                   'incomplete',
-                  style: style.copyWith(color: Colors.blue),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .body2
+                      .copyWith(color: Colors.blue),
                   textAlign: TextAlign.center,
                 ),
         ),
@@ -71,162 +59,195 @@ class _ViewSummaryState extends State<ViewSummary> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    List<TableRow> _buildRow(Inspection form) {
-      List<TableRow> _row = new List();
-      _row.add(new TableRow(children: [
-        new Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: new Text(
-            "項目",
-            style: style.copyWith(fontWeight: FontWeight.bold),
-          ),
-        ),
-        new Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: new Text(
-            "得分",
-            textAlign: TextAlign.center,
-            style: style.copyWith(fontWeight: FontWeight.bold),
-          ),
-        ),
-      ]));
-      _row.add(dRow(TranslateHelper.translate('grooming'),
-          FormHelper.calculate(form.grooming.toJson())));
-      _row.add(dRow(TranslateHelper.translate('behavior'),
-          FormHelper.calculate(form.behavior.toJson())));
-      _row.add(dRow(TranslateHelper.translate('serveCust'),
-          FormHelper.calculate(form.serveCust.toJson())));
-      _row.add(dRow(TranslateHelper.translate('listenCust'),
-          FormHelper.calculate(form.listenCust.toJson())));
-      _row.add(dRow(TranslateHelper.translate('handleCust'),
-          FormHelper.calculate(form.handleCust.toJson())));
-      _row.add(dRow(TranslateHelper.translate('closure'),
-          FormHelper.calculate(form.closure.toJson())));
-      _row.add(dRow(TranslateHelper.translate('communicationSkill'),
-          FormHelper.calculate(form.communicationSkill.toJson())));
-      _row.add(dRow(TranslateHelper.translate('warmHeart'),
-          FormHelper.calculate(form.warmHeart.toJson())));
-      if (form.postName == "商場") {
-        _row.add(dRow(TranslateHelper.translate('cleanlinessMall'),
-            FormHelper.calculate(form.cleanlinessMall.toJson())));
-      } else if (form.postName == "洗手間") {
-        _row.add(dRow(TranslateHelper.translate('cleanlinessToilet'),
-            FormHelper.calculate(form.cleanlinessToilet.toJson())));
-      }
-      return _row;
-    }
+  List<TableRow> _buildRow(Inspection form) {
+    Map<String, dynamic> rowData = {
+      'grooming': model.form.grooming.toJson(),
+      'behavior': model.form.behavior.toJson(),
+      'serveCust': model.form.serveCust.toJson(),
+      'listenCust': model.form.listenCust.toJson(),
+      'handleCust': model.form.handleCust.toJson(),
+      'closure': model.form.closure.toJson(),
+      'communicationSkill': model.form.communicationSkill.toJson(),
+      'warmHeart': model.form.warmHeart.toJson(),
+      'cleanlinessMall': model.form.cleanlinessMall == null
+          ? null
+          : model.form.cleanlinessMall.toJson(),
+      'cleanlinessToilet': model.form.cleanlinessToilet == null
+          ? null
+          : model.form.cleanlinessToilet.toJson(),
+    };
 
-    Future<bool> _confirmSave() async => await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text(
-              '請確認無誤',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .body2
-                  .copyWith(fontWeight: FontWeight.bold),
+    if (model.form.postName == '洗手間')
+      rowData.removeWhere((k, v) => k == 'cleanlinessMall');
+    if (model.form.postName == '商場')
+      rowData.removeWhere((k, v) => k == 'cleanlinessToilet');
+
+    List<TableRow> _row = new List();
+    _row.add(new TableRow(children: [
+      new Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: new Text(
+          "項目",
+          style: Theme
+              .of(context)
+              .textTheme
+              .body2
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+      ),
+      new Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: new Text(
+          "得分",
+          textAlign: TextAlign.center,
+          style: Theme
+              .of(context)
+              .textTheme
+              .body2
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+      ),
+    ]));
+    rowData.forEach((String key, dynamic value) {
+      _row.add(
+          dRow(TranslateHelper.translate(key), FormHelper.calculate(value)));
+    });
+    return _row;
+  }
+
+  Future<bool> _confirmSave() async => await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text(
+            '請確認無誤',
+            style: Theme
+                .of(context)
+                .textTheme
+                .body2
+                .copyWith(fontWeight: FontWeight.bold),
+          ),
+          content: const Text('一經確認記錄將無法修改?'),
+          actions: <Widget>[
+            new FlatButton(
+              color: Colors.redAccent,
+              child: Text(
+                '否',
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .body1
+                    .copyWith(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
             ),
-            content: const Text('一經確認記錄將無法修改?'),
-            actions: <Widget>[
-              new FlatButton(
-                color: Colors.redAccent,
-                child: Text(
-                  '否',
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .body1
-                      .copyWith(color: Colors.white),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
+            new FlatButton(
+              color: Colors.blueAccent,
+              child: Text(
+                '是',
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .body1
+                    .copyWith(color: Colors.white),
               ),
-              new FlatButton(
-                color: Colors.blueAccent,
-                child: Text(
-                  '是',
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .body1
-                      .copyWith(color: Colors.white),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              ),
-            ],
-          );
-        });
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      });
 
-    _saveToComplete(InspectionModel model) {
-      if (!model.form.checkForComplete()) {
-        showSnackBar(context, 'form incompleted');
-      } else {
-        if ((_confirmSave) == true) {
-          if (model.form.postName == "洗手間") model.form.cleanlinessMall = null;
-          if (model.form.postName == "商場") model.form.cleanlinessToilet = null;
-          model.form.status = InspectionStatus.complete;
-          SaveActionButton(
-            model,
-          )._save(context);
+  _save(BuildContext context) {
+    final form = model._globalKey.currentState;
+    if (form.validate()) {
+      form.save();
+      if (model.form.files != null) {
+        if (model.form.id == null) {
+          InspectionRepos.addInspection(model.form).whenComplete(() {
+            Navigator.pop(context);
+          }).catchError((onError) =>
+              showSnackBar(context, onError.toString(), bgcolor: Colors.red));
         } else {
-          showSnackBar(context, 'canceled by user');
+          InspectionRepos.updateInspection(model.form).whenComplete(() {
+            Navigator.pop(context);
+          }).catchError((onError) =>
+              showSnackBar(context, onError.toString(), bgcolor: Colors.red));
         }
       }
+    } else {
+      showSnackBar(context, 'Please fill in blank field', bgcolor: Colors.red);
+      model.setAutoValidate(true);
     }
+  }
 
-    RaisedButton buildRaisedButton(
-        BuildContext context, InspectionModel model) {
-      return new RaisedButton(
-        color: Theme.of(context).accentColor,
-        child: new Container(
-          child: new Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new Row(
-                  children: <Widget>[
-                    new Icon(
-                      Icons.file_upload,
-                    ),
-                    new Text('確認表格'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        onPressed: () => _saveToComplete(model),
-      );
+  _saveToComplete(InspectionModel model) {
+    if (!model.form.checkForComplete()) {
+      showSnackBar(context, 'form incompleted');
+    } else {
+      _confirmSave().then((result) {
+        if (result == true) {
+          if (model.form.postName == "洗手間") {
+            model.form.cleanlinessMall = null;
+          } else if (model.form.postName == "商場") {
+            model.form.cleanlinessToilet = null;
+          }
+          model.form.status = InspectionStatus.complete;
+          _save(context);
+        } else {
+          showSnackBar(context, 'canceled by user', bgcolor: Colors.red);
+        }
+      });
     }
+  }
 
-    return new Container(
-        padding: EdgeInsets.all(10.0),
-        child: ScopedModelDescendant<InspectionModel>(
-          builder: (context, _, model) => new ListView(
+  RaisedButton buildRaisedButton(BuildContext context) {
+    return new RaisedButton(
+      color: Theme.of(context).accentColor,
+      shape: new RoundedRectangleBorder(
+        borderRadius: new BorderRadius.circular(50.0),
+      ),
+      child: new Container(
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new Row(
                 children: <Widget>[
-                  new Table(
-                    border: new TableBorder.all(
-                        color: Theme.of(context).accentColor),
-                    children: _buildRow(model.form),
-                    defaultColumnWidth: FlexColumnWidth(15.0),
+                  new Icon(
+                    Icons.file_upload,
                   ),
-                  new SizedBox(height: 10.0),
-                  model.isFormCompleted
-                      ? new SizedBox(
-                          height: 0.0,
-                        )
-                      : buildRaisedButton(context, model)
+                  new Text('確認表格'),
                 ],
               ),
-        ));
+            ),
+          ],
+        ),
+      ),
+      onPressed: () => _saveToComplete(model),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      padding: EdgeInsets.all(10.0),
+      child: new ListView(
+        children: <Widget>[
+          new Table(
+            border: new TableBorder.all(color: Theme.of(context).accentColor),
+            children: _buildRow(model.form),
+            defaultColumnWidth: FlexColumnWidth(15.0),
+          ),
+          new SizedBox(height: 15.0),
+          model.isFormCompleted ? new Container() : buildRaisedButton(context)
+        ],
+      ),
+    );
   }
 }

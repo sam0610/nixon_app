@@ -128,9 +128,9 @@ class FirestoreListView extends StatelessWidget {
     });
   }
 
-  void _archive(
-      Inspection item, InspectionStatus status, BuildContext context) {
-    InspectionRepos.changeInspectionStatus(item, status).whenComplete(() {
+  void _archive(DocumentSnapshot snapshot, InspectionStatus status,
+      BuildContext context) {
+    InspectionRepos.changeInspectionStatus(snapshot, status).then((_) {
       FormHelper.showSnackBar(context, 'changed to $status');
     });
   }
@@ -172,14 +172,14 @@ class FirestoreListView extends StatelessWidget {
                                 icon: new Icon(Icons.archive),
                                 color: Theme.of(context).accentColor,
                                 onPressed: () {
-                                  _archive(inspection,
+                                  _archive(documents[index],
                                       InspectionStatus.archived, context);
                                 })
                             : new IconButton(
                                 icon: new Icon(Icons.unarchive),
                                 color: Theme.of(context).accentColor,
                                 onPressed: () {
-                                  _archive(inspection,
+                                  _archive(documents[index],
                                       InspectionStatus.complete, context);
                                 }),
                     title: new Text(
