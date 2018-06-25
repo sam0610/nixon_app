@@ -38,10 +38,10 @@ class _SplashPageState extends State<SplashPage>
   @override
   void initState() {
     initAnimation();
-    TranslateHelper()._load();
-    _auth.currentUser().then((FirebaseUser user) {
+    _auth.currentUser().then((FirebaseUser user) async {
       if (user != null) {
         AuthHelper.setCurrentUser(user);
+        await TranslateHelper()._load();
         new Future.delayed(new Duration(seconds: 5))
             .then((_) => Navigator.of(context).pushReplacementNamed("/home"));
       } else {

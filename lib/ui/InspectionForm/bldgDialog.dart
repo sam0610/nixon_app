@@ -12,6 +12,7 @@ class _BuildingDialogState extends State<BuildingDialog> {
 
   getBldg() async {
     await fetchBldgList(new http.Client())
+        .timeout(new Duration(seconds: 10))
         .then((bldg) => buildingList = bldg)
         .catchError((e) => print(e));
   }

@@ -391,9 +391,17 @@ class Summary_view extends StatelessWidget {
     ];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: new DataTable(
-        columns: col,
-        rows: buildRow(),
+      child: Column(
+        children: <Widget>[
+          new DataTable(
+            columns: col,
+            rows: buildRow(),
+          ),
+          new OutlineButton(
+            child: new Text('add'),
+            onPressed: () => addtoFirebase(),
+          )
+        ],
       ),
     );
   }
@@ -418,10 +426,9 @@ class Summary_view extends StatelessWidget {
 
   void addtoFirebase() {
     Firestore.instance
-        .collection('setting')
-        .document('ScoreFactor')
-        .collection(model.form.bldgCode)
-        .add(scoreFactorTemplate)
+        .collection('ScoreFactor')
+        .document('model.form.bldgCode')
+        .setData(scoreFactorTemplate)
         .then((_) => print('done'));
   }
 }

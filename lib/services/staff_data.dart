@@ -7,8 +7,9 @@ class StaffData {
   int nixonNumber;
   String englishName;
   String givenName;
+  int count;
 
-  StaffData({this.nixonNumber, this.englishName, this.givenName});
+  StaffData({this.nixonNumber, this.englishName, this.givenName, this.count});
 
   factory StaffData.fromJson(Map<String, dynamic> json) {
     return new StaffData(
@@ -21,19 +22,19 @@ class StaffData {
 Future<List<StaffData>> fetchStaffList(http.Client client, String bldgCode,
     {DateTime date}) async {
   assert(bldgCode.isNotEmpty);
-
-  if (date == null) date = DateTime.now();
-
-  String dateStr = DateFormat("yyyy-MM-dd").format(date);
-
-  var urlList =
-      'http://sammobile.azurewebsites.net/api/Staff/bldg/$bldgCode/$dateStr/l';
-  final response = await client.get(urlList);
-  return compute(parseStaff, response.body);
+  try {
+    if (date == null) date = DateTime.now();
+    String dateStr = DateFormat("yyyy-MM-dd").format(date);
+    var urlList =
+        'http://sammobile.azurewebsites.net/api/Staff/bldg/$bldgCode/$dateStr/l';
+    final response = await client.get(urlList);
+    return compute(parseStaff, response.body);
+  } catch (e) {
+    throw e;
+  }
 }
 
 List<StaffData> parseStaff(String responseBody) {
   final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
-
   return parsed.map<StaffData>((json) => new StaffData.fromJson(json)).toList();
 }

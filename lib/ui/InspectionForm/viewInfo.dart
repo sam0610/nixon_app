@@ -63,7 +63,10 @@ class _ViewInfoState extends State<ViewInfo>
       StaffData staffData =
           await Navigator.of(context).push(new MaterialPageRoute<StaffData>(
               builder: (BuildContext context) {
-                return new StaffDialog(bldgCode: model.form.bldgCode);
+                return new StaffDialog(
+                    bldgCode: model.form.bldgCode,
+                    yyyymm: DateFormat('yyyy.MM')
+                        .format(model.form.inspectionDate));
               },
               fullscreenDialog: true));
 

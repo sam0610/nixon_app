@@ -64,13 +64,17 @@ class _HomePageState extends State<HomePage>
       drawer: DrawerWidget(
         context: context,
       ),
-      body: new TabBarView(
-        controller: _tabController,
-        children: <Widget>[
-          InspectionBody(InspectionStatus.composing),
-          InspectionBody(InspectionStatus.complete),
-          InspectionBody(InspectionStatus.archived),
-        ],
+      body: new SafeArea(
+        top: true,
+        bottom: true,
+        child: new TabBarView(
+          controller: _tabController,
+          children: <Widget>[
+            InspectionBody(InspectionStatus.composing),
+            InspectionBody(InspectionStatus.complete),
+            InspectionBody(InspectionStatus.archived),
+          ],
+        ),
       ),
       bottomNavigationBar: new Material(
           color: Theme.of(context).primaryColor,

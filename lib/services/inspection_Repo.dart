@@ -21,6 +21,27 @@ class InspectionRepos {
     return inspectionList;
   }
 
+  static Future<Map<int, int>> countFormbyStaff(String yyyymm) async {
+    QuerySnapshot snapshot = await inspectionCollection
+        .where('yyyymm', isEqualTo: yyyymm)
+        .getDocuments();
+
+    Map<int, int> result = {};
+    snapshot.documents.map((document) {
+      int nixonNumber = document.data['nixonNumber'] != null
+          ? document.data['nixonNumber'] as int
+          : 0;
+
+      result.putIfAbsent(nixonNumber, () => 0);
+
+      if (result.containsKey(nixonNumber)) {
+        result[nixonNumber] += 1;
+      }
+    }).toList();
+
+    return result;
+  }
+
   static Future<void> addInspection(Inspection item) async {
     print('creating');
     item.userid = _user.uid;

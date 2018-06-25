@@ -1,8 +1,9 @@
 part of nixon_app;
 
 class StaffDialog extends StatefulWidget {
-  StaffDialog({@required this.bldgCode});
+  StaffDialog({@required this.bldgCode, @required this.yyyymm});
   final String bldgCode;
+  final String yyyymm;
 
   @override
   _StaffDialogState createState() => new _StaffDialogState();
@@ -11,14 +12,19 @@ class StaffDialog extends StatefulWidget {
 class _StaffDialogState extends State<StaffDialog> {
   List<StaffData> _staffList = [];
   List<StaffData> _staffListFiltered = [];
+  Map<int, int> _count = {};
   TextEditingController _filterController = new TextEditingController();
   final GlobalKey<AsyncLoaderState> _asyncLoaderState =
       new GlobalKey<AsyncLoaderState>();
 
   getStaff() async {
-    await fetchStaffList(new http.Client(), widget.bldgCode).then((staff) {
+    await fetchStaffList(new http.Client(), widget.bldgCode)
+        .timeout(new Duration(seconds: 10))
+        .then((staff) {
       _staffList = staff;
     }).catchError((e) => print(e));
+
+    InspectionRepos.countFormbyStaff(widget.yyyymm).then((map) => _count = map);
   }
 
   // getInspectionRecord() {
@@ -49,6 +55,16 @@ class _StaffDialogState extends State<StaffDialog> {
               child: new Row(children: <Widget>[
                 new Expanded(
                   child: new ListTile(
+                      trailing: _count[staff.nixonNumber] != null
+                          ? new CircleAvatar(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              child: new Text(
+                                  _count[staff.nixonNumber].toString()))
+                          : new CircleAvatar(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              child: new Text('0')),
                       onTap: () => Navigator.of(context).pop(staff),
                       title: new Text(
                         staff.nixonNumber.toString(),
