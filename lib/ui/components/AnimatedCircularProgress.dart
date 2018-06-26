@@ -23,9 +23,9 @@ class _AnimatedCircularProgressState extends State<AnimatedCircularProgress>
   void initState() {
     super.initState();
     _animationController = new AnimationController(
-        vsync: this, duration: new Duration(milliseconds: 1000));
+        vsync: this, duration: new Duration(seconds: 20));
 
-    _colorAnimation = new ColorTween(begin: Colors.green, end: Colors.blue)
+    _colorAnimation = new ColorTween(begin: Colors.red, end: Colors.blue)
         .animate(_animationController)
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {

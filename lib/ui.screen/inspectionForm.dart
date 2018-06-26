@@ -159,52 +159,8 @@ class _InspectionFormState extends State<InspectionForm>
     myModel._globalKey.currentState.validate();
     if (!myModel._formWasEdited) return true;
 
-    return await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return new AlertDialog(
-              title: new Text(
-                '有未儲存修改!!!',
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .body2
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-              content: const Text('確認離開?'),
-              actions: <Widget>[
-                new FlatButton(
-                  color: Colors.redAccent,
-                  child: Text(
-                    '否',
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .body1
-                        .copyWith(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
-                ),
-                new FlatButton(
-                  color: Colors.blueAccent,
-                  child: Text(
-                    '是',
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .body1
-                        .copyWith(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                  },
-                ),
-              ],
-            );
-          },
-        ) ??
+    return await FormHelper()._confirmDialog(
+            context: context, title: '有未儲存修改!!!', msg: '確認離開?') ??
         false;
   }
 }

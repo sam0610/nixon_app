@@ -83,6 +83,14 @@ class InspectionRepos {
 
   static Future<bool> deleteInspectionbySnapshot(
       DocumentSnapshot snapshot) async {
+    List<UFiles> files = (snapshot.data['files'] as List)
+        ?.map((f) =>
+            f == null ? null : new UFiles.fromJson(f.cast<String, dynamic>()))
+        ?.toList();
+    if (files != null) {
+      files.forEach((f) => deleteAudio(f.name));
+    }
+
     Firestore.instance.runTransaction((Transaction transaction) async {
       await transaction.delete(snapshot.reference);
     }).then((value) {
@@ -116,6 +124,7 @@ class InspectionRepos {
 
   static Future<void> deleteAudio(String name) async {
     StorageReference ref = audioStorageRef.child(name);
+
     await ref.delete();
   }
 }

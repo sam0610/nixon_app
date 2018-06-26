@@ -11,9 +11,9 @@ class MyApp extends StatelessWidget {
     final textTheme = baseTheme.textTheme
         .copyWith(
             body1: new TextStyle(fontSize: 14.0),
-            body2: new TextStyle(fontSize: 18.0),
-            title: new TextStyle(fontSize: 20.0),
-            subhead: new TextStyle(fontSize: 18.0))
+            body2: new TextStyle(fontSize: 16.0),
+            title: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            subhead: new TextStyle(fontSize: 18.0, color: Colors.grey.shade700))
         .apply(displayColor: kPrimaryColor, bodyColor: Colors.black87);
     /*subhead: new TextStyle(color: Colors.grey.shade900), //listtile subtitle
       caption: new TextStyle(color: Colors.grey.shade900), //listtile title
@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
   ThemeData buildThemeData() {
     final baseTheme = ThemeData.light();
     return baseTheme.copyWith(
+        canvasColor: Colors.transparent,
         textTheme: buildTextTheme(),
         primaryColor: kPrimaryColor,
         primaryColorDark: kPrimaryDark,

@@ -11,32 +11,19 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   bool boolEdit = false;
   bool _loading = false;
-  TabController _tabController;
-  List<Tab> myTabs = <Tab>[
-    new Tab(
-      icon: new Icon(
-        Icons.edit,
-      ),
-    ),
-    new Tab(
-      icon: new Icon(Icons.check_circle),
-    ),
-    new Tab(
-      icon: new Icon(Icons.archive),
-    )
-  ];
+  InspectionStatus _status = InspectionStatus.composing;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _assureLogin();
-    _tabController = new TabController(vsync: this, length: myTabs.length);
   }
 
   _assureLogin() {
     _auth.onAuthStateChanged.firstWhere((user) => user == null).then((user) {
       AuthHelper.setCurrentUser(null);
+      Navigator.of(context).pop;
       Navigator.of(context).pushReplacementNamed("/login");
     });
   }
@@ -53,35 +40,170 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Mystery Shopper"),
-        centerTitle: true,
-      ),
-      floatingActionButton: new FloatingActionButton(
-        child: new Icon(Icons.add_circle),
-        onPressed: () => _addForm(),
-      ),
-      drawer: DrawerWidget(
-        context: context,
-      ),
-      body: new SafeArea(
-        top: true,
-        bottom: true,
-        child: new TabBarView(
-          controller: _tabController,
+        appBar: new AppBar(
+          title: new Text(TranslateHelper.translate("Mystery Shopper")),
+          centerTitle: true,
+        ),
+        floatingActionButton: new FloatingActionButton(
+          child: new Icon(Icons.add),
+          onPressed: () => _addForm(),
+        ),
+        body: new SafeArea(
+          top: true,
+          bottom: true,
+          child: InspectionBody(_status),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: new BottomAppBar(
+            color: Theme.of(context).primaryColor,
+            child: new Row(children: <Widget>[
+              new IconButton(
+                icon: new Icon(
+                  Icons.menu,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  showModalBottomSheet<InspectionStatus>(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          new BottomDrawer(status: _status)).then((status) {
+                    if (status != null) {
+                      setState(() {
+                        _status = status;
+                      });
+                    }
+                  });
+                },
+              )
+            ])));
+  }
+}
+
+class BottomDrawer extends StatefulWidget {
+  BottomDrawer({Key key, this.status}) : super(key: key);
+  final InspectionStatus status;
+  @override
+  _BottomDrawerState createState() => _BottomDrawerState();
+}
+
+class item {
+  item({this.title, this.status});
+  @required
+  String title;
+  @required
+  InspectionStatus status;
+}
+
+class _BottomDrawerState extends State<BottomDrawer> {
+  List<item> _items = [
+    new item(
+        title: TranslateHelper.translate(InspectionStatus.composing.toString()),
+        status: InspectionStatus.composing),
+    new item(
+        title: TranslateHelper.translate(InspectionStatus.complete.toString()),
+        status: InspectionStatus.complete),
+    new item(
+      title: TranslateHelper.translate(InspectionStatus.archived.toString()),
+      status: InspectionStatus.archived,
+    )
+  ];
+
+  void changeName(BuildContext _context) async {
+    TextEditingController _controller = new TextEditingController();
+
+    String result = await showDialog(
+      context: _context,
+      builder: (BuildContext context) => new AlertDialog(
+            content: new TextFormField(
+                controller: _controller,
+                decoration: new InputDecoration(
+                    hintText: 'new display name',
+                    suffixIcon: new IconButton(
+                      icon: new Icon(Icons.subdirectory_arrow_left),
+                      onPressed: () =>
+                          Navigator.of(context).pop(_controller.text),
+                    ))),
+          ),
+    );
+    if (result != null && result.isNotEmpty) {
+      AuthHelper.updateProfileName(result).then((s) => _user.reload());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Drawer(
+      child: Container(
+        decoration: new BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+              top: Radius.circular(10.0), bottom: Radius.zero),
+        ),
+        child: new Column(
           children: <Widget>[
-            InspectionBody(InspectionStatus.composing),
-            InspectionBody(InspectionStatus.complete),
-            InspectionBody(InspectionStatus.archived),
+            new ExpansionTile(
+              title: new ListTile(
+                  leading: new Icon(
+                    Icons.account_circle,
+                  ),
+                  title: new Text(_user.displayName),
+                  subtitle: new Text(_user.email)),
+              children: <Widget>[
+                new Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    new FlatButton.icon(
+                      icon: new Icon(Icons.mode_edit),
+                      label: new Text('Change display name'),
+                      onPressed: () => changeName(context),
+                    ),
+                    new FlatButton.icon(
+                      icon: new Icon(Icons.exit_to_app),
+                      label: new Text('Logout'),
+                      onPressed: () => _auth.signOut(),
+                    )
+                  ],
+                )
+              ],
+            ),
+            new Divider(),
+            new Column(
+              children: _items.map((item) {
+                bool selected = item.status == widget.status;
+                TextStyle style = selected
+                    ? Theme
+                        .of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(fontWeight: FontWeight.bold)
+                    : Theme.of(context).textTheme.body1;
+
+                return Container(
+                  foregroundDecoration: new BoxDecoration(
+                    borderRadius: new BorderRadius.horizontal(
+                        left: Radius.circular(20.0),
+                        right: Radius.circular(0.0)),
+                    gradient: selected
+                        ? new LinearGradient(colors: [
+                            Theme.of(context).primaryColor.withOpacity(0.2),
+                            Theme.of(context).primaryColor.withOpacity(0.1)
+                          ])
+                        : null,
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      TranslateHelper.translate(item.title),
+                      style: style,
+                    ),
+                    onTap: () => Navigator.of(context).pop(item.status),
+                  ),
+                );
+              }).toList(),
+            ),
+            new Divider(),
           ],
         ),
       ),
-      bottomNavigationBar: new Material(
-          color: Theme.of(context).primaryColor,
-          child: new TabBar(
-            controller: _tabController,
-            tabs: myTabs,
-          )),
     );
   }
 }
@@ -122,9 +244,7 @@ class FirestoreListView extends StatelessWidget {
   }
 
   void _delete(DocumentSnapshot snapshot, BuildContext context) {
-    FormHelper()
-        ._confirmDialog(context: context, title: "確認刪除?", msg: "")
-        .then((res) {
+    FormHelper()._confirmDialog(context: context, title: "確認刪除").then((res) {
       if (res)
         InspectionRepos.deleteInspectionbySnapshot(snapshot).then((onValue) {
           FormHelper.showSnackBar(context, "Deleted");

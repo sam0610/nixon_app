@@ -37,37 +37,24 @@ class _ViewRecorderState extends State<ViewRecorder> {
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-      children: <Widget>[
-        _buildListView(),
-        _recorderWidget(),
-        new SizedBox(
-          height: 40.0,
-        )
-      ],
-    );
-  }
-
-  _recorderWidget() {
-    return new Center(
-      child: !_isRecording
-          ? new RaisedButton(
-              elevation: 4.0,
-              padding: EdgeInsets.all(15.0),
-              color: Theme.of(context).primaryColor,
-              shape: new CircleBorder(),
-              child: new Icon(Icons.mic, color: Colors.white, size: 40.0),
-              onPressed: _isRecording ? null : _start,
-            )
-          : new RaisedButton(
-              elevation: 4.0,
-              padding: EdgeInsets.all(15.0),
-              color: Theme.of(context).primaryColor,
-              shape: new RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(10.0)),
-              child: new Icon(Icons.stop, color: Colors.white, size: 40.0),
-              onPressed: _isRecording ? _stop : null,
-            ),
+    return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: new FloatingActionButton(
+        backgroundColor: Colors.red,
+        child: !_isRecording
+            ? new Icon(
+                Icons.mic,
+              )
+            : new Icon(
+                Icons.stop,
+              ),
+        onPressed: _isRecording ? _stop : _start,
+      ),
+      body: new Column(
+        children: <Widget>[
+          _buildListView(),
+        ],
+      ),
     );
   }
 

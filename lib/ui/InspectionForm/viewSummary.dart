@@ -115,51 +115,12 @@ class _ViewSummaryState extends State<ViewSummary> {
     return _row;
   }
 
-  Future<bool> _confirmSave() async => await showDialog<bool>(
+  Future<bool> _confirmSave() async => await FormHelper()._confirmDialog(
       context: context,
-      builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(
-            '請確認無誤',
-            style: Theme
-                .of(context)
-                .textTheme
-                .body2
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          content: const Text('一經確認記錄將無法修改?'),
-          actions: <Widget>[
-            new FlatButton(
-              color: Colors.redAccent,
-              child: Text(
-                '否',
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .body1
-                    .copyWith(color: Colors.white),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            new FlatButton(
-              color: Colors.blueAccent,
-              child: Text(
-                '是',
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .body1
-                    .copyWith(color: Colors.white),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      });
+      title: '請確認無誤',
+      msg: '一經確認記錄將無法修改!!',
+      trueText: '是',
+      falseText: '取消');
 
   _save(BuildContext context) {
     final form = model._globalKey.currentState;
@@ -204,35 +165,6 @@ class _ViewSummaryState extends State<ViewSummary> {
     }
   }
 
-  RaisedButton buildRaisedButton(BuildContext context) {
-    return new RaisedButton(
-      color: Theme.of(context).accentColor,
-      shape: new RoundedRectangleBorder(
-        borderRadius: new BorderRadius.circular(50.0),
-      ),
-      child: new Container(
-        child: new Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: new Row(
-                children: <Widget>[
-                  new Icon(
-                    Icons.file_upload,
-                  ),
-                  new Text('確認表格'),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      onPressed: () => _saveToComplete(model),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return new Container(
@@ -245,7 +177,13 @@ class _ViewSummaryState extends State<ViewSummary> {
             defaultColumnWidth: FlexColumnWidth(15.0),
           ),
           new SizedBox(height: 15.0),
-          model.isFormCompleted ? new Container() : buildRaisedButton(context)
+          model.isFormCompleted
+              ? new Container()
+              : new RaisedButton.icon(
+                  icon: new Icon(Icons.done_all),
+                  label: new Text('提交'),
+                  onPressed: () => _saveToComplete(model),
+                )
         ],
       ),
     );

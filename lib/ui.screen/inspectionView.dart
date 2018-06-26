@@ -345,11 +345,11 @@ class Summary_view extends StatelessWidget {
       if (post == '商場') rowData.removeWhere((k, v) => k == 'cleanlinessToilet');
 
       List<DataRow> row = [];
-      double totalScore = 0.0;
+      int totalScore = 0;
       rowData.forEach((title, object) {
-        double score = FormHelper.calculate(object);
-        double factor = getFactor(title);
-        double subtotal = (score * factor) / 100;
+        int score = FormHelper.calculate(object).toInt();
+        int factor = getFactor(title).toInt();
+        int subtotal = ((score * factor) ~/ 100).toInt();
         totalScore += subtotal;
         row.add(new DataRow(onSelectChanged: null, cells: <DataCell>[
           new DataCell(new Text(TranslateHelper.translate(title))),
@@ -380,29 +380,36 @@ class Summary_view extends StatelessWidget {
             style: _boldStyle),
       ),
       new DataColumn(
+          numeric: true,
           label:
               new Text(TranslateHelper.translate('Score'), style: _boldStyle)),
       new DataColumn(
+          numeric: true,
           label:
               new Text(TranslateHelper.translate('Factor'), style: _boldStyle)),
       new DataColumn(
+          numeric: true,
           label:
               new Text(TranslateHelper.translate('Total'), style: _boldStyle))
     ];
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Column(
-        children: <Widget>[
-          new DataTable(
-            columns: col,
-            rows: buildRow(),
+    return ListView(
+      children: <Widget>[
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Column(
+            children: <Widget>[
+              new DataTable(
+                columns: col,
+                rows: buildRow(),
+                // ),
+                // new OutlineButton(
+                //   child: new Text('add'),
+                //   onPressed: () => addtoFirebase(),
+              )
+            ],
           ),
-          new OutlineButton(
-            child: new Text('add'),
-            onPressed: () => addtoFirebase(),
-          )
-        ],
-      ),
+        ),
+      ],
     );
   }
 

@@ -19,7 +19,6 @@ class TranslateHelper {
         .document('FieldsTitle')
         .get()
         .then((f) {
-      fieldTitle.clear();
       print('loadTitle');
       fieldTitle.addAll(f.data);
     });
@@ -102,8 +101,12 @@ class FormHelper {
     Scaffold.of(context).showSnackBar(bar);
   }
 
-  static Future<Null> showAlertDialog(
-      BuildContext context, String title, String message) async {
+  static Future<Null> showAlertDialog<T>(
+      {BuildContext context,
+      String title,
+      String message,
+      List<String> actionButton,
+      List<T> returnValue}) async {
     return showDialog<Null>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -190,7 +193,7 @@ class FormHelper {
   Future<bool> _confirmDialog(
           {@required BuildContext context,
           @required String title,
-          @required String msg,
+          String msg,
           String trueText = "是",
           String falseText = "否"}) async =>
       await showDialog<bool>(
@@ -205,32 +208,18 @@ class FormHelper {
                     .body2
                     .copyWith(fontWeight: FontWeight.bold),
               ),
-              content: new Text(msg),
+              content: msg != null ? new Text(msg) : null,
               actions: <Widget>[
                 new FlatButton(
-                  color: Colors.redAccent,
-                  child: Text(
-                    falseText,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .body1
-                        .copyWith(color: Colors.white),
-                  ),
+                  child:
+                      Text(falseText, style: Theme.of(context).textTheme.body1),
                   onPressed: () {
                     Navigator.of(context).pop(false);
                   },
                 ),
                 new FlatButton(
-                  color: Colors.blueAccent,
-                  child: Text(
-                    trueText,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .body1
-                        .copyWith(color: Colors.white),
-                  ),
+                  child:
+                      Text(trueText, style: Theme.of(context).textTheme.body1),
                   onPressed: () {
                     Navigator.of(context).pop(true);
                   },
