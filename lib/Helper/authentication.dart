@@ -18,6 +18,31 @@ class AuthHelper {
     return user;
   }
 
+  static Future<bool> registerUser(
+      {@required String email,
+      @required String password,
+      @required String name}) async {
+    FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+        email: email, password: password);
+    user.sendEmailVerification();
+    FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password)
+        .then((user) {
+      UserUpdateInfo updateInfo = new UserUpdateInfo();
+      updateInfo.displayName = name;
+      FirebaseAuth.instance.updateProfile(updateInfo);
+    });
+    FirebaseAuth.instance.signOut();
+
+    return user != null;
+  }
+
+  static Future<void> resetPassword({@required String email}) async {
+    return _auth
+        .sendPasswordResetEmail(email: email)
+        .catchError((onError) => print(onError));
+  }
+
   static void updateUserProfile() {
     _auth.currentUser().then((user) => _user = user);
   }

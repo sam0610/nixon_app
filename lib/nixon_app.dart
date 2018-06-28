@@ -54,6 +54,8 @@ part 'ui.screen/homepage.dart';
 part 'ui.screen/inspectionForm.dart';
 part 'ui.screen/inspectionView.dart';
 part 'ui.screen/login.dart';
+part 'ui.screen/registrationForm.dart';
+part 'ui.screen/resetForm.dart';
 part 'ui.screen/splash_page.dart';
 // import 'dart:typed_data';
 // import 'package:http/http.dart';

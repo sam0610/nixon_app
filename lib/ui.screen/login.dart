@@ -30,7 +30,7 @@ class _BodyWidgetState extends State<BodyWidget> {
   void showSnackBar(String msg) {
     Scaffold.of(context).showSnackBar(
           new SnackBar(
-              duration: new Duration(seconds: 10),
+              duration: new Duration(seconds: 1),
               content: new Text(msg),
               backgroundColor: Theme.of(context).primaryColor),
         );
@@ -137,6 +137,21 @@ class _BodyWidgetState extends State<BodyWidget> {
     );
   }
 
+  Widget _wdRegister() {
+    return new Row(
+      children: <Widget>[
+        new FlatButton(
+          child: new Text(TranslateHelper.translate('register')),
+          onPressed: () => Navigator.of(context).pushNamed('/reg'),
+        ),
+        new FlatButton(
+          child: new Text(TranslateHelper.translate('forgot password')),
+          onPressed: () => Navigator.of(context).pushNamed('/reset'),
+        ),
+      ],
+    );
+  }
+
   void _setLoading(bool bool) {
     setState(() {
       _showLoading = bool;
@@ -157,7 +172,12 @@ class _BodyWidgetState extends State<BodyWidget> {
               password: _passwordEditController.text.trim())
           .then((FirebaseUser user) {
         AuthHelper.setCurrentUser(user).then((_) {
-          Navigator.of(context).pushReplacementNamed('/home');
+          if (user.isEmailVerified != true) {
+            showSnackBar("please verify your email  ");
+            user.sendEmailVerification();
+          } else {
+            Navigator.of(context).pushReplacementNamed('/home');
+          }
         });
       }).catchError((e) {
         _setLoading(false);
@@ -186,6 +206,7 @@ class _BodyWidgetState extends State<BodyWidget> {
           _emailTextField(),
           _passwordTextField(),
           _buttonBar(),
+          _wdRegister(),
           new Container(
               height: 40.0,
               child: _showLoading

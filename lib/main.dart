@@ -63,6 +63,16 @@ class MyApp extends StatelessWidget {
               builder: (_) => new LoginPage(),
               settings: settings,
             );
+          case '/reg':
+            return new AnimatedRoute(
+              builder: (_) => new RegistrationForm(),
+              settings: settings,
+            );
+          case '/reset':
+            return new AnimatedRoute(
+              builder: (_) => new ResetForm(),
+              settings: settings,
+            );
         }
         assert(false);
       },
