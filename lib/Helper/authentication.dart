@@ -22,17 +22,20 @@ class AuthHelper {
       {@required String email,
       @required String password,
       @required String name}) async {
+    assert(email.contains("nixon.com.hk"));
     FirebaseUser user = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
     user.sendEmailVerification();
+
     FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password)
         .then((user) {
       UserUpdateInfo updateInfo = new UserUpdateInfo();
       updateInfo.displayName = name;
-      FirebaseAuth.instance.updateProfile(updateInfo);
+      FirebaseAuth.instance
+          .updateProfile(updateInfo)
+          .then((_) => FirebaseAuth.instance.signOut());
     });
-    FirebaseAuth.instance.signOut();
 
     return user != null;
   }

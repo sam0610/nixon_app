@@ -21,9 +21,10 @@ class _ResetFormState extends State<ResetForm> {
           child: ListView(
             shrinkWrap: true,
             children: <Widget>[
-              new Text('reset User Password '),
+              new Text(TranslateHelper.translate('reset user password')),
               new TextFormField(
-                decoration: new InputDecoration(labelText: 'Email'),
+                decoration: new InputDecoration(
+                    labelText: TranslateHelper.translate('Email')),
                 controller: _email,
                 keyboardType: TextInputType.text,
               ),
@@ -31,11 +32,14 @@ class _ResetFormState extends State<ResetForm> {
                 height: 10.0,
               ),
               new RaisedButton(
-                child: new Text(TranslateHelper.translate('register')),
+                child: new Text(TranslateHelper.translate('confirm')),
                 onPressed: () {
-                  _auth
-                      .sendPasswordResetEmail(email: _email.text)
-                      .then((_) {
+                  _auth.sendPasswordResetEmail(email: _email.text).then((_) {
+                    FormHelper.showAlertDialog(
+                        context: context,
+                        title: TranslateHelper.translate("request completed"),
+                        message: TranslateHelper
+                            .translate("please check your email"));
                     Navigator.of(context).pop();
                   }).catchError((onError) {
                     Scaffold.of(context).showSnackBar(

@@ -39,7 +39,8 @@ class _SplashPageState extends State<SplashPage>
   void initState() {
     initAnimation();
     _auth.currentUser().then((FirebaseUser user) async {
-      if (user != null) {
+      user != null ? print(user.email) : print('null');
+      if (user != null && user.isEmailVerified) {
         AuthHelper.setCurrentUser(user);
         await TranslateHelper()._load();
         new Future.delayed(new Duration(seconds: 5))

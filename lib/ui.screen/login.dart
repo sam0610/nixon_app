@@ -26,6 +26,13 @@ class _BodyWidgetState extends State<BodyWidget> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool _autoValidate = false;
   bool _showLoading = false;
+  bool isObscure = false;
+
+  void _showPW() {
+    setState(() {
+      isObscure = !isObscure;
+    });
+  }
 
   void showSnackBar(String msg) {
     Scaffold.of(context).showSnackBar(
@@ -43,7 +50,7 @@ class _BodyWidgetState extends State<BodyWidget> {
         validator: (value) => value.isEmpty ? "email is required" : null,
         keyboardType: TextInputType.emailAddress,
         decoration: new InputDecoration(
-            hintText: "login email",
+            hintText: TranslateHelper.translate("Email"),
             icon: new Icon(
               Icons.email,
               color: Theme.of(context).primaryColor,
@@ -59,10 +66,14 @@ class _BodyWidgetState extends State<BodyWidget> {
       padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
       child: new TextFormField(
         validator: (value) => value.isEmpty ? "password required" : null,
-        keyboardType: TextInputType.text,
-        obscureText: true,
+        keyboardType: TextInputType.emailAddress,
+        obscureText: isObscure,
         decoration: new InputDecoration(
-            hintText: "password",
+            hintText: TranslateHelper.translate("password"),
+            suffixIcon: new IconButton(
+                icon: Icon(Icons.remove_red_eye),
+                onPressed: _showPW,
+                color: isObscure ? Colors.grey : Colors.black),
             icon: new Icon(
               Icons.lock,
               color: Theme.of(context).primaryColor,
@@ -87,7 +98,7 @@ class _BodyWidgetState extends State<BodyWidget> {
               new Container(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: new Icon(Icons.send)),
-              new Text("Login")
+              new Text(TranslateHelper.translate("Login"))
             ],
           ),
         ),
@@ -114,7 +125,7 @@ class _BodyWidgetState extends State<BodyWidget> {
               padding: const EdgeInsets.only(right: 8.0),
               child: new Icon(Icons.clear),
             ),
-            new Text("clear")
+            new Text(TranslateHelper.translate("clear"))
           ],
         ),
       ),

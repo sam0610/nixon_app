@@ -24,7 +24,9 @@ class _HomePageState extends State<HomePage>
     _auth.onAuthStateChanged.firstWhere((user) => user == null).then((user) {
       AuthHelper.setCurrentUser(null);
       Navigator.of(context).pop;
-      Navigator.of(context).pushReplacementNamed("/login");
+      Navigator
+          .of(context)
+          .pushNamedAndRemoveUntil("/login", ModalRoute.withName('/'));
     });
   }
 

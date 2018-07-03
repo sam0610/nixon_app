@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   ThemeData buildThemeData() {
     final baseTheme = ThemeData.light();
     return baseTheme.copyWith(
-        canvasColor: Colors.transparent,
+        //canvasColor: Colors.transparent,
         textTheme: buildTextTheme(),
         primaryColor: kPrimaryColor,
         primaryColorDark: kPrimaryDark,

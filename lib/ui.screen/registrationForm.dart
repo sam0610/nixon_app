@@ -9,8 +9,13 @@ class _RegistrationFormState extends State<RegistrationForm> {
   TextEditingController _displayname = new TextEditingController();
   TextEditingController _email = new TextEditingController();
   TextEditingController _password = new TextEditingController();
+  bool _isObscure = true;
 
-  void register() async {}
+  showPassword() {
+    setState(() {
+      _isObscure = !_isObscure;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
             child: ListView(
               shrinkWrap: true,
               children: <Widget>[
-                new Text('Registration only work with nixon email'),
+                new Text(TranslateHelper.translate('Registration'),
+                    style: Theme.of(context).textTheme.title),
                 new TextFormField(
                   decoration: new InputDecoration(
                       labelText: TranslateHelper.translate('display Name')),
@@ -37,9 +43,15 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 ),
                 new TextFormField(
                   decoration: new InputDecoration(
-                      labelText: TranslateHelper.translate('Password')),
+                    labelText: TranslateHelper.translate('Password'),
+                    suffixIcon: new IconButton(
+                      icon: new Icon(Icons.remove_red_eye),
+                      color: _isObscure ? Colors.grey : Colors.black,
+                      onPressed: () => showPassword(),
+                    ),
+                  ),
                   controller: _password,
-                  obscureText: true,
+                  obscureText: _isObscure,
                   keyboardType: TextInputType.text,
                 ),
                 new SizedBox(
@@ -49,29 +61,38 @@ class _RegistrationFormState extends State<RegistrationForm> {
                   child: new Text(TranslateHelper.translate('register')),
                   onPressed: _email.text.contains('nixon.com.hk')
                       ? () {
-                          AuthHelper
-                              .registerUser(
-                                  email: _email.text.trim(),
-                                  password: _password.text.trim(),
-                                  name: _displayname.text.trim())
-                              .then((successfull) {
-                            if (successfull == true) {
-                              FirebaseAuth.instance.signOut();
-                              Scaffold.of(context).showSnackBar(new SnackBar(
+                          !_email.text.contains('nixon.com.hk')
+                              ? Scaffold.of(context).showSnackBar(new SnackBar(
                                     duration: new Duration(seconds: 1),
-                                    content: new Text(
-                                        'Verification email sent to your mailbox'),
+                                    content:
+                                        new Text('only nixon.com.hk email'),
                                     backgroundColor: Colors.blue,
-                                  ));
-                              Navigator.of(context).pop();
-                            }
-                          }).catchError((onError) {
-                            Scaffold.of(context).showSnackBar(new SnackBar(
-                                  duration: new Duration(seconds: 1),
-                                  content: new Text(onError.toString()),
-                                  backgroundColor: Colors.red,
-                                ));
-                          });
+                                  ))
+                              : AuthHelper
+                                  .registerUser(
+                                      email: _email.text.trim(),
+                                      password: _password.text.trim(),
+                                      name: _displayname.text.trim())
+                                  .then((successfull) {
+                                  if (successfull == true) {
+                                    FormHelper.showAlertDialog(
+                                        context: context,
+                                        title: TranslateHelper
+                                            .translate("registration complete"),
+                                        message: TranslateHelper.translate(
+                                            "please check your email"));
+                                    Navigator.of(context).pop();
+                                  }
+                                }).catchError((onError) {
+                                  FirebaseAuth.instance.signOut();
+                                  Scaffold
+                                      .of(context)
+                                      .showSnackBar(new SnackBar(
+                                        duration: new Duration(seconds: 1),
+                                        content: new Text(onError.toString()),
+                                        backgroundColor: Colors.red,
+                                      ));
+                                });
                         }
                       : null,
                 )
