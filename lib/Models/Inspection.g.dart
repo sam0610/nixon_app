@@ -40,6 +40,7 @@ Inspection _$InspectionFromJson(Map<String, dynamic> json) => new Inspection(
 
 //
       userid: json['userid'] as String,
+      username: json['username'] as String,
       id: json['id'] as String,
       grooming: json['grooming'] == null
           ? null
@@ -93,6 +94,7 @@ abstract class _$InspectionSerializerMixin {
   //List<String> get audios;
   List<UFiles> get files;
   String get userid;
+  String get username;
   Grooming get grooming;
   Behavior get behavior;
   ServeCust get serveCust;
@@ -121,6 +123,7 @@ abstract class _$InspectionSerializerMixin {
       'guestsProportion': guestsProportion,
       'situationRemark': situationRemark,
       'userid': userid,
+      'username': username,
     };
     void writeNotNull(String key, dynamic value) {
       if (value != null) {

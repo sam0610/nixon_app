@@ -37,6 +37,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
   String situationRemark;
   List<UFiles> files;
   String userid;
+  String username;
   Grooming grooming;
   Behavior behavior;
   ServeCust serveCust;
@@ -64,6 +65,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
       this.situationRemark,
       this.files,
       this.userid,
+      this.username,
       this.grooming,
       this.behavior,
       this.serveCust,
@@ -90,6 +92,7 @@ class Inspection extends Object with _$InspectionSerializerMixin {
     this.guestsProportion = "1",
     this.situationRemark,
     this.userid,
+      this.username,
   })  : files = <UFiles>[],
         //audios = <String>[],
         grooming = new Grooming(),

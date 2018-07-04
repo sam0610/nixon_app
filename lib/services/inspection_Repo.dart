@@ -45,6 +45,7 @@ class InspectionRepos {
   static Future<void> addInspection(Inspection item) async {
     print('creating');
     item.userid = _user.uid;
+    item.username = _user.displayName;
     Firestore.instance.runTransaction((transaction) async {
       CollectionReference reference = inspectionCollection;
       await reference.add(item.toJson()).then((docRef) {
